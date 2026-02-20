@@ -1,0 +1,4 @@
+---
+name: context-extraction
+description: Writes meaningful ai_context values in Crowdin JSONL files for strings that need translator context. Use when extracting context, filling ai_context fields, adding context to ambiguous strings, or working with Crowdin JSONL context files.
+---
