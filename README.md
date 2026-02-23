@@ -20,11 +20,11 @@ This gives your AI coding agent access to comprehensive Crowdin knowledge includ
 
 ### context-extraction
 
-<!-- TODO: Add a description of the context-extraction skill -->
+Fills `ai_context` in Crowdin JSONL files so translators get clear context. Covers which strings need context (ambiguous short words, plurals, inline tags, etc.), how to write 1–3 sentence descriptions (UI element type, placement), and safe editing rules (only edit `ai_context`, validity checklist).
 
 ### crowdin-context-cli
 
-<!-- TODO: Add a description of the crowdin-context-cli skill -->
+Documents `crowdin context download` and `crowdin context upload` for AI enrichment. Covers CLI options (filters, output path, overwrite/dryrun), JSONL format, and the workflow: download → fill `ai_context` (e.g. with context-extraction) → upload.
 
 ## Quick Start
 
