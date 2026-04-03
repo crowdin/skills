@@ -30,6 +30,10 @@ Documents `crowdin context download` and `crowdin context upload` for AI enrichm
 
 Helps build, validate, and optimize Crowdin CroQL expressions for strings, translations, TM segments, and glossary terms. Includes operator guidance, context-specific fields, editor-filter equivalents, and API endpoint templates with URL-encoding reminders.
 
+### graphql
+
+Helps write and debug valid Crowdin GraphQL queries with schema-aware arguments, pagination, filtering/sorting, and node/rate-limit safety checks. Includes a troubleshooting pattern for common Playground errors like unsupported field arguments.
+
 ## Quick Start
 
 1. **Install all Crowdin skills:**
@@ -53,6 +57,7 @@ If you prefer, you can install specific skills:
 npx skills add crowdin/skills/context-extraction
 npx skills add crowdin/skills/crowdin-context-cli
 npx skills add crowdin/skills/croql
+npx skills add crowdin/skills/graphql
 ```
 
 ## Compatibility

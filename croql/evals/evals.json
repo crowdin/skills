@@ -39,6 +39,58 @@
         "Includes glossary terms endpoint path `/glossaries/{glossaryId}/terms`",
         "Provides stricter variant including `partOfSpeech = \"noun\"`"
       ]
+    },
+    {
+      "id": 4,
+      "prompt": "Give me a CroQL for TM segments where at least one record was used more than 10 times and created by user crowdin. Include the TM segments endpoint with encoded croql.",
+      "expected_output": "Response uses TM segment record filters with usageCount and createdBy and includes the TM segments API endpoint.",
+      "files": [],
+      "expectations": [
+        "Primary query includes `count of records where (` structure",
+        "Primary query filters by `usageCount > 10`",
+        "Primary query filters by creator using `createdBy = @user:\"crowdin\"`",
+        "Includes TM segments endpoint path `/tms/{tmId}/segments`",
+        "Includes URL-encoded `croql` query parameter in endpoint example"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "I need source strings where field Priority is High, and either field Platform or Environment contains Production. Return CroQL, plus strings endpoint and a broader variant that only requires Priority High.",
+      "expected_output": "Response uses field filters via count of fields where(...) with grouped OR for names, and includes strings endpoint plus broader variant.",
+      "files": [],
+      "expectations": [
+        "Primary query includes `count of fields where (name = \"Priority\" and value = \"High\") > 0`",
+        "Primary query includes grouped OR on field names Platform or Environment",
+        "Primary query includes `value contains \"Production\"`",
+        "Includes strings endpoint path `/projects/{projectId}/strings`",
+        "Provides broader variant that keeps Priority High and removes Platform/Environment requirement"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Create a CroQL that finds strings translated to Ukrainian but not approved and with QA issues in Ukrainian specifically. Include encoded strings endpoint.",
+      "expected_output": "Response scopes language summary to Ukrainian and combines translated + not approved + has qa issues in one predicate.",
+      "files": [],
+      "expectations": [
+        "Primary query uses `count of languages summary where (`",
+        "Primary query includes `language = @language:\"uk\"` inside languages summary predicate",
+        "Primary query includes both `is translated` and `not is approved`",
+        "Primary query includes `has qa issues`",
+        "Includes strings endpoint with encoded `croql` parameter"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "I need glossary terms added after 2024-12-01 that are abbreviations and have a note containing tooltip. Give CroQL and glossary endpoint, plus a stricter variant requiring English.",
+      "expected_output": "Response uses glossary term fields createdAt, type, and note; includes endpoint and stricter language variant.",
+      "files": [],
+      "expectations": [
+        "Primary query includes `createdAt > '2024-12-01 00:00:00'`",
+        "Primary query includes `type = \"abbreviation\"`",
+        "Primary query includes `note contains \"tooltip\"`",
+        "Includes glossary terms endpoint path `/glossaries/{glossaryId}/terms`",
+        "Provides stricter variant adding `language = @language:\"en\"`"
+      ]
     }
   ]
 }
