@@ -26,6 +26,10 @@ Fills `ai_context` in Crowdin JSONL files so translators get clear context. Cove
 
 Documents `crowdin context download` and `crowdin context upload` for AI enrichment. Covers CLI options (filters, output path, overwrite/dryrun), JSONL format, and the workflow: download → fill `ai_context` (e.g. with context-extraction) → upload.
 
+### crowdin-api-client
+
+Guides practical usage of `@crowdin/crowdin-api-client` for production workflows. Covers client/module selection, pagination with `.withFetchAll()`, uploads via storage + file creation, translation build/download flow, runtime options (`fetch`, retries, timeout), and error handling patterns (`CrowdinValidationError` vs `CrowdinError`).
+
 ### croql
 
 Helps build, validate, and optimize Crowdin CroQL expressions for strings, translations, TM segments, and glossary terms. Includes operator guidance, context-specific fields, editor-filter equivalents, and API endpoint templates with URL-encoding reminders.
@@ -56,6 +60,7 @@ If you prefer, you can install specific skills:
 ```bash
 npx skills add crowdin/skills/context-extraction
 npx skills add crowdin/skills/crowdin-context-cli
+npx skills add crowdin/skills/crowdin-api-client
 npx skills add crowdin/skills/croql
 npx skills add crowdin/skills/graphql
 ```
