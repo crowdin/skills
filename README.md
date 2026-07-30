@@ -57,6 +57,10 @@ Use `--agent <name>` (e.g. `--agent cursor`) to target a specific tool, and `gh 
 
 ## Available Skills
 
+### create-app
+
+Builds a Crowdin app end to end and leaves the user looking at it: scaffolds with `@crowdin/serverless-apps-cli`, writes the UI with `@crowdin/serverless-apps-sdk`, publishes into the organization and opens it. Written for translators and localization managers rather than developers, so it derives what it can (edition, placement, scopes, editor modes) and asks only questions a non-programmer can answer. Covers the placements that have no preview link, the requests that need a backend and what to offer instead, and the checks that catch a published app which does not actually render.
+
 ### context-extraction
 
 Fills `ai_context` in Crowdin JSONL files so translators get clear context. Covers which strings need context (ambiguous short words, plurals, inline tags, etc.), how to write 1–3 sentence descriptions (UI element type, placement), and safe editing rules (only edit `ai_context`, validity checklist).
@@ -102,6 +106,7 @@ npx skills add crowdin/skills --skill crowdin-context-cli
 npx skills add crowdin/skills --skill crowdin-api-client
 npx skills add crowdin/skills --skill croql
 npx skills add crowdin/skills --skill graphql
+npx skills add crowdin/skills --skill create-app
 ```
 
 ## Compatibility
