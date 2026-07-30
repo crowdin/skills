@@ -16,6 +16,43 @@ npx skills add crowdin/skills
 
 This gives your AI coding agent access to comprehensive Crowdin knowledge including best practices, common pitfalls, and configuration patterns.
 
+### Claude Code Plugin
+
+Alternatively, install the skills as a [Claude Code plugin](https://code.claude.com/docs/en/discover-plugins). In Claude Code, run:
+
+```
+/plugin marketplace add crowdin/skills
+/plugin install crowdin@crowdin-skills
+```
+
+All skills load automatically and stay up to date via `/plugin marketplace update`.
+
+### Other Agent Tools (Plugin Install)
+
+The repo is also installable as a plugin via the [`plugins` CLI](https://npmx.dev/package/plugins), which auto-detects your installed agent tools (Claude Code, Cursor, Codex, Grok Build, Kimi Code, GitHub Copilot CLI, VS Code) and installs through each tool's native plugin system:
+
+```bash
+npx plugins add crowdin/skills
+```
+
+### Gemini CLI
+
+Gemini CLI can install the skills directly from this repo with its built-in skills installer:
+
+```bash
+gemini skills install https://github.com/crowdin/skills
+```
+
+### GitHub CLI
+
+The [GitHub CLI](https://cli.github.com) (v2.90+) can install the skills for GitHub Copilot or any other supported agent:
+
+```bash
+gh skill install crowdin/skills --all
+```
+
+Use `--agent <name>` (e.g. `--agent cursor`) to target a specific tool, and `gh skill update` to pull newer versions.
+
 ## Available Skills
 
 ### context-extraction
@@ -68,12 +105,15 @@ npx skills add crowdin/skills/graphql
 ## Compatibility
 
 These skills are compatible with:
-- [Cursor](https://cursor.sh)
 - [Claude Code](https://claude.ai/product/claude-code)
+- [Cursor](https://cursor.sh)
+- [OpenAI Codex](https://openai.com/codex/)
+- [Gemini CLI](https://geminicli.com)
+- [GitHub Copilot](https://github.com/features/copilot)
+- [OpenCode](https://opencode.ai)
 - [Cline](https://cline.bot/)
 - [Windsurf](https://codeium.com/windsurf)
-- [GitHub Copilot](https://github.com/features/copilot)
-- And other agents supporting the skills.sh format
+- And other agents supporting the [Agent Skills](https://agentskills.io) format
 
 ## Resources
 

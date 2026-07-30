@@ -1,0 +1,23 @@
+{
+  "name": "crowdin-skills",
+  "description": "Agent Skills for Crowdin, an AI-powered localization platform for teams and businesses",
+  "owner": {
+    "name": "Crowdin",
+    "url": "https://crowdin.com"
+  },
+  "plugins": [
+    {
+      "name": "crowdin",
+      "source": "./",
+      "description": "Crowdin localization skills: CroQL, GraphQL, API client, context extraction, and context CLI",
+      "category": "productivity",
+      "skills": [
+        "./croql",
+        "./graphql",
+        "./context-extraction",
+        "./crowdin-context-cli",
+        "./crowdin-api-client"
+      ]
+    }
+  ]
+}

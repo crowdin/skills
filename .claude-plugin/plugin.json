@@ -1,0 +1,19 @@
+{
+  "name": "crowdin",
+  "displayName": "Crowdin Skills",
+  "description": "Crowdin localization skills: CroQL, GraphQL, API client, context extraction, and context CLI",
+  "author": {
+    "name": "Crowdin",
+    "url": "https://crowdin.com"
+  },
+  "homepage": "https://github.com/crowdin/skills",
+  "repository": "https://github.com/crowdin/skills",
+  "keywords": ["crowdin", "localization", "i18n", "translation"],
+  "skills": [
+    "./croql",
+    "./graphql",
+    "./context-extraction",
+    "./crowdin-context-cli",
+    "./crowdin-api-client"
+  ]
+}
