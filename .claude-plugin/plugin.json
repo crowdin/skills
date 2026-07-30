@@ -1,7 +1,7 @@
 {
   "name": "crowdin",
   "displayName": "Crowdin Skills",
-  "description": "Crowdin localization skills: CroQL, GraphQL, API client, context extraction, and context CLI",
+  "description": "Crowdin localization skills: building Crowdin apps, CroQL, GraphQL, API client, context extraction, and context CLI",
   "author": {
     "name": "Crowdin",
     "url": "https://crowdin.com"

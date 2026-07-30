@@ -9,7 +9,7 @@
     {
       "name": "crowdin",
       "source": "./",
-      "description": "Crowdin localization skills: CroQL, GraphQL, API client, context extraction, and context CLI",
+      "description": "Crowdin localization skills: building Crowdin apps, CroQL, GraphQL, API client, context extraction, and context CLI",
       "category": "productivity"
     }
   ]
