@@ -37,10 +37,10 @@ npx plugins add crowdin/skills
 
 ### Gemini CLI
 
-Gemini CLI can install the skills directly from this repo with its built-in skills installer:
+The repo is a [Gemini CLI extension](https://geminicli.com/docs/extensions/) — install it with:
 
 ```bash
-gemini skills install https://github.com/crowdin/skills
+gemini extensions install https://github.com/crowdin/skills
 ```
 
 ### GitHub CLI
@@ -95,11 +95,11 @@ Helps write and debug valid Crowdin GraphQL queries with schema-aware arguments,
 
 If you prefer, you can install specific skills:
 ```bash
-npx skills add crowdin/skills/context-extraction
-npx skills add crowdin/skills/crowdin-context-cli
-npx skills add crowdin/skills/crowdin-api-client
-npx skills add crowdin/skills/croql
-npx skills add crowdin/skills/graphql
+npx skills add crowdin/skills --skill context-extraction
+npx skills add crowdin/skills --skill crowdin-context-cli
+npx skills add crowdin/skills --skill crowdin-api-client
+npx skills add crowdin/skills --skill croql
+npx skills add crowdin/skills --skill graphql
 ```
 
 ## Compatibility

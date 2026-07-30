@@ -8,12 +8,5 @@
   },
   "homepage": "https://github.com/crowdin/skills",
   "repository": "https://github.com/crowdin/skills",
-  "keywords": ["crowdin", "localization", "i18n", "translation"],
-  "skills": [
-    "./croql",
-    "./graphql",
-    "./context-extraction",
-    "./crowdin-context-cli",
-    "./crowdin-api-client"
-  ]
+  "keywords": ["crowdin", "localization", "i18n", "translation"]
 }
