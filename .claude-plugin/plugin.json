@@ -8,5 +8,6 @@
   },
   "homepage": "https://github.com/crowdin/skills",
   "repository": "https://github.com/crowdin/skills",
+  "license": "MIT",
   "keywords": ["crowdin", "localization", "i18n", "translation"]
 }
