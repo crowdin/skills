@@ -16,6 +16,45 @@ npx skills add crowdin/skills
 
 This gives your AI coding agent access to comprehensive Crowdin knowledge including best practices, common pitfalls, and configuration patterns.
 
+### Claude Code Plugin
+
+Alternatively, install the skills as a [Claude Code plugin](https://code.claude.com/docs/en/discover-plugins). In Claude Code, run:
+
+```
+/plugin marketplace add crowdin/skills
+/plugin install crowdin@crowdin-skills
+```
+
+All skills load automatically and stay up to date via `/plugin marketplace update`.
+
+The plugin also includes the [Crowdin MCP Server](https://support.crowdin.com/developer/crowdin-mcp-server/), giving your agent direct access to Crowdin projects. Authenticate via the browser OAuth flow on first use (`/mcp` in Claude Code). Crowdin Enterprise users should connect their organization endpoint (`https://{organization}.mcp.crowdin.com/v2/mcp`) manually instead.
+
+### Other Agent Tools (Plugin Install)
+
+The repo is also installable as a plugin via the [`plugins` CLI](https://npmx.dev/package/plugins), which auto-detects your installed agent tools (Claude Code, Cursor, Codex, Grok Build, Kimi Code, GitHub Copilot CLI, VS Code) and installs through each tool's native plugin system:
+
+```bash
+npx plugins add crowdin/skills
+```
+
+### Gemini CLI
+
+The repo is a [Gemini CLI extension](https://geminicli.com/docs/extensions/) — install it with:
+
+```bash
+gemini extensions install https://github.com/crowdin/skills
+```
+
+### GitHub CLI
+
+The [GitHub CLI](https://cli.github.com) (v2.90+) can install the skills for GitHub Copilot or any other supported agent:
+
+```bash
+gh skill install crowdin/skills --all
+```
+
+Use `--agent <name>` (e.g. `--agent cursor`) to target a specific tool, and `gh skill update` to pull newer versions.
+
 ## Available Skills
 
 ### context-extraction
@@ -58,22 +97,25 @@ Helps write and debug valid Crowdin GraphQL queries with schema-aware arguments,
 
 If you prefer, you can install specific skills:
 ```bash
-npx skills add crowdin/skills/context-extraction
-npx skills add crowdin/skills/crowdin-context-cli
-npx skills add crowdin/skills/crowdin-api-client
-npx skills add crowdin/skills/croql
-npx skills add crowdin/skills/graphql
+npx skills add crowdin/skills --skill context-extraction
+npx skills add crowdin/skills --skill crowdin-context-cli
+npx skills add crowdin/skills --skill crowdin-api-client
+npx skills add crowdin/skills --skill croql
+npx skills add crowdin/skills --skill graphql
 ```
 
 ## Compatibility
 
 These skills are compatible with:
-- [Cursor](https://cursor.sh)
 - [Claude Code](https://claude.ai/product/claude-code)
+- [Cursor](https://cursor.sh)
+- [OpenAI Codex](https://openai.com/codex/)
+- [Gemini CLI](https://geminicli.com)
+- [GitHub Copilot](https://github.com/features/copilot)
+- [OpenCode](https://opencode.ai)
 - [Cline](https://cline.bot/)
 - [Windsurf](https://codeium.com/windsurf)
-- [GitHub Copilot](https://github.com/features/copilot)
-- And other agents supporting the skills.sh format
+- And other agents supporting the [Agent Skills](https://agentskills.io) format
 
 ## Resources
 
