@@ -1,5 +1,5 @@
 {
   "name": "crowdin",
   "version": "1.0.0",
-  "description": "Crowdin localization skills: Crowdin CLI, building Crowdin apps, CroQL, GraphQL, API client, context extraction, and context CLI"
+  "description": "Agent Skills for Crowdin, an AI-powered localization platform for teams and businesses"
 }
