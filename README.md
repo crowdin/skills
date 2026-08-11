@@ -57,6 +57,10 @@ Use `--agent <name>` (e.g. `--agent cursor`) to target a specific tool, and `gh 
 
 ## Available Skills
 
+### crowdin-cli
+
+Guides correct usage of Crowdin CLI v5 — the `crowdin` command that syncs localization files between a local project and Crowdin. Covers installation and authentication, `crowdin.yml` configuration (placeholders, file groups, language mapping), the core upload/download workflow, `auto-translate`, machine-readable output for scripts and agents (`-o json|toon|plain`), exit codes, CI/CD patterns, and migration from CLI v4.
+
 ### create-app
 
 Builds a Crowdin app end to end and leaves the user looking at it: scaffolds with `@crowdin/serverless-apps-cli`, writes the UI with `@crowdin/serverless-apps-sdk`, publishes into the organization and opens it. Written for translators and localization managers rather than developers, so it derives what it can (edition, placement, scopes, editor modes) and asks only questions a non-programmer can answer. Covers the placements that have no preview link, the requests that need a backend and what to offer instead, and the checks that catch a published app which does not actually render.
@@ -101,6 +105,7 @@ Helps write and debug valid Crowdin GraphQL queries with schema-aware arguments,
 
 If you prefer, you can install specific skills:
 ```bash
+npx skills add crowdin/skills --skill crowdin-cli
 npx skills add crowdin/skills --skill context-extraction
 npx skills add crowdin/skills --skill crowdin-context-cli
 npx skills add crowdin/skills --skill crowdin-api-client
