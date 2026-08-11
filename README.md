@@ -71,7 +71,7 @@ Fills `ai_context` in Crowdin JSONL files so translators get clear context. Cove
 
 ### crowdin-context-cli
 
-Documents `crowdin context download` and `crowdin context upload` for AI enrichment. Covers CLI options (filters, output path, overwrite/dryrun), JSONL format, and the workflow: download → fill `ai_context` (e.g. with context-extraction) → upload.
+Documents the `crowdin context` commands (`download`, `upload`, `status`, `reset`) for AI enrichment. Covers CLI options (filters, output path, overwrite/dryrun), coverage statistics, JSONL format, and the workflow: download → fill `ai_context` (e.g. with context-extraction) → upload.
 
 ### crowdin-api-client
 
