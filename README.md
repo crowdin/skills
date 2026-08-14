@@ -61,6 +61,10 @@ Use `--agent <name>` (e.g. `--agent cursor`) to target a specific tool, and `gh 
 
 Guides correct usage of Crowdin CLI v5 — the `crowdin` command that syncs localization files between a local project and Crowdin. Covers installation and authentication, `crowdin.yml` configuration (placeholders, file groups, language mapping), the core upload/download workflow, `auto-translate`, machine-readable output for scripts and agents (`-o json|toon|plain`), exit codes, CI/CD patterns, and migration from CLI v4.
 
+### github-action
+
+Sets up, reviews, and debugs [crowdin/github-action](https://github.com/crowdin/github-action) — the workflow step that syncs sources and translations and opens the translation PR. Covers the fixed pipeline a single step runs (and the defaults that surprise people), the git half it performs after a download, secrets, token scopes and the permissions PR creation needs, the `command` escape hatch and what it silently skips, and a symptom → cause table for runs that produce no PR or no CI checks. Ships a full inputs/outputs reference and recipes for the patterns upstream doesn't document — split upload/download workflows, GitHub App auth, post-processing before the PR — linking to the action's own examples for the rest.
+
 ### create-app
 
 Builds a Crowdin app end to end and leaves the user looking at it: scaffolds with `@crowdin/serverless-apps-cli`, writes the UI with `@crowdin/serverless-apps-sdk`, publishes into the organization and opens it. Written for translators and localization managers rather than developers, so it derives what it can (edition, placement, scopes, editor modes) and asks only questions a non-programmer can answer. Covers the placements that have no preview link, the requests that need a backend and what to offer instead, and the checks that catch a published app which does not actually render.
@@ -106,6 +110,7 @@ Helps write and debug valid Crowdin GraphQL queries with schema-aware arguments,
 If you prefer, you can install specific skills:
 ```bash
 npx skills add crowdin/skills --skill crowdin-cli
+npx skills add crowdin/skills --skill github-action
 npx skills add crowdin/skills --skill context-extraction
 npx skills add crowdin/skills --skill crowdin-context-cli
 npx skills add crowdin/skills --skill crowdin-api-client
