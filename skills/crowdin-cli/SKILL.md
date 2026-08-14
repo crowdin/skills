@@ -158,7 +158,7 @@ Shell completion: `source <(crowdin complete zsh)` (also `bash`, `fish`, `powers
 
 - Store the token as a CI secret exposed as `CROWDIN_PERSONAL_TOKEN`; keep `project_id` in the committed `crowdin.yml` (it is not sensitive).
 - Typical pipeline: `crowdin upload sources` on merge to the main branch; `crowdin download translations` on a schedule or before release, followed by a commit/PR of the updated files.
-- For GitHub Actions prefer the official [crowdin/github-action](https://github.com/crowdin/github-action), which wraps this CLI.
+- For GitHub Actions prefer the official [crowdin/github-action](https://github.com/crowdin/github-action), which wraps this CLI — covered by the [github-action](../github-action/SKILL.md) skill.
 - The CLI never prompts when all required values are provided; a missing value fails with exit code 2 rather than hanging.
 - `crowdin status --fail-if-incomplete` exits non-zero when the project isn't fully translated — a ready-made release gate.
 
