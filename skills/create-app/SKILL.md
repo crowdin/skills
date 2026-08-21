@@ -15,7 +15,7 @@ When their request runs past what the platform allows, that is your problem to s
 
 ## What you are actually building
 
-A frontend-only React bundle that Crowdin loads into an iframe inside its own UI. There is no backend and no token in the app: the host executes Crowdin REST calls for you, under the session of whoever opened the app, limited to the scopes the manifest declares.
+A frontend-only React bundle that Crowdin loads into an iframe inside its own UI. There is no backend and no token in the app: the host executes Crowdin REST calls and keeps the app's persisted records ([Crowdin Storage](#when-the-app-needs-to-remember-something)) for you, under the session of whoever opened the app, limited to the scopes the manifest declares.
 
 ## Where the facts come from
 
@@ -27,6 +27,7 @@ The platform gains module types, manifest fields, SDK methods and scopes over ti
 | [reference/manifest.md](https://crowdin.github.io/serverless-apps/reference/manifest.md) | Manifest fields, module shapes, permissions |
 | [reference/cli-commands.md](https://crowdin.github.io/serverless-apps/reference/cli-commands.md) | Commands and flags as released |
 | [building-app/crowdin-api.md](https://crowdin.github.io/serverless-apps/building-app/crowdin-api.md) | The tokenless API client |
+| [building-app/storage.md](https://crowdin.github.io/serverless-apps/building-app/storage.md) | Crowdin Storage - persisted shared, per-user and module-scoped records |
 | [building-app/context.md](https://crowdin.github.io/serverless-apps/building-app/context.md) | Context, theme, events |
 | [building-app/host-actions.md](https://crowdin.github.io/serverless-apps/building-app/host-actions.md) | Editor and host actions |
 | [building-app/user-interface.md](https://crowdin.github.io/serverless-apps/building-app/user-interface.md) | The UI kit |
@@ -79,24 +80,36 @@ One question at a time, each with your recommended answer attached, so "yes" is 
 
 Then show the brief and wait for a go-ahead: `create` registers a real app in their organization and there is no `delete` command.
 
+## When the app needs to remember something
+
+Crowdin Storage is the app's own persisted key-value store, hosted by Crowdin per installation - so stored settings, notes that survive a reload, and state a team shares are all buildable, without a backend. It needs `application.storage` in the manifest `scopes`, and calls run like the REST proxy: as the current viewer, no tokens. The surface lives in [building-app/storage.md](https://crowdin.github.io/serverless-apps/building-app/storage.md); [references/sdk.md](references/sdk.md#keeping-data-crowdin-storage) has the verified snippets.
+
+The design decision is not how to store but **who each record belongs to**, and the key prefix is what enforces the answer:
+
+| The data is | Use | Because |
+|---|---|---|
+| One user's own - their filters, drafts, notes, a credential they entered | `kv.user.*` (the `user:` prefix) | The platform hides it: another user's records simply do not exist for the caller, in reads and listings alike |
+| Shared, but with a controlled audience - team state, integration settings, a credential the whole audience may hold | a key under `module:{moduleKey}:` | The platform enforces that module's audience - records under a managers-only module do not exist for anyone who cannot use that module |
+| Public to everyone the app reaches | a plain key | Nothing protects it: everyone who can use the app can read **and overwrite** it, and in a public project that includes anonymous visitors |
+
+Default to `user:` for anything about a person and `module:` for anything shared, because both stay access-controlled by the platform; reach for a plain shared key only when anyone the app is visible to may legitimately see *and change* the value. The order matters because the failure is silent: a plain key behaves perfectly while one person tests the app, and leaks or gets clobbered only when the second user arrives.
+
+Two facts that shape designs: unauthenticated viewers have no user identity, so `kv.user.*` throws for them while shared keys keep working - check `user.id` in the context before offering per-user features; and uninstalling the app deletes every record immediately, with no retention.
+
 ## When the platform says no
 
-Four things a frontend-only app genuinely cannot do:
+Three things a frontend-only app genuinely cannot do:
 
-- **Hold a secret.** A third-party API key would ship inside a bundle any viewer can read.
+- **Use a secret without revealing it.** There is no backend, so the code that uses a credential runs in the viewer's browser - a key baked into the bundle is readable by any viewer, and a storage record comes back decrypted to everyone its scope admits, `secret: true` or not. Storing one is fine exactly when everyone who can reach it may know it: a credential each user enters for themselves under `kv.user.*`, or a team credential for an integration under the `module:` prefix of a module only that team can use - `secret: true` in both cases. A key that must work for people who should not see it belongs in Crowdin's own integration settings, not in the app.
 - **Be called from outside.** Webhooks, schedules, emails, and the platform extension points Crowdin invokes over HTTP (`custom-mt`, `custom-file-format`, `ai-provider`, `external-qa-check` and friends - not even valid module types here). A closed tab is listening to nothing.
-- **Keep its own data.** No app-owned storage, so nothing persists between sessions or between users on its own.
 - **Outlive the tab.** A few megabytes of file processing in the browser is fine; hundreds are not.
 
 **A no is never the end of the run.** The user came with a real chore and cannot act on "this needs a backend". Deliver the part that works and name the trade-off in one plain sentence:
 
 | They asked for | Give them |
 |---|---|
-| Notes on strings that persist | The same notes as Crowdin comments, which do persist - and say plainly that their manager will see them, because that changes how they write |
 | A weekly email digest | The page itself, which they open when they need it, plus a pointer to Crowdin's own notification settings. Say the email part is not possible in this kind of app |
-| Stored per-user settings or rates | The screen without the memory, and say the values have to be re-entered. If that ruins it, say so before building |
-| Shared state the team ticks off | State kept in something Crowdin already stores for everyone - labels, comments, task status - accepting that the model bends to fit |
-| A third-party engine or key | Crowdin's own settings for that integration, where a key belongs |
+| A third-party engine or key | Crowdin's own settings for that integration when the key must work for people who should not see it. When everyone using it may also know it, [Crowdin Storage](#when-the-app-needs-to-remember-something) holds it with `secret: true`: `kv.user.*` for a personal key, a restricted module's `module:` prefix for a team key |
 | A huge file processed | The same work on a size that fits, with the limit agreed up front |
 
 Only when nothing useful survives, say so and offer to hand it to a developer. Never end a user's run with npm package names as their next step.
@@ -236,6 +249,9 @@ Never ask for a token in chat. On a machine with no browser at all, `CROWDIN_PER
 | App published but absent from the UI slot | `manifest push` skipped, or a string-based project without `stringBasedAvailable`. |
 | App opens but shows nothing | Empty data, or the first-project fallback landed somewhere with no glossary/TM/strings. Check before blaming the code. |
 | 403 or an empty list at runtime, all checks green | A scope. See [scopes.md](references/scopes.md), including the read-looking calls that need the bare scope. |
+| Every storage call rejected | `application.storage` missing from the manifest `scopes`, or the manifest change not pushed. |
+| `kv.user.*` throws while shared keys work | The viewer is anonymous - no user identity. Check `user.id` in the context before offering per-user features. |
+| A write under `module:...:` rejected | No module with that manifest `key`, or the viewer cannot use it. On reads the same situation is silent: `get` resolves `undefined`, listings skip the records. |
 | `You have no accessible projects to preview this module in.` | Either no project access, or a crowdsource module needing a public project. |
 | `Could not list your projects - this login may lack the project scope.` | Log in again to grant it. |
 | `GraphQL is not available to serverless apps` | The proxy is REST `/api/v2` only. |

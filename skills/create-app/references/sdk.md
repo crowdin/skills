@@ -2,7 +2,7 @@
 
 Every snippet here is taken from a scaffold that builds and runs, not from memory. Prefer copying and adapting these over recalling the SDK surface, because the failure mode is expensive: a plausible method that does not exist costs a debug cycle, and a wrong registration shape produces a blank iframe with nothing in the console.
 
-For the current surface - which methods exist, what the context carries, which editor actions are available - fetch the docs: [building-app/overview.md](https://crowdin.github.io/serverless-apps/building-app/overview.md), [context.md](https://crowdin.github.io/serverless-apps/building-app/context.md), [crowdin-api.md](https://crowdin.github.io/serverless-apps/building-app/crowdin-api.md), [host-actions.md](https://crowdin.github.io/serverless-apps/building-app/host-actions.md), [user-interface.md](https://crowdin.github.io/serverless-apps/building-app/user-interface.md), [i18n.md](https://crowdin.github.io/serverless-apps/building-app/i18n.md). This page is the empirical layer underneath them: shapes copied from a build that runs, and the failures the docs do not mention.
+For the current surface - which methods exist, what the context carries, which editor actions are available - fetch the docs: [building-app/overview.md](https://crowdin.github.io/serverless-apps/building-app/overview.md), [context.md](https://crowdin.github.io/serverless-apps/building-app/context.md), [crowdin-api.md](https://crowdin.github.io/serverless-apps/building-app/crowdin-api.md), [storage.md](https://crowdin.github.io/serverless-apps/building-app/storage.md), [host-actions.md](https://crowdin.github.io/serverless-apps/building-app/host-actions.md), [user-interface.md](https://crowdin.github.io/serverless-apps/building-app/user-interface.md), [i18n.md](https://crowdin.github.io/serverless-apps/building-app/i18n.md). This page is the empirical layer underneath them: shapes copied from a build that runs, and the failures the docs do not mention.
 
 Import paths are partitioned on purpose. The root export is framework-free; React, the UI kit and Lingui live behind their own subpaths.
 
@@ -10,6 +10,7 @@ Import paths are partitioned on purpose. The root export is framework-free; Reac
 |---|---|
 | `@crowdin/serverless-apps-sdk` | `prepare*`, `ModuleContract`, `resize`, `redirect`, host methods, editor RPCs |
 | `@crowdin/serverless-apps-sdk/api` | `createCrowdinClient()` - a pre-authenticated Crowdin API client |
+| `@crowdin/serverless-apps-sdk/storage` | `createStorage()` - Crowdin Storage, plus `KeyExistsError` |
 | `@crowdin/serverless-apps-sdk/react` | `useCrowdinContext()` |
 | `@crowdin/serverless-apps-sdk/ui` | shadcn-style components, `AppUiProvider`, `ui/theme.css`, `ui/styles.css` |
 | `@crowdin/serverless-apps-sdk/i18n` | `AppI18nProvider` |
@@ -106,6 +107,66 @@ Three hard limits of the proxy:
 - **GraphQL is unavailable.** `client.graphql` throws: the bridge proxies REST `/api/v2` only.
 - **`FormData` is rejected.** Pass a raw `Blob`, `File` or `ArrayBuffer`; no v2 endpoint needs multipart.
 - **Calls run as the viewer.** A translator who opens the app can only do what that translator may do, regardless of who installed it. Design around that rather than assuming elevated rights.
+
+## Keeping data: Crowdin Storage
+
+`createStorage()` returns the app's Crowdin-hosted key-value store - the same viewer-session model as the API client, no token. It works only with `application.storage` in the manifest `scopes`; without it every call is rejected. A value is any JSON value except `null`, up to 240 KiB serialized.
+
+The key prefix *is* the access model, so pick it by who the data belongs to - the decision table is in [SKILL.md](../SKILL.md#when-the-app-needs-to-remember-something):
+
+```tsx
+import { createStorage } from "@crowdin/serverless-apps-sdk/storage";
+
+const { kv } = createStorage();
+
+// one user's own: kv.user.* applies the user: prefix, and the platform
+// hides the records from everyone else
+await kv.user.set("filters", { onlyMine: true });
+const filters = await kv.user.get<{ onlyMine: boolean }>("filters");
+
+// shared with a module's audience: write the module: prefix into the key -
+// the platform limits access to whoever can use that module
+await kv.set("module:reviewer-panel:checklist", items);
+
+// a plain key is effectively public: everyone the app reaches can read and overwrite
+await kv.set("board:columns", ["To do", "In progress", "Done"]);
+```
+
+The rest of the surface:
+
+```tsx
+import { createStorage, KeyExistsError } from "@crowdin/serverless-apps-sdk/storage";
+
+// listing: prefix filter, REST-style ordering, pagination like the API client
+const page = await kv.list({ prefix: "board:", limit: 100 });
+const freshest = await kv.list({ orderBy: "updatedAt desc,key" });
+const everything = await kv.withFetchAll().list({ prefix: "board:" });
+
+// a credential the user entered for themselves: user-scoped, encrypted at rest
+await kv.user.set("gh-token", token, { secret: true });
+
+// a team credential for an integration: scoped to a restricted module -
+// everyone who can use that module can read it decrypted
+await kv.set("module:cms-settings:api-token", token, { secret: true });
+
+// expiry (seconds), and a lock that fails instead of overwriting
+await kv.set("cache:report", report, { ttl: 3600 });
+try {
+  await kv.set("import:lock", Date.now(), { keyPolicy: "FAIL_IF_EXISTS" });
+} catch (error) {
+  if (error instanceof KeyExistsError) {
+    // another viewer already holds the lock
+  }
+}
+```
+
+What costs a debugging cycle:
+
+- **`kv.user.*` throws for anonymous viewers** (public projects), while shared keys keep working. Check `user.id` in the context before offering per-user features.
+- **"No access" reads as "no data".** `get` resolves `undefined` for a missing key and equally for a `module:` record whose module the viewer cannot use; listings silently skip them. Only a *write* under an unknown or inaccessible module key fails loudly.
+- **`secret: true` does not restrict who reads.** It encrypts the value at rest; anyone who can read the record still receives it decrypted. So scope a secret to exactly the people who may know it - `kv.user.*` for a personal credential, a restricted module's `module:` prefix for a team one - and never a plain shared key. A key that must serve people who should not see it cannot live in the app at all: the browser that uses it can extract it.
+- **TypeScript hints:** key positions suggest `module:`; `createStorage<"main" | "reports">()` upgrades the hints to the full per-module prefixes.
+- **Not the Upload Storage API.** `client.uploadStorageApi` holds temporary files for REST uploads; Crowdin Storage is the app's own persisted records.
 
 ## Host context and edition
 
@@ -213,5 +274,6 @@ useEffect(() => {
 - **Manifest and `prepare*` disagree.** Same symptom, and the console says nothing useful.
 - **Forgetting `resize()`.** Content silently clipped.
 - **Assuming installer rights.** Calls run as the viewer.
+- **A plain storage key.** Everyone the app reaches can read and overwrite it; personal data goes under `kv.user.*`, shared data under a `module:` prefix.
 - **`window.location`** instead of `redirect()`.
 - **Reaching for GraphQL** because the REST call looks verbose.
