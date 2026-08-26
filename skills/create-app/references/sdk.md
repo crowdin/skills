@@ -124,11 +124,12 @@ const { kv } = createStorage();
 await kv.user.set("filters", { onlyMine: true });
 const filters = await kv.user.get<{ onlyMine: boolean }>("filters");
 
-// shared with a module's audience: write the module: prefix into the key -
-// the platform limits access to whoever can use that module
+// owned by one surface: write the module: prefix into the key -
+// the platform serves the record only where the app runs as that module
 await kv.set("module:reviewer-panel:checklist", items);
 
-// a plain key is effectively public: everyone the app reaches can read and overwrite
+// a plain key is effectively public: everyone the app reaches can read it,
+// every signed-in viewer can overwrite it
 await kv.set("board:columns", ["To do", "In progress", "Done"]);
 ```
 
@@ -162,8 +163,8 @@ try {
 
 What costs a debugging cycle:
 
-- **`kv.user.*` throws for anonymous viewers** (public projects), while shared keys keep working. Check `user.id` in the context before offering per-user features.
-- **"No access" reads as "no data".** `get` resolves `undefined` for a missing key and equally for a `module:` record whose module the viewer cannot use; listings silently skip them. Only a *write* under an unknown or inaccessible module key fails loudly.
+- **`kv.user.*` throws for anonymous viewers** (public projects), while shared keys stay readable for them - every *write* requires a signed-in viewer. Check `user.id` in the context before offering per-user or write features.
+- **"No access" reads as "no data".** `get` resolves `undefined` for a missing key and equally for a `module:` record outside its own module's surface; listings silently skip them (the app's installer is the exception - they see module records on every surface). Only `set` under a module key other than the current surface's (or an unknown one) fails loudly - `delete` stays silent, since a record outside the caller's view behaves as missing.
 - **`secret: true` does not restrict who reads.** It encrypts the value at rest; anyone who can read the record still receives it decrypted. So scope a secret to exactly the people who may know it - `kv.user.*` for a personal credential, a restricted module's `module:` prefix for a team one - and never a plain shared key. A key that must serve people who should not see it cannot live in the app at all: the browser that uses it can extract it.
 - **TypeScript hints:** key positions suggest `module:`; `createStorage<"main" | "reports">()` upgrades the hints to the full per-module prefixes.
 - **Not the Upload Storage API.** `client.uploadStorageApi` holds temporary files for REST uploads; Crowdin Storage is the app's own persisted records.
@@ -274,6 +275,6 @@ useEffect(() => {
 - **Manifest and `prepare*` disagree.** Same symptom, and the console says nothing useful.
 - **Forgetting `resize()`.** Content silently clipped.
 - **Assuming installer rights.** Calls run as the viewer.
-- **A plain storage key.** Everyone the app reaches can read and overwrite it; personal data goes under `kv.user.*`, shared data under a `module:` prefix.
+- **A plain storage key.** Everyone the app reaches can read it and every signed-in viewer can overwrite it; personal data goes under `kv.user.*`, a surface's own data under its `module:` prefix.
 - **`window.location`** instead of `redirect()`.
 - **Reaching for GraphQL** because the REST call looks verbose.

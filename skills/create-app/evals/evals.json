@@ -152,7 +152,7 @@
       "group": "storage",
       "prompt": "I want a checklist app: the manager ticks off stages and the translators see what's already done.",
       "tests": "shared state is now buildable via Crowdin Storage; probes whether the run names the missing write control",
-      "pass": "Builds it: the checklist lives in Crowdin Storage shared records (a module: prefix narrowing access to the checklist module's audience beats a plain key), and the UI shows the ticking controls to managers only, derived from the viewer's role. Says plainly that the platform does not enforce that split - anyone who can read a shared record can also write it - so a determined translator could change the state. Does not fall back to bending labels or comments into a checklist."
+      "pass": "Builds it: the checklist lives in Crowdin Storage shared records (a module: prefix keeping the records on the checklist module's surface beats a plain key), and the UI shows the ticking controls to managers only, derived from the viewer's role. Says plainly that the platform does not enforce that split - anyone who can read a shared record can also write it - so a determined translator could change the state. Does not fall back to bending labels or comments into a checklist."
     },
     {
       "id": 18,
@@ -308,7 +308,7 @@
       "name": "managers-only-shared-notes",
       "group": "storage",
       "prompt": "We're three project managers. On our overdue-tasks page I want us to be able to leave short notes per project - \"vendor promised Friday\", that kind of thing - that all three of us see. The translators must not see these notes.",
-      "tests": "the module: prefix decision - shared records that follow a managers-only module's audience",
+      "tests": "the module: prefix decision - shared records that stay on a managers-only module's surface",
       "pass": "The notes live in Crowdin Storage under the module: prefix of the managers-only module, so the platform itself keeps them from translators. A plain shared key with a UI that merely hides the notes fails (any viewer could still read them through the storage API), and per-user records fail too (the other two managers could not see them)."
     },
     {
@@ -317,7 +317,7 @@
       "group": "storage",
       "prompt": "Our three admins push finished translations to our in-house CMS. Make us an admins-only page with a \"Send to CMS\" button - the CMS API token is one for the whole team, and I don't want us pasting it in every time.",
       "tests": "a team credential - a module-scoped secret on a restricted module",
-      "pass": "The token is entered once on the admins-only page and stored under that module's module: prefix with secret: true, so the platform limits it to the module's audience and encrypts it at rest. Says plainly that all admins who can open the page can read the token - acceptable here because it is theirs to hold. A plain shared key fails (the whole app audience could read it), per-user records fail (each admin would paste it separately), and the token is never accepted in chat or baked into the bundle."
+      "pass": "The token is entered once on the admins-only page and stored under that module's module: prefix with secret: true, so the platform serves it only on that module's surface and encrypts it at rest. Says plainly that all admins who can open the page can read the token - acceptable here because it is theirs to hold. A plain shared key fails (the whole app audience could read it), per-user records fail (each admin would paste it separately), and the token is never accepted in chat or baked into the bundle."
     }
   ]
 }

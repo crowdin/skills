@@ -89,10 +89,10 @@ The design decision is not how to store but **who each record belongs to**, and 
 | The data is | Use | Because |
 |---|---|---|
 | One user's own - their filters, drafts, notes, a credential they entered | `kv.user.*` (the `user:` prefix) | The platform hides it: another user's records simply do not exist for the caller, in reads and listings alike |
-| Shared, but with a controlled audience - team state, integration settings, a credential the whole audience may hold | a key under `module:{moduleKey}:` | The platform enforces that module's audience - records under a managers-only module do not exist for anyone who cannot use that module |
-| Public to everyone the app reaches | a plain key | Nothing protects it: everyone who can use the app can read **and overwrite** it, and in a public project that includes anonymous visitors |
+| Owned by one of the app's surfaces - team state, integration settings, a credential of that surface's team | a key under `module:{moduleKey}:` | The platform serves it only where the app runs as that module, to viewers allowed there - a managers-only module's records never reach the app's other surfaces |
+| Public to everyone the app reaches, or shared between the app's modules | a plain key | Nothing protects it: everyone who can use the app can read it - in a public project that includes anonymous visitors - and every signed-in viewer can **overwrite** it |
 
-Default to `user:` for anything about a person and `module:` for anything shared, because both stay access-controlled by the platform; reach for a plain shared key only when anyone the app is visible to may legitimately see *and change* the value. The order matters because the failure is silent: a plain key behaves perfectly while one person tests the app, and leaks or gets clobbered only when the second user arrives.
+Default to `user:` for anything about a person and `module:` for anything one surface's team owns, because both stay access-controlled by the platform; a plain shared key is for values anyone the app is visible to may legitimately see - and, signed in, change - including data the app's modules must share, since `module:` records never cross surfaces. One person is exempt from module narrowing: the app's installer sees every module's records on any surface - only other users' `user:` records stay hidden from them. The order matters because the failure is silent: a plain key behaves perfectly while one person tests the app, and leaks or gets clobbered only when the second user arrives.
 
 Two facts that shape designs: unauthenticated viewers have no user identity, so `kv.user.*` throws for them while shared keys keep working - check `user.id` in the context before offering per-user features; and uninstalling the app deletes every record immediately, with no retention.
 
@@ -251,7 +251,7 @@ Never ask for a token in chat. On a machine with no browser at all, `CROWDIN_PER
 | 403 or an empty list at runtime, all checks green | A scope. See [scopes.md](references/scopes.md), including the read-looking calls that need the bare scope. |
 | Every storage call rejected | `application.storage` missing from the manifest `scopes`, or the manifest change not pushed. |
 | `kv.user.*` throws while shared keys work | The viewer is anonymous - no user identity. Check `user.id` in the context before offering per-user features. |
-| A write under `module:...:` rejected | No module with that manifest `key`, or the viewer cannot use it. On reads the same situation is silent: `get` resolves `undefined`, listings skip the records. |
+| A write under `module:...:` rejected | The key names a module other than the one the app is currently running as, or an unknown one. On reads the same situation is silent: `get` resolves `undefined`, listings skip the records. |
 | `You have no accessible projects to preview this module in.` | Either no project access, or a crowdsource module needing a public project. |
 | `Could not list your projects - this login may lack the project scope.` | Log in again to grant it. |
 | `GraphQL is not available to serverless apps` | The proxy is REST `/api/v2` only. |
