@@ -1,4 +1,4 @@
-# Crowdin CLI v5 — Installation, Configuration & Environment
+# Crowdin CLI — Installation, Configuration & Environment
 
 ## Contents
 
@@ -28,7 +28,7 @@
 | Nix | `nix-shell -p crowdin-cli` |
 | Standalone binary | Download from https://github.com/crowdin/crowdin-cli/releases/latest, `chmod +x`, move onto `PATH` |
 
-v5 is a self-contained binary — no Java/JRE required (unlike 4.x). Verify with `crowdin --version`.
+The CLI is a self-contained binary — no Java/JRE required (unlike the legacy 4.x). Verify with `crowdin --version`.
 
 ## The configuration file
 
@@ -67,7 +67,7 @@ Commands look for `crowdin.yml`, then `crowdin.yaml`, in the current working dir
 
 ## Placeholders
 
-Used in `translation` (and `ignore`/`dest`/`context`) patterns. The full set v5 recognizes:
+Used in `translation` (and `ignore`/`dest`/`context`) patterns. The full set the CLI recognizes:
 
 **File placeholders**
 

@@ -1,6 +1,6 @@
 # Inputs and outputs
 
-Every input of `crowdin/github-action`, its default, and the CLI flag or git behavior it maps to — the mapping is what [`action.yml`](https://raw.githubusercontent.com/crowdin/github-action/refs/heads/master/action.yml) alone can't tell you, since the flags are assembled in [`entrypoint.sh`](https://raw.githubusercontent.com/crowdin/github-action/refs/heads/master/entrypoint.sh). Verified against both at `v2.17.0`; the `v3` pre-release declares an identical interface.
+Every input of `crowdin/github-action`, its default, and the CLI flag or git behavior it maps to — the mapping is what [`action.yml`](https://raw.githubusercontent.com/crowdin/github-action/refs/heads/master/action.yml) alone can't tell you, since the flags are assembled in [`entrypoint.sh`](https://raw.githubusercontent.com/crowdin/github-action/refs/heads/master/entrypoint.sh). Verified against both at `v3.0.0`; the legacy `v2` line (Crowdin CLI 4) declares an identical interface.
 
 - [Upload](#upload)
 - [Download](#download)

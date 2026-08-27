@@ -93,7 +93,7 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Synchronize with Crowdin
-        uses: crowdin/github-action@v2
+        uses: crowdin/github-action@v3
         with:
           upload_sources: true
           upload_translations: false
@@ -156,11 +156,11 @@ Read the step's log first: it prints `UPLOAD SOURCES`, `DOWNLOAD TRANSLATIONS`, 
 
 ## `command` — running any CLI command
 
-`command` (plus optional `command_args`) turns the step into an arbitrary CLI invocation: `status`, `pre-translate`, `bundle`, `string`, anything the CLI supports.
+`command` (plus optional `command_args`) turns the step into an arbitrary CLI invocation: `status`, `auto-translate`, `bundle`, `string`, anything the CLI supports.
 
 ```yaml
 - name: Fail the build unless translations are complete
-  uses: crowdin/github-action@v2
+  uses: crowdin/github-action@v3
   with:
     command: 'status translation'
     command_args: '--fail-if-incomplete'
@@ -178,14 +178,9 @@ The command's stdout is available to later steps as the `command_output` output.
 
 ## Which version to pin
 
-`@v2` is the recommended stable line; it bundles Crowdin CLI 4 and needs no Java on the runner.
+`@v3` is the current stable line and runs Crowdin CLI 5.
 
-A **v3 pre-release** runs [Crowdin CLI 5](https://github.com/crowdin/crowdin-cli/releases) — a rewrite that starts in about a millisecond and ships as a self-contained binary. Every input, output, and default is identical to v2, so workflows carry over unchanged; what changes is the CLI underneath, and therefore the strings you pass to `command` and `*_args`. Most notably `pre-translate` became `auto-translate`, and `--plain` became `-o plain`; the [migration reference](../crowdin-cli/references/migrating-from-v4.md) lists the rest.
-
-```yaml
-# Check the releases page for the current pre-release tag
-- uses: crowdin/github-action@v3.0.0-next.3
-```
+`@v2` is the legacy line, bundling the Java-based Crowdin CLI 4. Every input, output, and default is identical between the two, so upgrading a pipeline-style step is a one-line pin change; what changes is the CLI underneath, and therefore the strings you pass to `command` and `*_args`. Most notably v4's `pre-translate` became `auto-translate`, and `--plain` became `-o plain`; the [migration reference](../crowdin-cli/references/migrating-from-v4.md) lists the rest. Stay on `@v2` only while a `command` step still depends on v4-specific CLI syntax.
 
 ## Related skills
 

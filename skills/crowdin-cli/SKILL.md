@@ -1,11 +1,11 @@
 ---
 name: crowdin-cli
-description: Guides correct usage of Crowdin CLI v5 - the `crowdin` command that syncs localization files between a local project and Crowdin. Use whenever the user runs, scripts, or debugs `crowdin` commands, creates or edits a crowdin.yml configuration, uploads sources, downloads translations, checks translation status, auto-translates a project, wires localization into CI/CD, or migrates scripts from CLI v4 to v5 - even if they just say "sync translations" or "push strings to Crowdin" without naming the CLI.
+description: Guides correct usage of Crowdin CLI - the `crowdin` command that syncs localization files between a local project and Crowdin. Use whenever the user runs, scripts, or debugs `crowdin` commands, creates or edits a crowdin.yml configuration, uploads sources, downloads translations, checks translation status, auto-translates a project, wires localization into CI/CD, or migrates scripts from CLI v4 to v5 - even if they just say "sync translations" or "push strings to Crowdin" without naming the CLI.
 ---
 
-# Crowdin CLI (v5)
+# Crowdin CLI
 
-Crowdin CLI is the command-line tool for managing and synchronizing localization resources with a Crowdin project. Version 5 is a complete rewrite in TypeScript (powered by Bun): a single self-contained binary, no Java required, ~1 ms startup, and machine-readable output designed for scripts and AI agents.
+Crowdin CLI is the command-line tool for managing and synchronizing localization resources with a Crowdin project. It ships as a single self-contained binary — no Java or other runtime required.
 
 Check what's installed with `crowdin --version`. If it prints `4.x` or a Java error, the user is on the legacy CLI — commands below still mostly apply, but see [references/migrating-from-v4.md](references/migrating-from-v4.md) for the differences.
 
@@ -93,7 +93,7 @@ crowdin download sources                     # pull sources back from Crowdin
 
 Everything is branch-aware: pass `-b <name>` to scope upload/download/status to a Crowdin branch (create it with `crowdin branch add`).
 
-`auto-translate` (renamed from v4's `pre-translate`) applies TM (`--method tm`), machine translation (`--method mt --engine-id <id>`), or AI (`--method ai --ai-prompt <id>`), with fine-grained control: `--scope untranslated|translated|all`, `--skip-approved-translations`, `--label`/`--exclude-label`, `--replace-translations-option`, `--translation-modified-before`, and more — see [references/commands.md](references/commands.md#auto-translate).
+`auto-translate` (v4's `pre-translate`) applies TM (`--method tm`), machine translation (`--method mt --engine-id <id>`), or AI (`--method ai --ai-prompt <id>`), with fine-grained control: `--scope untranslated|translated|all`, `--skip-approved-translations`, `--label`/`--exclude-label`, `--replace-translations-option`, `--translation-modified-before`, and more — see [references/commands.md](references/commands.md#auto-translate).
 
 ## Output for scripts and agents
 

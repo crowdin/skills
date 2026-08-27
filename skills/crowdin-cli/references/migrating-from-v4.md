@@ -1,6 +1,6 @@
 # Migrating from Crowdin CLI 4.x to 5.0
 
-CLI 5.0 is a complete rewrite (Java → TypeScript, powered by Bun), but the essentials are unchanged: the command tree, the `crowdin.yml` configuration file, and the exit codes stay the same. Most workflows carry over as-is. Java/JRE is no longer required — v5 ships as a self-contained binary.
+CLI 5.0 is a rewrite of the Java-based 4.x, but the essentials are unchanged: the command tree, the `crowdin.yml` configuration file, and the exit codes stay the same. Most workflows carry over as-is. Java/JRE is no longer required — v5 ships as a self-contained binary.
 
 Fix scripts with the find-and-replace changes below.
 
@@ -102,4 +102,3 @@ The `--branch` option was removed from `crowdin config sources` — it had no ef
 - Global `-o, --output <json|toon|plain>` on every command — machine-readable output for scripts and agents.
 - `auto-translate` gains `--scope`, `--priority`, `--skip-approved-translations`, `--replace-translations-option`, `--reset-approval-status`, `--translation-modified-before`, `--exclude-label`, `--source-language`.
 - Shell completions for zsh, bash, fish, and powershell: `crowdin complete <shell>`.
-- Startup is ~100× faster (no JVM), which matters in CI where the CLI runs dozens of times.

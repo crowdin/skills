@@ -1,4 +1,4 @@
-# Crowdin CLI v5 — Command Reference
+# Crowdin CLI — Command Reference
 
 Condensed from the generated command documentation (https://crowdin.github.io/crowdin-cli/commands/crowdin). Synopsis: `crowdin [SUBCOMMAND] [OPTIONS]`.
 
@@ -235,7 +235,7 @@ Manage content distributions. Config: set B.
 
 Manage screenshots that give translators context. Config: set B.
 
-- `crowdin screenshot list` — `--string-id <id>`
+- `crowdin screenshot list` — `--string-id <id>` (repeatable), `--search <term>` (matches name, tagged strings, or file names), `--label` / `--exclude-label` (repeatable)
 - `crowdin screenshot upload <file>` — `--auto-tag`, and with it: `-f/--file <path>`, `-b/--branch <name>`, `-d/--directory <path>`; `--label` (repeatable)
 - `crowdin screenshot delete <id>`
 
@@ -306,7 +306,7 @@ Print the shell completion script for the given shell (e.g. `source <(crowdin co
 
 ## Aliases, renames, and scope notes
 
-| v5 command | Notes |
+| Command | Notes |
 |---|---|
 | `crowdin push` | Alias of `upload` |
 | `crowdin pull` | Alias of `download` |

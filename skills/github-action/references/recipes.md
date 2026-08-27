@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: crowdin/github-action@v2
+      - uses: crowdin/github-action@v3
         with:
           upload_sources: true
           upload_translations: false
@@ -60,7 +60,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: crowdin/github-action@v2
+      - uses: crowdin/github-action@v3
         with:
           upload_sources: false          # the default is true
           download_translations: true
@@ -78,7 +78,7 @@ jobs:
 For a project with one source file and one translation pattern, the patterns can live in the workflow. Anything more — several file groups, `ignore`, `dest`, language mapping — needs the config file.
 
 ```yaml
-- uses: crowdin/github-action@v2
+- uses: crowdin/github-action@v3
   with:
     upload_sources: true
     source: src/locale/en.json                  # no leading /
@@ -95,7 +95,7 @@ Pick one or the other: a `crowdin.yml` in the repository conflicts with these in
 `crowdin_branch_name` mirrors a git branch as a Crowdin version branch, so strings from a feature branch stay separate from `main` until it merges.
 
 ```yaml
-- uses: crowdin/github-action@v2
+- uses: crowdin/github-action@v3
   with:
     upload_sources: true
     download_translations: false
@@ -120,7 +120,7 @@ The fix for "the translation PR has no CI checks": an App token is scoped, rotat
           permission-contents: write
           permission-pull-requests: write
 
-      - uses: crowdin/github-action@v2
+      - uses: crowdin/github-action@v3
         with:
           upload_sources: false
           download_translations: true
@@ -139,7 +139,7 @@ A classic PAT with the `repo` scope works too — pass it as `GITHUB_TOKEN` — 
 Turn off the git half when translations need post-processing — reformatting, a lint pass, regenerating a compiled locale bundle — before they are committed. The files land in the workspace and are yours to handle.
 
 ```yaml
-      - uses: crowdin/github-action@v2
+      - uses: crowdin/github-action@v3
         with:
           upload_sources: false
           download_translations: true
@@ -164,7 +164,7 @@ This also side-steps `git add .`: the Crowdin step commits nothing, so a job tha
 [Bundles](https://support.crowdin.com/bundles/) export strings in a chosen format regardless of the source format — and they are the **only** way to download translations from a string-based project, where `download_translations` does nothing.
 
 ```yaml
-      - uses: crowdin/github-action@v2
+      - uses: crowdin/github-action@v3
         with:
           upload_sources: false
           download_translations: false
@@ -183,9 +183,9 @@ Upload → pre-translate → download, as **three** steps: a `command` step runs
 
 ```yaml
       - name: Pre-translate with AI
-        uses: crowdin/github-action@v2
+        uses: crowdin/github-action@v3
         with:
-          command: 'pre-translate'        # 'auto-translate' on the v3 pre-release
+          command: 'auto-translate'       # 'pre-translate' on the legacy v2 line
           command_args: '--method ai --ai-prompt=${{ secrets.PROMPT_ID }}'
         env:
           CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
