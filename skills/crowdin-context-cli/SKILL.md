@@ -25,9 +25,11 @@ crowdin context download [CONFIG OPTIONS] [OPTIONS]
 - `-b, --branch=<name>` — Filter by branch name
 - `--croql=<expr>` — CroQL expression (cannot be combined with the other filter options)
 - `--since=<YYYY-MM-DD>` — Only strings created after this date
-- `--status=<value>` — Filter by context status. Supported values: `empty`, `ai`, `manual`
+- `--status=<value>` — Which kind of context a string already has: `empty` (none of any kind), `manual` (source context, no AI context), `ai` (AI context written). See below — this is not a filter for "still needs context"
 
 Config options (if not using a config file): `-T, --token`, `-i, --project-id`, `--base-url`, `--base-path`. Use `-c, --config=<path>` to override config file (default: `crowdin.yml` or `crowdin.yaml`).
+
+**Which `--status` selects the strings needing AI context depends on the source format, so prefer omitting it.** A format that carries source references into Crowdin — PO `#:` lines, for one — leaves every string holding manual context, so `empty` matches nothing and `manual` matches everything; a format carrying no context at all inverts that. With no `--status` the download covers both cases in one call, and costs nothing extra: `context upload` writes back only the records whose `ai_context` was actually filled.
 
 ## context upload
 
@@ -91,7 +93,7 @@ Example line:
 
 ## Typical Workflow
 
-1. Check coverage (optional): `crowdin context status` — see how many strings still lack context (`--status=empty` on the next step targets exactly those).
+1. Check coverage (optional): `crowdin context status` — the split between manual, AI and no context. Read it before picking a `--status` filter for the next step, or skip the filter and take everything.
 2. Download: `crowdin context download` (writes to `crowdin-context.jsonl` by default) or `crowdin context download --to=path/to/file.jsonl`
 3. Edit the file - fill in `ai_context` for each string (use [context-extraction](../context-extraction/SKILL.md) to help).
 4. Upload: `crowdin context upload` (reads from `crowdin-context.jsonl` by default) or `crowdin context upload --from=path/to/file.jsonl`

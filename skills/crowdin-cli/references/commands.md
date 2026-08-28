@@ -46,7 +46,7 @@ Parent commands (`crowdin file`, `crowdin string`, …) only dispatch subcommand
 crowdin init [options]
 ```
 
-Generate the `crowdin.yml` configuration skeleton. Interactive by default (browser authorization → project selection → config written); note a browser-issued token expires after 30 days.
+Generate the `crowdin.yml` configuration skeleton. Interactive by default (browser authorization → project selection → config written); note a browser-issued token expires after 30 days. The browser step times out after ~2 minutes, and the flow aborts with `No projects with manager access found` when the authorized account has no project with manager access. The credential is written to `~/.crowdin.yml` only at the very end, so an aborted init leaves nothing behind.
 
 - `-d, --destination <path>` — where to save the skeleton (default: `crowdin.yml`)
 - `-T, --token`, `-i, --project-id`, `--base-path`, `--base-url`, `-s, --source`, `-t, --translation` — pre-fill values instead of prompting
@@ -208,7 +208,7 @@ Manage translation memories. Config: set C (account-level, no project ID).
 Manage glossaries. Config: set C.
 
 - `crowdin glossary list`
-- `crowdin glossary upload <file>` — `--id <id>`, `--language <code>`, `--scheme <scheme...>` (CSV/XLSX; constants: `term_{language_code}`, `description_{language_code}`, `partOfSpeech_{language_code}`, `{column_number}`), `--first-line-contains-header`
+- `crowdin glossary upload <file>` — `--id <id>` (import into an existing glossary; omitting it **creates a new one**, which makes `--language <code>` — the glossary's source language, a Crowdin language id — required), `--scheme <scheme...>` (mandatory for CSV/XLSX, rejected for TBX; maps column names to zero-based indexes, e.g. `term_en=0,description_en=1`; constants: `term_{language_code}`, `description_{language_code}`, `partOfSpeech_{language_code}`, `{column_number}`), `--first-line-contains-header` (CSV/XLSX; keeps the header row from importing as a term). Success prints `Imported in #<id> '<name>' glossary`.
 - `crowdin glossary download <id>` — `--format <tbx|csv|xlsx>`, `--to <path>`
 
 ## bundle
@@ -293,7 +293,7 @@ AI context for strings — download, enrich, upload. Covered in depth by the **c
 Validate configuration and preview pattern matching. Config: set A.
 
 - `crowdin config lint` — analyze the configuration file for errors
-- `crowdin config sources [--tree]` — list local files matching the `source` patterns
+- `crowdin config sources [--tree]` — list local files matching the `source` patterns. Fetches project info before listing, so it needs a valid token and `project_id` even though the output is local
 - `crowdin config translations [--tree]` — list translation paths that will be produced
 
 ## complete
