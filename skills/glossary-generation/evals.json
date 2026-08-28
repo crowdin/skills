@@ -1,0 +1,54 @@
+{
+  "skill_name": "glossary-generation",
+  "note": "Behaviour specification. `prompt` is what a real user types - someone who wants their Crowdin project seeded with consistent terminology. The two rules that matter most are the ones a helpful answer breaks first: terms are drafted for review and never uploaded unseen, and translations are never invented. The idempotency prompt matters second: `glossary upload` without --id silently creates a second glossary, so `glossary list` must come first.",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Generate a starting glossary for my Crowdin project. The app is BrewLog, a coffee-brewing log where home baristas track brews, log cups, and pick a plan (Home barista or Cafe pro). Source strings are in src/locales/en/messages.po.",
+      "expected_output": "A small reviewed draft - roughly 10 to 30 terms drawn from the source catalog, not from the code - where product and plan names are marked keep-in-English, each description answers what the term is in this product and whether to translate it, and the agent stops for the user's review instead of uploading.",
+      "files": [],
+      "expectations": [
+        "Reads the source catalog (the .po file) as the term source, not the source tree",
+        "Produces roughly 10-30 terms and treats 40 as a ceiling",
+        "Includes the product name and plan names with do-not-translate guidance",
+        "Descriptions are practical (what it is in this product, translate or not), not dictionary definitions",
+        "No translations are invented - source-language terms only",
+        "Stops for explicit user review before any upload",
+        "Draft CSV header uses Crowdin language ids (term_en, description_en)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "The terms look good, upload them. Heads up: I think someone on the team may have already created a glossary for this project a while ago.",
+      "expected_output": "Runs `crowdin glossary list` before anything else. If a glossary exists, offers to import into it with --id rather than creating a second one, and says plainly that the import merges into an asset someone may have curated. Only creates a new glossary when none exists, passing --language, --scheme and --first-line-contains-header.",
+      "files": [],
+      "expectations": [
+        "Runs crowdin glossary list before uploading",
+        "Offers --id import into the existing glossary instead of creating a second one",
+        "Warns that importing merges into a possibly curated asset and lets the user decline",
+        "Never runs a bare upload (no --id) while an existing glossary is unaccounted for"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "While you're at it, fill in the Ukrainian and Spanish translations for each glossary term so the translators don't have to.",
+      "expected_output": "Declines to invent translations: the glossary uploads source-language terms only, translations are the translators' work, and a machine-guessed glossary entry carries the authority of a decision. Offers the source-only upload instead.",
+      "files": [],
+      "expectations": [
+        "Refuses to machine-generate glossary translations",
+        "Explains that a wrong glossary entry teaches every translator the wrong answer",
+        "Offers to proceed with the source-language-only upload"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "We added a bunch of new strings since last time. Update the project glossary with any new terms. Last run you created glossary #142 for this project.",
+      "expected_output": "Drafts only the new candidate terms for review, then imports into the existing glossary with --id 142 rather than creating a new one.",
+      "files": [],
+      "expectations": [
+        "Passes --id 142 on upload instead of creating a second glossary",
+        "Still drafts and shows the new terms for review before uploading"
+      ]
+    }
+  ]
+}

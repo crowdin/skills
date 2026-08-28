@@ -43,6 +43,15 @@ Prioritize these - skip strings that are already clear from `text` + `key` alone
 | `"Edit <0>src/App.tsx</0> and save to test HMR"` | *(none)* | `"Instructional UI message. The tagged portion is rendered as an inline code element highlighting a filename."` |
 | `"New"` | `button.new` | `"Label for a button that creates a new item. The exact entity depends on the current page context."` |
 
+## Orchestrated inputs (optional)
+
+When another workflow invokes this skill with extra context, use it:
+
+- App domain - a one-line description of what the product is. Prefix or fold it into placement descriptions where it disambiguates ("Button label in a coffee-brew logging app…").
+- Source checkout - when the JSONL `context` field carries a `#: path:line` reference (PO uploads add these automatically) and the repo is available, read the surrounding code instead of guessing: identify the component type, the props, and what any placeholder is replaced with.
+
+Neither input changes the safety rules below - still edit only `ai_context`.
+
 ## JSONL file safety rules
 
 **Only ever edit the `ai_context` field value.** Never touch `id`, `key`, `text`, `file`, or `context`.

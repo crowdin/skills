@@ -87,7 +87,6 @@ Used in `translation` (and `ignore`/`dest`/`context`) patterns. The full set the
 | `%locale%` | `uk-UA` |
 | `%locale_with_underscore%` | `uk_UA` |
 | `%language%` | `Ukrainian` |
-| `%language_id%` | `uk` (Crowdin language ID) |
 | `%android_code%` | `uk-rUA` |
 | `%osx_code%` | `uk.lproj` |
 | `%osx_locale%` | `uk` |

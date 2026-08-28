@@ -57,6 +57,10 @@ Use `--agent <name>` (e.g. `--agent cursor`) to target a specific tool, and `gh 
 
 ## Available Skills
 
+### create-app
+
+Builds a Crowdin app end to end and leaves the user looking at it: scaffolds with `@crowdin/serverless-apps-cli`, writes the UI with `@crowdin/serverless-apps-sdk`, publishes into the organization and opens it. Written for translators and localization managers rather than developers, so it derives what it can (edition, placement, scopes, editor modes) and asks only questions a non-programmer can answer. Covers the placements that have no preview link, the requests that need a backend and what to offer instead, and the checks that catch a published app which does not actually render.
+
 ### crowdin-cli
 
 Guides correct usage of Crowdin CLI v5 — the `crowdin` command that syncs localization files between a local project and Crowdin. Covers installation and authentication, `crowdin.yml` configuration (placeholders, file groups, language mapping), the core upload/download workflow, `auto-translate`, machine-readable output for scripts and agents (`-o json|toon|plain`), exit codes, CI/CD patterns, and migration from CLI v4.
@@ -65,10 +69,6 @@ Guides correct usage of Crowdin CLI v5 — the `crowdin` command that syncs loca
 
 Sets up, reviews, and debugs [crowdin/github-action](https://github.com/crowdin/github-action) — the workflow step that syncs sources and translations and opens the translation PR. Covers the fixed pipeline a single step runs (and the defaults that surprise people), the git half it performs after a download, secrets, token scopes and the permissions PR creation needs, the `command` escape hatch and what it silently skips, and a symptom → cause table for runs that produce no PR or no CI checks. Ships a full inputs/outputs reference and recipes for the patterns upstream doesn't document — split upload/download workflows, GitHub App auth, post-processing before the PR — linking to the action's own examples for the rest.
 
-### create-app
-
-Builds a Crowdin app end to end and leaves the user looking at it: scaffolds with `@crowdin/serverless-apps-cli`, writes the UI with `@crowdin/serverless-apps-sdk`, publishes into the organization and opens it. Written for translators and localization managers rather than developers, so it derives what it can (edition, placement, scopes, editor modes) and asks only questions a non-programmer can answer. Covers the placements that have no preview link, the requests that need a backend and what to offer instead, and the checks that catch a published app which does not actually render.
-
 ### context-extraction
 
 Fills `ai_context` in Crowdin JSONL files so translators get clear context. Covers which strings need context (ambiguous short words, plurals, inline tags, etc.), how to write 1–3 sentence descriptions (UI element type, placement), and safe editing rules (only edit `ai_context`, validity checklist).
@@ -76,6 +76,10 @@ Fills `ai_context` in Crowdin JSONL files so translators get clear context. Cove
 ### crowdin-context-cli
 
 Documents the `crowdin context` commands (`download`, `upload`, `status`, `reset`) for AI enrichment. Covers CLI options (filters, output path, overwrite/dryrun), coverage statistics, JSONL format, and the workflow: download → fill `ai_context` (e.g. with context-extraction) → upload.
+
+### glossary-generation
+
+Generates a starting glossary for a Crowdin project from the project's own source strings and uploads it with the CLI. Covers which terms earn an entry (product and feature names, domain vocabulary, words that are ambiguous out of context, UI objects that must stay distinct), descriptions translators can act on, the review gate before anything reaches the project, and the idempotent upload — `glossary list` first, merge into an existing glossary with `--id`, never a duplicate. Source-language terms only; translations are never invented. Works standalone on any connected project, and `i18n-setup` delegates its glossary steps here.
 
 ### crowdin-api-client
 
@@ -88,6 +92,24 @@ Helps build, validate, and optimize Crowdin CroQL expressions for strings, trans
 ### graphql
 
 Helps write and debug valid Crowdin GraphQL queries with schema-aware arguments, pagination, filtering/sorting, and node/rate-limit safety checks. Includes a troubleshooting pattern for common Playground errors like unsupported field arguments.
+
+### i18n-setup
+
+Takes a project from hardcoded strings to continuously translating through Crowdin — or connects an already-internationalized project. Detects the stack, delegates library implementation to the ecosystem's own skills (v1: JavaScript/TypeScript + Lingui via the `lingui` plugin, whichever framework the project uses), wraps existing strings with a self-healing recall check, writes a verified `crowdin.yml`, enriches string context for translators, drafts a reviewed starting glossary, and hands continuous sync to the `github-action` skill. Plans into a resumable `.crowdin/` workspace; runs on any agent, uses parallel subagents when available.
+
+```mermaid
+flowchart TD
+    P1["Detect the stack"] --> P2["Plan into .crowdin/ — resumable checklist"]
+    P2 -->|"unsupported build"| STOP(["Stop — nothing touched"])
+    P2 -->|"already internationalized"| GATE
+    P2 --> P3["Setup + wrap strings — delegated to the lingui skills"]
+    P3 --> GATE{{"Token gate — everything above is offline"}}
+    GATE --> P5["crowdin.yml + four verification gates + first upload"]
+    P5 --> P6["Translator context + reviewed glossary"]
+    P6 --> P7["Continuous sync — delegated to github-action"]
+```
+
+The Lingui stack requires the `lingui` plugin — the setup, wrapping, and recall passes are delegated to it rather than duplicated here. A run installs it when missing and stops to ask only when that install can't run — never improvising library guidance in its place. The glossary and CI phases delegate the same way to the `glossary-generation` and `github-action` skills below, which ship in this repository — installing the whole set, or the plugin, already covers them.
 
 ## Quick Start
 
@@ -109,14 +131,16 @@ Helps write and debug valid Crowdin GraphQL queries with schema-aware arguments,
 
 If you prefer, you can install specific skills:
 ```bash
+npx skills add crowdin/skills --skill create-app
 npx skills add crowdin/skills --skill crowdin-cli
 npx skills add crowdin/skills --skill github-action
 npx skills add crowdin/skills --skill context-extraction
 npx skills add crowdin/skills --skill crowdin-context-cli
+npx skills add crowdin/skills --skill glossary-generation
 npx skills add crowdin/skills --skill crowdin-api-client
 npx skills add crowdin/skills --skill croql
 npx skills add crowdin/skills --skill graphql
-npx skills add crowdin/skills --skill create-app
+npx skills add crowdin/skills --skill i18n-setup
 ```
 
 ## Compatibility
