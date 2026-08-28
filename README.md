@@ -57,24 +57,6 @@ Use `--agent <name>` (e.g. `--agent cursor`) to target a specific tool, and `gh 
 
 ## Available Skills
 
-### i18n-setup
-
-Takes a project from hardcoded strings to continuously translating through Crowdin — or connects an already-internationalized project. Detects the stack, delegates library implementation to the ecosystem's own skills (v1: JavaScript/TypeScript + Lingui via the `lingui` plugin, whichever framework the project uses), wraps existing strings with a self-healing recall check, writes a verified `crowdin.yml`, enriches string context for translators, drafts a reviewed starting glossary, and hands continuous sync to the `github-action` skill. Plans into a resumable `.crowdin/` workspace; runs on any agent, uses parallel subagents when available.
-
-```mermaid
-flowchart TD
-    P1["Detect the stack"] --> P2["Plan into .crowdin/ — resumable checklist"]
-    P2 -->|"unsupported build"| STOP(["Stop — nothing touched"])
-    P2 -->|"already internationalized"| GATE
-    P2 --> P3["Setup + wrap strings — delegated to the lingui skills"]
-    P3 --> GATE{{"Token gate — everything above is offline"}}
-    GATE --> P5["crowdin.yml + four verification gates + first upload"]
-    P5 --> P6["Translator context + reviewed glossary"]
-    P6 --> P7["Continuous sync — delegated to github-action"]
-```
-
-The Lingui stack requires the `lingui` plugin — the setup, wrapping, and recall passes are delegated to it rather than duplicated here. A run installs it when missing (`npx skills add lingui/skills`; Claude Code plugin users: `/plugin marketplace add lingui/skills && /plugin install lingui@lingui-skills`) and stops to ask only when that install can't run — never improvising library guidance in its place. The glossary and CI phases delegate the same way to the `glossary-generation` and `github-action` skills below, which ship in this repository — installing the whole set, or the plugin, already covers them.
-
 ### create-app
 
 Builds a Crowdin app end to end and leaves the user looking at it: scaffolds with `@crowdin/serverless-apps-cli`, writes the UI with `@crowdin/serverless-apps-sdk`, publishes into the organization and opens it. Written for translators and localization managers rather than developers, so it derives what it can (edition, placement, scopes, editor modes) and asks only questions a non-programmer can answer. Covers the placements that have no preview link, the requests that need a backend and what to offer instead, and the checks that catch a published app which does not actually render.
@@ -111,6 +93,24 @@ Helps build, validate, and optimize Crowdin CroQL expressions for strings, trans
 
 Helps write and debug valid Crowdin GraphQL queries with schema-aware arguments, pagination, filtering/sorting, and node/rate-limit safety checks. Includes a troubleshooting pattern for common Playground errors like unsupported field arguments.
 
+### i18n-setup
+
+Takes a project from hardcoded strings to continuously translating through Crowdin — or connects an already-internationalized project. Detects the stack, delegates library implementation to the ecosystem's own skills (v1: JavaScript/TypeScript + Lingui via the `lingui` plugin, whichever framework the project uses), wraps existing strings with a self-healing recall check, writes a verified `crowdin.yml`, enriches string context for translators, drafts a reviewed starting glossary, and hands continuous sync to the `github-action` skill. Plans into a resumable `.crowdin/` workspace; runs on any agent, uses parallel subagents when available.
+
+```mermaid
+flowchart TD
+    P1["Detect the stack"] --> P2["Plan into .crowdin/ — resumable checklist"]
+    P2 -->|"unsupported build"| STOP(["Stop — nothing touched"])
+    P2 -->|"already internationalized"| GATE
+    P2 --> P3["Setup + wrap strings — delegated to the lingui skills"]
+    P3 --> GATE{{"Token gate — everything above is offline"}}
+    GATE --> P5["crowdin.yml + four verification gates + first upload"]
+    P5 --> P6["Translator context + reviewed glossary"]
+    P6 --> P7["Continuous sync — delegated to github-action"]
+```
+
+The Lingui stack requires the `lingui` plugin — the setup, wrapping, and recall passes are delegated to it rather than duplicated here. A run installs it when missing and stops to ask only when that install can't run — never improvising library guidance in its place. The glossary and CI phases delegate the same way to the `glossary-generation` and `github-action` skills below, which ship in this repository — installing the whole set, or the plugin, already covers them.
+
 ## Quick Start
 
 1. **Install all Crowdin skills:**
@@ -131,7 +131,6 @@ Helps write and debug valid Crowdin GraphQL queries with schema-aware arguments,
 
 If you prefer, you can install specific skills:
 ```bash
-npx skills add crowdin/skills --skill i18n-setup
 npx skills add crowdin/skills --skill create-app
 npx skills add crowdin/skills --skill crowdin-cli
 npx skills add crowdin/skills --skill github-action
@@ -141,6 +140,7 @@ npx skills add crowdin/skills --skill glossary-generation
 npx skills add crowdin/skills --skill crowdin-api-client
 npx skills add crowdin/skills --skill croql
 npx skills add crowdin/skills --skill graphql
+npx skills add crowdin/skills --skill i18n-setup
 ```
 
 ## Compatibility
