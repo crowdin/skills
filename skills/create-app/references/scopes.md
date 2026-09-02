@@ -26,8 +26,10 @@ The authority is [understanding-scopes](https://support.crowdin.com/developer/un
 | `project.translation` | Add and manage translations |
 | `project.screenshot` | Screenshots and tags |
 | `project.webhook` | Project webhook configuration |
+| `project.advisor` | Context Advisor checks and insights |
 | `tm` | Translation memories |
 | `glossary` | Glossaries and terms |
+| `style-guide` | Style guides and their assignment to projects |
 | `group` | Project groups (Enterprise) |
 | `language` | Organization languages |
 | `user` | Users (Enterprise) |
@@ -40,8 +42,14 @@ The authority is [understanding-scopes](https://support.crowdin.com/developer/un
 | `mt` | Machine translation engines |
 | `ai`, `ai.provider`, `ai.prompt`, `ai.fine-tuning` | AI providers, prompts, fine-tuning |
 | `ai.proxy` | Proxying requests to AI providers. Read-only |
+| `ai.translate` | AI translation of strings and files |
+| `ai.request-log` | AI request logs. Read-only |
 | `security-log` | Security logs. Read-only |
-| `application` | Installing applications |
+| `application` | Everything applications - installations, request proxying, consents, storage. An umbrella over the four below; prefer the narrow form |
+| `application.installation` | Install, update and remove applications |
+| `application.proxy` | Request proxying to the API of installed applications |
+| `application.consent` | User consents granted to applications |
+| `application.storage` | The app's own Crowdin Storage records. Required for `createStorage()` |
 | `webhook` | Organization webhooks |
 | `automation`, `automation.rule`, `automation.rule.execution` | Automation rules (Enterprise) |
 | `custom-spellchecker`, `external-qa-check` | Enterprise, read-only |
@@ -59,6 +67,7 @@ Taken from apps that work, not composed here:
 - untranslated counts per language - `project.status.progress:read`
 - comments and issues on strings - a `project.source` scope is required; `project.translation` alone returns a uniform 403. Two runs hit this and reported it slightly differently (`project.source.string` versus `project.source:read` alongside `project.translation:read`), so treat the exact minimal pair as unsettled: start from the narrowest that has actually worked for someone (`project.source.string:read`) and widen only on a real 403 rather than guessing
 - who translated how much - `project.report`, plus `project.member:read` for names
+- anything the app remembers between sessions (settings, notes, shared state) - `application.storage`
 
 ## When a read-looking call needs the write scope
 
