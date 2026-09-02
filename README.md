@@ -25,7 +25,14 @@ Alternatively, install the skills as a [Claude Code plugin](https://code.claude.
 /plugin install crowdin@crowdin-skills
 ```
 
-All skills load automatically and stay up to date via `/plugin marketplace update`.
+All skills load automatically. Every commit to `main` is a new plugin version, so newly added skills reach you as soon as the plugin updates. Turn on auto-update once (run `/plugin`, open the **Marketplaces** tab, select `crowdin-skills`, choose **Enable auto-update**), or update by hand:
+
+```
+/plugin update crowdin@crowdin-skills
+/reload-plugins
+```
+
+A running session keeps the version it started with, so new skills appear after `/reload-plugins` or a restart. Note that `/plugin marketplace update` only refreshes the catalog and does not update the installed plugin.
 
 The plugin also includes the [Crowdin MCP Server](https://support.crowdin.com/developer/crowdin-mcp-server/), giving your agent direct access to Crowdin projects. Authenticate via the browser OAuth flow on first use (`/mcp` in Claude Code). Crowdin Enterprise users should connect their organization endpoint (`https://{organization}.mcp.crowdin.com/v2/mcp`) manually instead.
 
