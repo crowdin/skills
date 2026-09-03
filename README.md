@@ -36,6 +36,12 @@ A running session keeps the version it started with, so new skills appear after 
 
 The plugin also includes the [Crowdin MCP Server](https://support.crowdin.com/developer/crowdin-mcp-server/), giving your agent direct access to Crowdin projects. Authenticate via the browser OAuth flow on first use (`/mcp` in Claude Code). Crowdin Enterprise users should connect their organization endpoint (`https://{organization}.mcp.crowdin.com/v2/mcp`) manually instead.
 
+### Claude Cowork
+
+[Cowork](https://claude.com/docs/cowork/guide/plugins) installs the same plugin. Open **Customize** in the sidebar, go to **Plugins**, select **Add marketplace**, and enter `crowdin/skills` (the full `https://github.com/crowdin/skills` URL works too). The `crowdin` plugin then appears among the other marketplaces — install it there, and press **Update** on the marketplace later to pull newer versions.
+
+The bundled Crowdin MCP server shows up as a connector and asks you to sign in on first use. Plugins require a paid plan and run in Cowork and Claude Code, not in Chat — to use one skill on its own, zip its folder from `skills/` and upload it under **Customize → Skills**.
+
 ### Other Agent Tools (Plugin Install)
 
 The repo is also installable as a plugin via the [`plugins` CLI](https://npmx.dev/package/plugins), which auto-detects your installed agent tools (Claude Code, Cursor, Codex, Grok Build, Kimi Code, GitHub Copilot CLI, VS Code) and installs through each tool's native plugin system:
