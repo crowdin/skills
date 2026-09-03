@@ -88,6 +88,10 @@ Documents the `crowdin context` commands (`download`, `upload`, `status`, `reset
 
 Generates a starting glossary for a Crowdin project from the project's own source strings and uploads it with the CLI. Covers which terms earn an entry (product and feature names, domain vocabulary, words that are ambiguous out of context, UI objects that must stay distinct), descriptions translators can act on, the review gate before anything reaches the project, and the idempotent upload — `glossary list` first, merge into an existing glossary with `--id`, never a duplicate. Source-language terms only; translations are never invented. Works standalone on any connected project, and `i18n-setup` delegates its glossary steps here.
 
+### generate-screenshots
+
+Captures screenshots of the running app with a browser the agent drives and uploads them to Crowdin as visual context, auto-tagged to the strings they show. Screen-driven rather than string-driven: a committed screen map (`.agents/crowdin-screens.md`) records which screens exist and how to reach them, uploads key on the filename so re-runs update images in place instead of duplicating, and a CroQL coverage query (`count of screenshots = 0`) measures what is still missing. The user starts the app and logs in; the agent does the rest — and when no browser can be driven, a publish-only mode uploads screenshots the user captures themselves. Works standalone on any connected project.
+
 ### crowdin-api-client
 
 Guides practical usage of `@crowdin/crowdin-api-client` for production workflows. Covers client/module selection, pagination with `.withFetchAll()`, uploads via storage + file creation, translation build/download flow, runtime options (`fetch`, retries, timeout), and error handling patterns (`CrowdinValidationError` vs `CrowdinError`).
@@ -102,7 +106,7 @@ Helps write and debug valid Crowdin GraphQL queries with schema-aware arguments,
 
 ### i18n-setup
 
-Takes a project from hardcoded strings to continuously translating through Crowdin — or connects an already-internationalized project. Detects the stack, delegates library implementation to the ecosystem's own skills (v1: JavaScript/TypeScript + Lingui via the `lingui` plugin, whichever framework the project uses), wraps existing strings with a self-healing recall check, writes a verified `crowdin.yml`, enriches string context for translators, drafts a reviewed starting glossary, and hands continuous sync to the `github-action` skill. Plans into a resumable `.crowdin/` workspace; runs on any agent, uses parallel subagents when available.
+Takes a project from hardcoded strings to continuously translating through Crowdin — or connects an already-internationalized project. Detects the stack, delegates library implementation to the ecosystem's own skills (v1: JavaScript/TypeScript + Lingui via the `lingui` plugin, whichever framework the project uses), wraps existing strings with a self-healing recall check, writes a verified `crowdin.yml`, enriches string context for translators, drafts a reviewed starting glossary, captures and uploads screenshots when the user opts in, and hands continuous sync to the `github-action` skill. Plans into a resumable `.crowdin/` workspace; runs on any agent, uses parallel subagents when available.
 
 ```mermaid
 flowchart TD
@@ -112,11 +116,11 @@ flowchart TD
     P2 --> P3["Setup + wrap strings — delegated to the lingui skills"]
     P3 --> GATE{{"Token gate — everything above is offline"}}
     GATE --> P5["crowdin.yml + four verification gates + first upload"]
-    P5 --> P6["Translator context + reviewed glossary"]
+    P5 --> P6["Translator context + glossary + opt-in screenshots"]
     P6 --> P7["Continuous sync — delegated to github-action"]
 ```
 
-The Lingui stack requires the `lingui` plugin — the setup, wrapping, and recall passes are delegated to it rather than duplicated here. A run installs it when missing and stops to ask only when that install can't run — never improvising library guidance in its place. The glossary and CI phases delegate the same way to the `glossary-generation` and `github-action` skills below, which ship in this repository — installing the whole set, or the plugin, already covers them.
+The Lingui stack requires the `lingui` plugin — the setup, wrapping, and recall passes are delegated to it rather than duplicated here. A run installs it when missing and stops to ask only when that install can't run — never improvising library guidance in its place. The glossary, screenshot, and CI phases delegate the same way to the `glossary-generation`, `generate-screenshots`, and `github-action` skills in this repository — installing the whole set, or the plugin, already covers them.
 
 ## Quick Start
 
@@ -144,6 +148,7 @@ npx skills add crowdin/skills --skill github-action
 npx skills add crowdin/skills --skill context-extraction
 npx skills add crowdin/skills --skill crowdin-context-cli
 npx skills add crowdin/skills --skill glossary-generation
+npx skills add crowdin/skills --skill generate-screenshots
 npx skills add crowdin/skills --skill crowdin-api-client
 npx skills add crowdin/skills --skill croql
 npx skills add crowdin/skills --skill graphql

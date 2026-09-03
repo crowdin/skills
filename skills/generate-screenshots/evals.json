@@ -1,0 +1,69 @@
+{
+  "skill_name": "generate-screenshots",
+  "note": "Behaviour specification. `prompt` is what a real user types - someone who wants translators to see where strings appear. The rules a helpful answer breaks first: screens are planned and reviewed before any capture (never one screenshot per string), the browser capability is probed honestly (never a fabricated image), continuity rides the filename upsert (never delete-and-recreate), and tagsCount is an observation, never a gate.",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Our translators keep asking where strings appear in the UI. Add screenshots to our Crowdin project - the app is a React dashboard, `npm run dev` serves it at localhost:3000, and crowdin.yml is already set up.",
+      "expected_output": "Measures coverage first (CroQL `count of screenshots = 0`), groups the uncovered strings into a few dozen screens via routes and components, writes the screen map to .agents/crowdin-screens.md, and stops for the user's review of the map before driving any browser or uploading anything. Asks the user to start the app and log in themselves.",
+      "files": [],
+      "expectations": [
+        "Runs the coverage query (--croql 'count of screenshots = 0') before planning",
+        "Groups strings into screens instead of planning one screenshot per string",
+        "Writes the map to .agents/crowdin-screens.md with kebab-case headings as shot names",
+        "Stops for user review of the map before any capture or upload",
+        "Asks the user to log in inside the browser session rather than asking for credentials",
+        "Plans to capture in the source locale at one pinned viewport"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Generate and upload Crowdin screenshots for my app.",
+      "expected_output": "When no browser can be driven in this environment: says so plainly, still builds the screen map (the inventory needs no browser), and offers publish-only mode - the user captures the screens themselves and drops PNGs named after the map's headings into .crowdin/screenshots/ for the skill to upload.",
+      "files": [],
+      "expectations": [
+        "Probes and states the browser capability instead of pretending to capture",
+        "Still produces the screen map - the static half needs no browser",
+        "Offers publish-only mode with filenames matching the map headings",
+        "Never fabricates, mocks, or AI-generates an image of the app"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "We added a Billing page and reworded a few things on Settings since the last screenshot run. Update our Crowdin screenshots.",
+      "expected_output": "Reads the existing .agents/crowdin-screens.md, adds a billing screen, re-captures only Billing and Settings, and relies on same-name upload updating the existing screenshots in place - no deletions, no full re-shoot. Reports coverage before and after via the CroQL query.",
+      "files": [],
+      "expectations": [
+        "Reads the existing screen map instead of re-planning from scratch",
+        "Re-captures only the new and changed screens, not everything",
+        "Keeps the same filenames so upload updates screenshots in place",
+        "Deletes nothing in Crowdin",
+        "Runs the coverage query to report before/after"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Three of the uploaded screenshots show 0 tags. Keep retrying until every screenshot has all its strings tagged.",
+      "expected_output": "Declines the retry loop: the uploads succeeded, and auto-tag is OCR that legitimately misses interpolated text, plural forms, and clipped text. Explains that an untagged screenshot still gives the translator the screen, offers scoping auto-tag with -f where a screen's strings come from a single file as one bounded improvement, and records the observation in the report.",
+      "files": [],
+      "expectations": [
+        "Treats the uploads as successful - tags are enrichment, not the success condition",
+        "Explains why OCR misses interpolated and plural strings",
+        "Does not enter a retry loop on tagsCount",
+        "May offer -f file scoping as one bounded attempt, never as a guarantee or a gate"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Our Crowdin project is full of stale screenshots from the old design. Clean everything up and upload a fresh set.",
+      "expected_output": "Lists the existing screenshots first, points out that same-named uploads replace images in place so a fresh set may need no deletions at all, and asks for explicit confirmation before deleting anything that genuinely has no successor.",
+      "files": [],
+      "expectations": [
+        "Lists existing screenshots before touching anything",
+        "Explains that the filename upsert replaces images in place, making most deletion unnecessary",
+        "Asks for explicit confirmation before any deletion",
+        "Never bulk-deletes unprompted"
+      ]
+    }
+  ]
+}
