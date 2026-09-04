@@ -8,7 +8,7 @@ Phase 3 opens with this step. Read the `skills` block of `manifest-snapshot.json
 
 1. Name exactly which skills are missing, and which role needs them.
 2. Run the snapshot's own install command yourself — `skills.install` (`npx skills add lingui/skills`). It installs into the user's skills directory, and it is exactly the dependency the manifest declares, not an improvisation. Re-probe when it finishes.
-3. When that command fails, is declined, or cannot run in this environment, stop and hand the user both commands — `skills.install`, and `skills.installClaudeCode` (`/plugin marketplace add lingui/skills && /plugin install lingui@lingui-skills`) for skills managed as plugins — then wait, and re-probe before continuing.
+3. When that command fails, is declined, or cannot run in this environment, stop and hand the user the install command — `skills.install`, plus the agent's own plugin-manager equivalent when it manages skills as plugins (`skills.installClaudeCode`, `/plugin marketplace add lingui/skills && /plugin install lingui@lingui-skills`, is the Claude Code one) — then wait, and re-probe before continuing.
 
 This is a hard gate, and the important half of it is what you must *not* do: **never substitute your own library guidance for a missing skill.** Not a summary of it, not "the general approach", not a best-effort config you are fairly confident about — improvised library instructions are stale the moment they're written. A missing dependency makes the correct outcome a paused run, never an improvised one. (A role whose manifest list names reference files rather than skills is satisfied by those files — the gate applies to named skills.)
 

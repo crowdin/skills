@@ -29,7 +29,7 @@ When one of them does hold, the rest of this phase is a conversation rather than
 
 ## Delegate the workflow
 
-`write_workflow` hands over to the **`github-action`** skill. Confirm it is loadable first; if it isn't, the fix is one install command (`npx skills add crowdin/skills --skill github-action`, or the whole set with `npx skills add crowdin/skills`), and a run that installed this skill as a Claude Code plugin already has it. Ask the user to install it and wait.
+`write_workflow` hands over to the **`github-action`** skill. Confirm it is loadable first; if it isn't, the fix is one install command (`npx skills add crowdin/skills --skill github-action`, or the whole set with `npx skills add crowdin/skills`), and a run that installed the whole set — or the plugin, in any agent that installs it as one — already has it. Ask the user to install it and wait.
 
 Do not write workflow YAML from memory in its place — not a minimal version, not "the usual shape". A workflow that looks right and fails on its first run is worse than a phase that paused: the failure surfaces after the user has already been told the journey is finished, and it surfaces on GitHub rather than here. Phase 3's dependency gate exists for the same reason, and the reasoning carries over unchanged.
 

@@ -4,7 +4,7 @@ Reached from `SKILL.md`'s Phase 6 — Context, for the `generate_glossary` and `
 
 ## Delegate
 
-Confirm the `glossary-generation` skill is loadable first. It ships alongside this one, so a run that installed this skill as a Claude Code plugin already has it; otherwise the fix is one install command (`npx skills add crowdin/skills --skill glossary-generation`). If it is missing, ask the user to install it and wait — do not improvise a glossary in its place; phase 3's dependency-gate reasoning carries over unchanged.
+Confirm the `glossary-generation` skill is loadable first. It ships alongside this one, so a run that installed the whole `crowdin/skills` set — or the plugin, in any agent that installs it as one — already has it; otherwise the fix is one install command (`npx skills add crowdin/skills --skill glossary-generation`). If it is missing, ask the user to install it and wait — do not improvise a glossary in its place; phase 3's dependency-gate reasoning carries over unchanged.
 
 Then invoke it under its own invoked-by-another-workflow contract, passing what this journey already knows so it asks the user nothing twice:
 

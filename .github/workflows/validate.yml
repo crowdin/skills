@@ -34,3 +34,11 @@ jobs:
 
       - name: Validate skills (strict)
         run: claude plugin validate skills --strict
+
+      # The same skills ship to the OpenAI plugin directory as a skills-only
+      # archive; check the Codex manifest and build the ZIP the portal receives.
+      - name: Validate OpenAI plugin manifest and skills
+        run: node scripts/openai/validate.mjs
+
+      - name: Build the OpenAI directory archive
+        run: scripts/openai/build-archive.sh
