@@ -42,6 +42,18 @@ The plugin also includes the [Crowdin MCP Server](https://support.crowdin.com/de
 
 The bundled Crowdin MCP server shows up as a connector and asks you to sign in on first use. Plugins require a paid plan and run in Cowork and Claude Code, not in Chat — to use one skill on its own, zip its folder from `skills/` and upload it under **Customize → Skills**.
 
+### OpenAI Codex
+
+The repo is also a Codex plugin marketplace. In Codex CLI (0.142 or newer):
+
+```bash
+codex plugin marketplace add crowdin/skills
+codex plugin add crowdin@crowdin-skills
+```
+
+Start a new session afterwards so the bundled skills load. The plugin includes the same Crowdin MCP Server as the Claude Code plugin. A skills-only build of it (`scripts/openai/build-archive.sh`, run on every version tag such as `1.2.0`) is what gets submitted to the OpenAI plugin directory for ChatGPT and Codex.
+
+
 ### Other Agent Tools (Plugin Install)
 
 The repo is also installable as a plugin via the [`plugins` CLI](https://npmx.dev/package/plugins), which auto-detects your installed agent tools (Claude Code, Cursor, Codex, Grok Build, Kimi Code, GitHub Copilot CLI, VS Code) and installs through each tool's native plugin system:

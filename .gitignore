@@ -1,2 +1,5 @@
 *-workspace/iteration-*
 *-workspace/*
+dist/
+.idea/
+.DS_Store
