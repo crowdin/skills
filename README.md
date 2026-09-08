@@ -122,6 +122,8 @@ Helps write and debug valid Crowdin GraphQL queries with schema-aware arguments,
 
 Takes a project from hardcoded strings to continuously translating through Crowdin — or connects an already-internationalized project. Detects the stack, delegates library implementation to the ecosystem's own skills (v1: JavaScript/TypeScript + Lingui via the `lingui` plugin, whichever framework the project uses), wraps existing strings with a self-healing recall check, writes a verified `crowdin.yml`, enriches string context for translators, drafts a reviewed starting glossary, and hands continuous sync to the `github-action` skill. Plans into a resumable `.crowdin/` workspace; runs on any agent, uses parallel subagents when available.
 
+See the skill in action: [i18n-setup demo on YouTube](https://www.youtube.com/watch?v=Hc6StVCp7U0).
+
 ```mermaid
 flowchart TD
     P1["Detect the stack"] --> P2["Plan into .crowdin/ — resumable checklist"]
