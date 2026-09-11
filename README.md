@@ -108,7 +108,7 @@ Generates a starting glossary for a Crowdin project from the project's own sourc
 
 ### crowdin-api-client
 
-Guides practical usage of `@crowdin/crowdin-api-client` for production workflows. Covers client/module selection, pagination with `.withFetchAll()`, uploads via storage + file creation, translation build/download flow, runtime options (`fetch`, retries, timeout), and error handling patterns (`CrowdinValidationError` vs `CrowdinError`).
+Guides practical usage of `@crowdin/crowdin-api-client` for production workflows. Covers client/module selection, pagination, uploads via storage + file creation, translation build/download flow, runtime options (`fetch`, retries, timeout), and error handling patterns. Ships a recipes reference with type-checked multi-step flows — waiting on long-running operations, uploading or updating files, building and downloading translations, pre-translation, CroQL filter to label to task, batch string edits, TM and glossary import and export, QA issue triage, screenshots, over-the-air releases, reports.
 
 ### croql
 
@@ -117,6 +117,10 @@ Helps build, validate, and optimize Crowdin CroQL expressions for strings, trans
 ### graphql
 
 Helps write and debug valid Crowdin GraphQL queries with schema-aware arguments, pagination, filtering/sorting, and node/rate-limit safety checks. Includes a troubleshooting pattern for common Playground errors like unsupported field arguments.
+
+### how-to-crowdin
+
+Answers "how do I do X in Crowdin" by mapping a localization pain to the cheapest thing Crowdin already offers: a built-in feature the user never found, a few actions through the Crowdin connector or API, an app from the [Crowdin Store](https://store.crowdin.com), or a custom app. A map of around ninety problem families — mined from every store listing and the product documentation — gives the rung and the hand-off, and the exact how goes to the skill that owns it (`croql`, `graphql`, `crowdin-api-client`, `crowdin-cli`, `create-app`). Written for a localization manager working through an assistant with the Crowdin connector, so answers are phrased as actions on Crowdin objects, bulk changes are counted and confirmed first, and an app is named only after the live store catalog confirms it.
 
 ### i18n-setup
 
@@ -167,6 +171,7 @@ npx skills add crowdin/skills --skill glossary-generation
 npx skills add crowdin/skills --skill crowdin-api-client
 npx skills add crowdin/skills --skill croql
 npx skills add crowdin/skills --skill graphql
+npx skills add crowdin/skills --skill how-to-crowdin
 npx skills add crowdin/skills --skill i18n-setup
 ```
 

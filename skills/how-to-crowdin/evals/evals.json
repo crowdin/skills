@@ -1,0 +1,117 @@
+{
+  "skill_name": "how-to-crowdin",
+  "note": "Triage tests. Each prompt is what a localization manager or a developer would type to an assistant that has the Crowdin connector. What is graded is the rung the answer lands on, the hand-off it names, and whether it says why the cheaper rungs lost when it recommends an app. Half the prompts are traps: they sound like they need an app and do not, or they name an app the user does not need.",
+  "evals": [
+    {
+      "id": 0,
+      "name": "stale-after-term-rename",
+      "prompt": "we renamed our product feature from 'Boards' to 'Spaces' last week and updated the glossary. now i have thousands of already-approved translations in 12 languages that still say the old word. is there an app for finding those? i saw something called Stale Translations Advisor in the store",
+      "expected_output": "Does not lead with the app. A known term rename is Replace in Translations, or a filter on translations containing the old term plus a label when each one needs review. Names Stale Translations Advisor only for what the user did not describe: style-rule changes, or continuous watching with self-closing labels. Any bulk change is counted and confirmed first.",
+      "expectations": [
+        "The answer lands on rung 1 or 2 (Replace in Translations, or a filter plus a label), not on installing an app",
+        "The answer names Stale Translations Advisor and says what it adds over the cheaper path",
+        "The answer counts the affected translations and asks before changing them, or proposes review before replacing",
+        "The answer does not invent an app or a feature"
+      ]
+    },
+    {
+      "id": 1,
+      "name": "progress-across-projects",
+      "prompt": "I manage 14 Crowdin projects. Every Monday I open each one and copy the progress per language into a spreadsheet for my boss. How do I stop doing this by hand?",
+      "expected_output": "Rung 2: list the projects, read per-language translation and approval progress, present one table. A standing dashboard page or a recurring email is the app, mentioned after the cheaper path.",
+      "expectations": [
+        "The answer offers to produce the cross-project table through the connector as the primary path",
+        "If a store app is mentioned, the answer says what it adds (a standing page, a scheduled email) rather than leading with it",
+        "The answer does not tell the user to install anything before trying the connector path"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "subset-to-task",
+      "prompt": "i need to send exactly 340 strings (the ones for the new checkout flow, they all have 'checkout' in the key) to our French and German translators. Crowdin tasks only let me pick whole files. is there an app for this?",
+      "expected_output": "Rung 2: filter the strings by key, add a label, create the French and German tasks filtered by that label. The filter expression itself goes to croql.",
+      "expectations": [
+        "The answer describes filter, then label, then a task filtered by that label",
+        "The answer hands the filter expression to the croql skill rather than inventing CroQL syntax",
+        "The answer does not recommend installing an app as the primary solution"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "cms-connector",
+      "prompt": "Our marketing site runs on Storyblok and the team copies every blog post into Crowdin by hand. What should we do?",
+      "expected_output": "Rung 3, correctly: a CMS is an external system. The agent narrows the store catalog to the CMS category, confirms the Storyblok item exists, names it, and says in a line why rungs 1 and 2 cannot reach a CMS.",
+      "expectations": [
+        "The answer recommends the Storyblok integration from the Crowdin Store",
+        "The answer consults the store catalog rather than asserting the app from memory",
+        "The answer says in one line why a native feature or connector actions cannot replace a CMS connector"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "wrong-german-is-terminology",
+      "prompt": "QA checks all pass but our German translations keep using different words for the same UI element. Translators do not seem to care. What can I do?",
+      "expected_output": "Restates the symptom as a terminology gap rather than a QA misconfiguration. The glossary is probably empty or thin: draft terms and add them after review, then the Consistent Terminology check has something to enforce.",
+      "expectations": [
+        "The answer identifies the pain as missing or thin glossary terminology, not a QA-check setting",
+        "The answer proposes filling the glossary, naming glossary-generation for a terminal user or the connector path otherwise",
+        "The answer does not lead with installing a store app"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "slack-notify-is-native",
+      "prompt": "how do i get a slack message when a language hits 100% translated? do i need the slack app from the store?",
+      "expected_output": "Rung 1: the native Slack integration and custom notification channels cover personal alerts, and native webhooks cover a channel or another tool. Answers the direct question: the store app is not required for what was described, and says when it would be.",
+      "expectations": [
+        "The answer names the native notification settings or webhooks first",
+        "The answer answers whether the store app is needed, and when it would be",
+        "The answer claims nothing about the store app beyond its description"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "developer-terminal-context",
+      "prompt": "I'm a developer, repo is open in this terminal, project is connected to Crowdin via crowdin.yml. Translators complain that half our strings have no context and they guess what 'Post' means. Fix it.",
+      "expected_output": "Rung 2 with a shell available: hand off to crowdin-context-cli to download the strings missing context and context-extraction to write it, then upload. No app for a user who already has the codebase.",
+      "expectations": [
+        "The answer hands off to crowdin-context-cli and context-extraction rather than improvising commands",
+        "The answer does not recommend a store app as the primary solution",
+        "The answer uses the terminal and the repository, which the user said are available"
+      ]
+    },
+    {
+      "id": 7,
+      "name": "dubbing-is-genuinely-an-app",
+      "prompt": "Is there a way for Crowdin to automatically dub our product videos into Japanese with a cloned voice of our founder, and lip-sync them?",
+      "expected_output": "Rung 3: Dubbing Studio, with voice cloning and optional lip sync. Confirmed in the catalog before it is named, and no capability claimed beyond the item description.",
+      "expectations": [
+        "The answer names Dubbing Studio from the Crowdin Store",
+        "The answer confirms the item through the catalog rather than from memory",
+        "The answer does not claim features the item description does not state"
+      ]
+    },
+    {
+      "id": 8,
+      "name": "odd-csv-walks-the-ladder",
+      "prompt": "we have a weird internal export format, basically CSV but with three header rows and the key in column 4 and per-language columns after that. crowdin choked on it. options?",
+      "expected_output": "Walks the ladder out loud: the native spreadsheet parser with column mapping first, then the store's File Formats category, then create-app for a custom format only if the parser cannot express the header rows.",
+      "expectations": [
+        "The answer starts with the native spreadsheet parser configuration and column mapping",
+        "The answer names the File Formats category next and create-app last",
+        "The answer does not jump straight to building a custom app"
+      ]
+    },
+    {
+      "id": 9,
+      "name": "tm-cleanup-is-destructive",
+      "prompt": "our main TM has grown to 200k segments and I think a lot are duplicates. can you just clean it up for me?",
+      "expected_output": "Rung 3 at this size: TM Cleaner, which keeps a backup. The connector path suits a small TM only and is destructive. The agent does not start deleting; it insists on a backup and a confirmed count.",
+      "expectations": [
+        "The answer neither performs nor promises bulk deletion without a backup and confirmation",
+        "The answer recommends TM Cleaner and says why the connector path does not suit 200k segments",
+        "The answer notes the app keeps a backup, or advises exporting the TM first"
+      ]
+    }
+  ]
+}

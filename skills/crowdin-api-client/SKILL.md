@@ -17,6 +17,7 @@ Core principle: verify local client typings first, then implement with strict mo
 - Confusion about method names, request fields, or `ResponseList` vs `ResponseObject`.
 - Refactors involving uploads, file translations, screenshots, tasks, comments, strings, or projects.
 - Reviews where behavior works at runtime but types/mapping look suspicious.
+- Multi-step flows: build and download, pre-translate, upload or update files, label strings and open a task, TM or glossary import, reports. Start from [references/recipes.md](references/recipes.md) instead of composing the calls from memory.
 
 Do not use this skill for unrelated infra-only changes.
 
@@ -39,6 +40,7 @@ Do not code from memory when typings and docs disagree.
 | Transient failures | `retryConfig` |
 | Bounded request duration | `{ httpRequestTimeout: 60_000 }` |
 | Uploads | `uploadStorageApi.addStorage` -> `sourceFilesApi.createFile` |
+| Long-running operations (builds, pre-translation, imports, exports, reports) | Poll the matching `check...Status` method with a delay; stop on `finished`, `failed` or `canceled` — [recipes](references/recipes.md#helpers-wait-save-chunk) |
 | Error branching | `CrowdinValidationError` before `CrowdinError` |
 
 ## Core Patterns
@@ -101,6 +103,8 @@ try {
 | Manual pagination loops by default | Prefer `.withFetchAll()` unless custom batching is required |
 | Uploading file directly to `createFile` | Create storage first, then pass `storageId` |
 | Catching all errors as generic | Branch `CrowdinValidationError` and `CrowdinError` explicitly |
+| Polling a status endpoint in a tight loop, or only until `finished` | Sleep between checks and treat `failed` and `canceled` as terminal — see [recipes](references/recipes.md) |
+| Composing a multi-step flow from memory | Start from the matching recipe in [references/recipes.md](references/recipes.md) |
 
 ## Verification Gate
 
@@ -120,4 +124,4 @@ After changing API-client usage:
 - Retry/timeout/runtime options fit environment.
 - Error handling distinguishes validation from generic API errors.
 
-Reference docs: [Crowdin API Client modules](https://crowdin.github.io/crowdin-api-client-js/modules.html)
+Reference docs: [Crowdin API Client modules](https://crowdin.github.io/crowdin-api-client-js/modules.html) · [API recipes](references/recipes.md)
