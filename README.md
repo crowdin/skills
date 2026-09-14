@@ -142,6 +142,10 @@ flowchart TD
 
 The Lingui stack requires the `lingui` plugin — the setup, wrapping, and recall passes are delegated to it rather than duplicated here. A run installs it when missing and stops to ask only when that install can't run — never improvising library guidance in its place. The glossary and CI phases delegate the same way to the `glossary-generation` and `github-action` skills below, which ship in this repository — installing the whole set, or the plugin, already covers them.
 
+### feedback
+
+Records feedback about Crowdin for the Crowdin team: a skill in this plugin that gave wrong instructions, a Crowdin CLI or API limitation, an MCP server tool that failed, a capability Crowdin lacks. The agent drafts a short, factual report on your machine at high-signal moments or when you ask, and sends it as a public GitHub issue in this repository only when you explicitly say so. See [Feedback](#feedback-1) below for what is included and what never is.
+
 ## Quick Start
 
 1. **Install all Crowdin skills:**
@@ -173,7 +177,18 @@ npx skills add crowdin/skills --skill croql
 npx skills add crowdin/skills --skill graphql
 npx skills add crowdin/skills --skill how-to-crowdin
 npx skills add crowdin/skills --skill i18n-setup
+npx skills add crowdin/skills --skill feedback
 ```
+
+## Feedback
+
+When something about Crowdin gets in the way while an agent works with these skills, the `feedback` skill turns it into a report for the Crowdin team without leaving the session.
+
+**How it works.** The agent drafts a report when you ask ("report this", "file feedback", "tell Crowdin about this") or on its own after a Crowdin skill instruction, CLI command, MCP tool call or API call failed reproducibly, when you are clearly frustrated with a Crowdin component, or when a Crowdin capability you expected does not exist. The draft is a Markdown file in `~/.crowdin/feedback/` on your machine, outside any repository, with a fixed structure: type (`bug`, `idea` or `missing_capability`), component, what happened, what you said, how to reproduce it, evidence. Everything in it comes from the session; unknown fields stay blank. Drafting never interrupts your task: at most one line at the end of a reply tells you a draft exists.
+
+**Where it goes.** Nothing leaves your machine until you say "send feedback" after seeing the draft. Then the agent opens a public issue in this repository with GitHub's `gh` CLI when it is installed and authenticated, or gives you a prefilled new-issue link to submit yourself. For anything you do not want public, hand the draft to [Crowdin support](https://crowdin.com/contacts) instead.
+
+**What is never included.** Tokens or credentials, Crowdin organization or project names and identifiers, source strings, translations, glossary terms or file contents from your project, and people's names (roles are used instead). These rules apply when the draft is written, so the file on disk is already safe to share.
 
 ## Compatibility
 
