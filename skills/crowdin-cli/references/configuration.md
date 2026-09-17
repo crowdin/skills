@@ -185,6 +185,8 @@ Keep resource description (project `crowdin.yml`) and credentials separate:
 
 Either file may contain `project_id`, `api_token`, `base_path`, `base_url` (and their `*_env` variants).
 
+`crowdin login` writes `~/.crowdin.yml` for you after a browser authorization — see the [commands reference](commands.md#login) for what it writes and the token's 30-day lifetime.
+
 ## Argument files
 
 Store arguments in a plain text file, one per line, and pass it as `@file`:
@@ -206,5 +208,5 @@ Useful for long option lists and for avoiding shell quote-escaping (especially C
 - **"Downloaded translations don't match the current project configuration … will be omitted"** — the file's export pattern in Crowdin doesn't match the `translation` pattern (files were uploaded outside the CLI, or the config changed). Fix by running `crowdin upload sources` (it sets the export pattern), or edit the file settings in Crowdin. Also happens when sources live in a branch and `-b` wasn't passed.
 - **"Due to missing respective sources, the following translations will be omitted"** — translation export pattern is empty on the Crowdin side; run `crowdin upload sources` to set it.
 - **Empty string values in downloaded JSON** — an effect of *Skip untranslated strings* for JSON: keys are exported with empty values by design.
-- **`crowdin init` browser token expires after 30 days** — use a personal access token for anything long-lived.
+- **Exit code 101 about a month after `crowdin login` or `crowdin init`** — the browser-issued token expires after 30 days. Re-run `crowdin login`; use a personal access token for CI and anything long-lived.
 - **Docs vs. code**: the correct export-workflow key is `export_strings_that_passed_workflow` (plural "strings"); the singular form is silently ignored.

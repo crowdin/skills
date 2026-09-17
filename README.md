@@ -88,7 +88,7 @@ Builds a Crowdin app end to end and leaves the user looking at it: scaffolds wit
 
 ### crowdin-cli
 
-Guides correct usage of Crowdin CLI v5 — the `crowdin` command that syncs localization files between a local project and Crowdin. Covers installation and authentication, `crowdin.yml` configuration (placeholders, file groups, language mapping), the core upload/download workflow, `auto-translate`, machine-readable output for scripts and agents (`-o json|toon|plain`), exit codes, CI/CD patterns, and migration from CLI v4.
+Guides correct usage of the Crowdin CLI — the `crowdin` command that syncs localization files between a local project and Crowdin. Covers installation and authentication, `crowdin.yml` configuration (placeholders, file groups, language mapping), the core upload/download workflow, `auto-translate`, machine-readable output for scripts and agents (`-o json|toon|plain`), exit codes, CI/CD patterns, and migration from CLI v4.
 
 ### github-action
 

@@ -54,7 +54,7 @@ Then show the user the terms and stop. This is a real gate: the file is small, p
 
 ## Upload
 
-Both commands are authenticated: the token comes from the environment (`CROWDIN_PERSONAL_TOKEN`, or whatever `crowdin.yml`'s `api_token_env` names), and its value is never asked for, echoed, or written. A gitignored `.env` at the project root is enough to supply it — CLI v5 reads `.env` from its working directory natively.
+Both commands are authenticated: the token comes from the environment (`CROWDIN_PERSONAL_TOKEN`, or whatever `crowdin.yml`'s `api_token_env` names), and its value is never asked for, echoed, or written. A gitignored `.env` at the project root is enough to supply it — the CLI reads `.env` from its working directory natively.
 
 **First, check for an existing glossary** — uploading without an id creates a *second* glossary rather than merging:
 

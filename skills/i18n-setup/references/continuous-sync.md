@@ -61,7 +61,7 @@ Correcting a Crowdin-side value in the file — the secret name, the trigger bra
 
 ## Secret
 
-`set_secret_instruction` is an instruction, not an action: the workflow's token comes from a repository secret only the user can create. Ask them to run, in their own terminal:
+`set_secret_instruction` is an instruction, not an action: the workflow's token comes from a repository secret only the user can create. Its value is a **personal access token**. When phase 5's token gate resolved one — from the environment or `.env` — the user can reuse it; when phase 5 authorized through `crowdin login`, the token in `~/.crowdin.yml` expires after 30 days and stays on that machine, so the user creates a personal access token now: crowdin.com → **Settings → API** (`https://crowdin.com/settings#api-key`); Crowdin Enterprise → **Account Settings → Access Tokens** in the organization's Crowdin UI. Then ask them to run, in their own terminal:
 
 ```bash
 gh secret set CROWDIN_PERSONAL_TOKEN
