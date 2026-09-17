@@ -16,17 +16,25 @@ Detection order — stop checking at the first one found:
 
 1. `CROWDIN_PERSONAL_TOKEN` already set in the environment commands run in — it got there from whatever launched the agent, or from CI.
 2. A `.env` file in the project root that sets it. Before treating this as a good credential source, confirm `.env` is actually covered by `.gitignore` — a committed `.env` is a leaked secret sitting in the repository, not a valid place to keep a token, no matter what value it holds.
-3. `~/.crowdin.yml` (or whatever `--identity` points at) carrying a token entry.
+3. `~/.crowdin.yml` (or whatever `--identity` points at) carrying an `api_token` entry — the file `crowdin login` writes.
 
-If none of the three resolve a token, stop and ask the user to create one, printing the creation URL rather than a form to fill in: crowdin.com → **Settings → API** (`https://crowdin.com/settings#api-key`); Crowdin Enterprise → **Account Settings → Access Tokens** in the organization's Crowdin UI. Then wait — this is a real stop, not something to poll around. Do not offer `crowdin init`'s interactive browser-authorization flow as a shortcut here: it issues a token that expires after 30 days, which is wrong for a value this same journey is about to hand to CI as a long-lived secret in phase 7.
+If none of the three resolve a token, stop and ask the user to run, in their own terminal:
 
-Name the token's destination in the same message as the creation URL: a `.env` file at the project root, one line, written by the user —
+```bash
+crowdin login
+```
+
+It authorizes in the browser and writes the identity file, and that is all: `login` is the authorization half of `crowdin init` on its own, and this phase authors the config half — `crowdin.yml` — itself, below. The command is the same for both Crowdin editions. It runs in the user's terminal because the flow finishes through a browser callback on the machine running it; when the agent's shell is that same machine, the agent may run it and relay the URL it prints if no browser opens. What the identity file receives, the timeout, and the token's 30-day lifetime are in the `crowdin-cli` skill's [login entry](../../crowdin-cli/references/commands.md#login). That lifetime suits a developer's machine and is why phase 7's CI secret is a separate personal access token — `continuous-sync.md` covers creating it there.
+
+The alternative is a **personal access token**, for a user who wants a token that does not expire or has no browser on this machine. Print the creation URL rather than a form to fill in: crowdin.com → **Settings → API** (`https://crowdin.com/settings#api-key`); Crowdin Enterprise → **Account Settings → Access Tokens** in the organization's Crowdin UI. Name the token's destination in the same message: a `.env` file at the project root, one line, written by the user —
 
 ```
 CROWDIN_PERSONAL_TOKEN=<the token>
 ```
 
 Before pointing the user at that file, make sure `.gitignore` covers `.env`, adding the line if it is missing — that edit carries no secret, and it has to exist before the token does. CLI v5 reads `.env` from the directory it runs in natively, so the token is live the moment the file is saved: no export, no restart. That is why `.env` is the instruction to give — the shell each command runs in inherited its environment when the agent started, so a variable exported in the user's terminal mid-session never reaches it. An environment variable delivers a token only when it was set before the agent launched, or by CI. A user who wants one token across every project on the machine can put it in `~/.crowdin.yml` instead; the CLI picks that file up by itself.
+
+Either way this is a real stop, not something to poll around: wait for the user to say they are done, then run the detection above again — it now resolves at one of the three sources, and the verification call below is what closes the gate.
 
 Verify whatever token was resolved with one authenticated call, and pass a placeholder id to get past the config validator:
 
@@ -63,7 +71,7 @@ files:
     translation: "/src/locales/%locale%/%original_file_name%"
 ```
 
-Substitute the real numeric id from the Project step for `<id>`, and add a `languages_mapping` block only when `decisions.md` froze one. One line in this block is a security invariant and stays absolute: `api_token_env` never becomes a literal `api_token`. Whatever the scheme, what proves the resolved path is right is gate three printing paths that match the directories already on disk, never the identity of the placeholder by itself. See the `crowdin-cli` skill's [configuration reference, placeholders section](../../crowdin-cli/references/configuration.md#placeholders) for the full placeholder set when reading a pre-existing config that chose a different placeholder — a config this journey authors always uses `%locale%`.
+Substitute the real numeric id from the Project step for `<id>`, and add a `languages_mapping` block only when `decisions.md` froze one. One line in this block is a security invariant and stays absolute: `api_token_env` never becomes a literal `api_token`. It stays when the local token came from `crowdin login`: the identity file outranks the config's `*_env` keys, so `~/.crowdin.yml` supplies the token on this machine and the CI secret supplies it in phase 7's workflow — one config, both places. Whatever the scheme, what proves the resolved path is right is gate three printing paths that match the directories already on disk, never the identity of the placeholder by itself. See the `crowdin-cli` skill's [configuration reference, placeholders section](../../crowdin-cli/references/configuration.md#placeholders) for the full placeholder set when reading a pre-existing config that chose a different placeholder — a config this journey authors always uses `%locale%`.
 
 Two additions apply on top of the fixed block, and only when actually needed:
 

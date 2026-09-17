@@ -1,6 +1,6 @@
-# Migrating from Crowdin CLI 4.x to 5.0
+# Migrating from Crowdin CLI 4.x
 
-CLI 5.0 is a rewrite of the Java-based 4.x, but the essentials are unchanged: the command tree, the `crowdin.yml` configuration file, and the exit codes stay the same. Most workflows carry over as-is. Java/JRE is no longer required — v5 ships as a self-contained binary.
+CLI 5 is a rewrite of the Java-based 4.x, but the essentials are unchanged: the command tree, the `crowdin.yml` configuration file, and the exit codes stay the same. Most workflows carry over as-is. Java/JRE is no longer required — v5 ships as a self-contained binary.
 
 Fix scripts with the find-and-replace changes below.
 
@@ -97,8 +97,9 @@ Renamed to avoid clashing with the global config options and to match the underl
 
 The `--branch` option was removed from `crowdin config sources` — it had no effect.
 
-## New in 5.0 (not breaking, worth adopting)
+## New since 4.x (not breaking, worth adopting)
 
+- `crowdin login` (5.1) — browser authorization on its own, saving the token to `~/.crowdin.yml` without generating a configuration file; in 4.x that flow existed only inside `init`.
 - Global `-o, --output <json|toon|plain>` on every command — machine-readable output for scripts and agents.
 - `auto-translate` gains `--scope`, `--priority`, `--skip-approved-translations`, `--replace-translations-option`, `--reset-approval-status`, `--translation-modified-before`, `--exclude-label`, `--source-language`.
 - Shell completions for zsh, bash, fish, and powershell: `crowdin complete <shell>`.

@@ -21,7 +21,7 @@ Load references lazily: read `manifest.json` when phase 2 starts, and read a ref
 | 6 | Context | `ai_context` written for the new strings, a starting glossary uploaded | token |
 | 7 | CI | sync workflow + the secret instruction for the user | token (as a CI secret) |
 
-Two entry points share this spine, and phase 2 decides which: the **full journey** runs all seven phases; **connect-only** — the project is already internationalized — omits phases 3–4 entirely rather than emitting no-op steps. Everything before phase 5 is offline; the token gate opens phase 5 — say so at the end of phase 2, so the user can provision their token while phases 3–4 run.
+Two entry points share this spine, and phase 2 decides which: the **full journey** runs all seven phases; **connect-only** — the project is already internationalized — omits phases 3–4 entirely rather than emitting no-op steps. Everything before phase 5 is offline; the token gate opens phase 5 — say so at the end of phase 2, so the user can authorize the CLI while phases 3–4 run.
 
 ## Execution model
 
@@ -118,7 +118,7 @@ Say it in full rather than in initials, so the user can search for the toolchain
 
 **Two cases override the default spelling:** the user asks for specific codes (URL segments like `/uk/`, an in-house convention), or the project's locale directories already spell them (`detection.json`'s `localeSignals.existingLocaleDirs`). Keep that spelling and record one `languages_mapping` row per target whose code differs from its Crowdin locale code — never rename a project's directories to dodge a row. `references/connect.md` and the `crowdin-cli` skill's configuration reference own the mapping mechanics; this file doesn't repeat them.
 
-**4. Ask which Crowdin edition.** crowdin.com or Crowdin Enterprise. Enterprise means one extra recorded value — the organization — which becomes `base_url: https://{org}.api.crowdin.com` in `crowdin.yml` and changes where the user creates their token. Nothing else in the journey differs.
+**4. Ask which Crowdin edition.** crowdin.com or Crowdin Enterprise. Enterprise means one extra recorded value — the organization — which becomes `base_url: https://{org}.api.crowdin.com` in `crowdin.yml` and, when a personal access token is used, where it is created. Nothing else in the journey differs.
 
 **5. Confirm the remaining choices**, then freeze all of them in `decisions.md`: the app's one-line product description (phase 6 passes it to the context skill), the scope of files to wrap, whether to work on a new git branch, mode (**guided** — confirm at each phase boundary; **unguided** — run the approved plan to completion, stopping only on ambiguity or a hard stop), and add-ons. Add-ons are off by default, including `crowdin auto-translate`: never machine-translate a fresh project unasked, and when the user does opt in, `--method tm` only.
 
@@ -181,7 +181,7 @@ crowdin config lint  →  crowdin config sources  →  crowdin config translatio
 
 Only `config lint` answers without credentials; the other three all reach the project, which the gate order absorbs — the token and project id exist before any of them runs. `crowdin config translations` is the kill switch: it resolves the `translation` pattern's `%locale%` placeholder — through the `languages_mapping` rows, if any were decided — against the project's actual languages, printing the per-language paths the pattern resolves to so you can compare them against the layout phase 3 created. Only after all four pass does `upload_sources` run for real.
 
-**The agent never sees the token value.** Not in a prompt, not in a variable it echoes, not in a file it writes. `crowdin.yml` always carries `api_token_env: "CROWDIN_PERSONAL_TOKEN"` and never a literal token; `project_id` is committed, because it is not a secret. `connect.md`'s token gate covers how a token is detected, created and stored by the user, and verified without ever being read.
+**The agent never sees the token value.** Not in a prompt, not in a variable it echoes, not in a file it writes. `crowdin.yml` always carries `api_token_env: "CROWDIN_PERSONAL_TOKEN"` and never a literal token; `project_id` is committed, because it is not a secret. `connect.md`'s token gate covers how a token is detected, how the user obtains one — `crowdin login` in their own terminal by default — and how it is verified without ever being read.
 
 ## Phase 6 — Context
 
@@ -198,7 +198,7 @@ Then the glossary, in the same phase because it needs the same two things: the p
 
 Delegated, like phases 3–4. The **`github-action`** skill writes the workflow — its inputs, the version to pin, and everything that only fails once a run is on a runner. `references/continuous-sync.md` covers what comes before and after: the decision (a workflow, or Crowdin's native GitHub integration), the gate that runs before anything is written (`git ls-remote origin 'l10n*'` — an existing `l10n*` branch means an automation already syncs this repository, and a hit is a stop-and-ask), the handoff, and the post-conditions to read back.
 
-`write_workflow` then delegates, and `set_secret_instruction` asks the user to set `CROWDIN_PERSONAL_TOKEN` as a repository secret themselves — same rule as phase 5, the value never passes through the conversation.
+`write_workflow` then delegates, and `set_secret_instruction` asks the user to set `CROWDIN_PERSONAL_TOKEN` as a repository secret themselves — same rule as phase 5, the value never passes through the conversation. The secret is a personal access token; `continuous-sync.md` says when the user has to create one first.
 
 `prove_round_trip` closes the journey, and it is the last step for the same reason `extract_smoke` is an early one: **every step before it can pass while the app still shows one language.** Translate a single string in the Crowdin project — one word is enough, by hand in the editor — let the sync bring it back, and see it render. That exercises the whole chain end to end: the catalog the workflow downloads, the path `%locale%` resolved to, the macro the setup phase wired, and the locale the app negotiates. Nothing else does; a green build, a full catalog, four passed gates and a written workflow are all compatible with a project that will never display a translation.
 

@@ -5,7 +5,7 @@ Condensed from the generated command documentation (https://crowdin.github.io/cr
 ## Contents
 
 - [Common options](#common-options)
-- [init](#init)
+- [init](#init) · [login](#login)
 - [upload (push)](#upload-alias-push) · [download (pull)](#download-alias-pull)
 - [status](#status) · [auto-translate](#auto-translate)
 - [file](#file) · [string](#string) · [branch](#branch)
@@ -52,6 +52,21 @@ Generate the `crowdin.yml` configuration skeleton. Interactive by default (brows
 - `-T, --token`, `-i, --project-id`, `--base-path`, `--base-url`, `-s, --source`, `-t, --translation` — pre-fill values instead of prompting
 - `--no-preserve-hierarchy` — generate `preserve_hierarchy: false` (default generates `true`)
 - `--quiet` — generate without interactive prompts
+
+To authorize without generating a configuration file, run [`login`](#login) instead.
+
+## login
+
+```
+crowdin login
+```
+
+Authorize the CLI in the browser and save the token to the identity file — the authorization half of `init` on its own, with no configuration file generated or read. No options beyond the global ones, no prompts.
+
+- Opens the OAuth page on `accounts.crowdin.com`, waits for the callback on `localhost:46221`, and gives up after ~2 minutes. When no browser can be opened it prints the URL to open by hand — so the browser and the shell running `login` must be the same machine.
+- Writes `~/.crowdin.yml`, merging `api_token` into whatever the file already holds; for a Crowdin Enterprise account it also writes `base_url`, with the organization taken from the sign-in. Always that default file — `--identity` does not redirect it.
+- Text output ends with `Authorized as <username>` and the file path; `-o json`/`-o toon` return `username`, `id`, `baseUrl`, `identityFile`.
+- The browser-issued token expires after 30 days: re-run `login`. CI and long-lived automation use a personal access token instead.
 
 ## upload (alias: push)
 

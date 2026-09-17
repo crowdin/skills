@@ -1,6 +1,6 @@
 ---
 name: crowdin-cli
-description: Guides correct usage of Crowdin CLI - the `crowdin` command that syncs localization files between a local project and Crowdin. Use whenever the user runs, scripts, or debugs `crowdin` commands, creates or edits a crowdin.yml configuration, uploads sources, downloads translations, checks translation status, auto-translates a project, wires localization into CI/CD, or migrates scripts from CLI v4 to v5 - even if they just say "sync translations" or "push strings to Crowdin" without naming the CLI.
+description: Guides correct usage of Crowdin CLI - the `crowdin` command that syncs localization files between a local project and Crowdin. Use whenever the user runs, scripts, or debugs `crowdin` commands, authorizes the CLI, creates or edits a crowdin.yml configuration, uploads sources, downloads translations, checks translation status, auto-translates a project, wires localization into CI/CD, or migrates scripts from CLI v4 to v5 - even if they just say "sync translations" or "push strings to Crowdin" without naming the CLI.
 ---
 
 # Crowdin CLI
@@ -21,11 +21,20 @@ Also available via Homebrew (`brew tap crowdin/crowdin && brew install crowdin@5
 
 ## Authenticate
 
-The CLI needs a **personal access token** and (for most commands) a **project ID**:
+The CLI needs an **API token** and (for most commands) a **project ID**. On a developer's machine the quickest route is:
+
+```bash
+crowdin login
+```
+
+It authorizes in the browser and saves the token to the identity file `~/.crowdin.yml`, where every later command — run by the user or by an agent — picks it up. No configuration file is generated or required, and Crowdin Enterprise needs nothing extra: the organization comes from the account signed in. `crowdin init` runs the same browser authorization and then generates a `crowdin.yml`; `login` is the choice when the config is written by hand or already exists. The flow finishes through a browser callback on the same machine, so when the agent's shell may be elsewhere, the user runs it in their own terminal. The browser-issued token expires after 30 days — re-run `crowdin login` when a command exits `101`. Details: [references/commands.md](references/commands.md#login).
+
+For CI and anything long-lived, use a **personal access token** — it does not expire:
 
 - crowdin.com: create the token in **Settings → API** (`https://crowdin.com/settings#api-key`). `base_url` is `https://api.crowdin.com` (the default — no need to set it).
 - Crowdin Enterprise: create it in **Account Settings → Access Tokens**. `base_url` must be set to `https://{organization}.api.crowdin.com`.
-- The project ID is numeric — get it with `crowdin project list` once a token is configured, or from the project page in Crowdin.
+
+The project ID is numeric — get it with `crowdin project list` once a token is configured (add `-i 1` while no `crowdin.yml` carries a `project_id`: validation demands one even though this command ignores it), or from the project page in Crowdin.
 
 Credentials resolve in this priority order (highest wins):
 
@@ -35,9 +44,7 @@ Credentials resolve in this priority order (highest wins):
 4. Literal keys in the config file (`api_token: "..."`)
 5. `CROWDIN_PERSONAL_TOKEN`, `CROWDIN_PROJECT_ID`, `CROWDIN_BASE_PATH`, `CROWDIN_BASE_URL` environment variables
 
-`.env` files in the working directory are loaded automatically, so `CROWDIN_PERSONAL_TOKEN` can live there. **Never write a real token into `crowdin.yml`** if the file is committed — use `api_token_env` or the `CROWDIN_PERSONAL_TOKEN` variable instead.
-
-`crowdin init` sets up a project interactively, including browser-based authorization — but a browser-issued token expires after 30 days, so for CI and long-lived automation use a personal access token.
+`.env` files in the working directory are loaded automatically, so `CROWDIN_PERSONAL_TOKEN` can live there. **Never write a real token into `crowdin.yml`** if the file is committed — use `api_token_env` or the `CROWDIN_PERSONAL_TOKEN` variable instead. A committed `api_token_env` and a local `crowdin login` coexist: the unset variable contributes nothing, so the identity file supplies the token on the developer's machine and the variable supplies it in CI.
 
 ## Configure — crowdin.yml
 
@@ -126,13 +133,14 @@ Mutating file commands accept `--dryrun` to preview what would happen. Add `-v/-
 
 ## Command map
 
-21 top-level commands; most have subcommands. Full option-level reference: [references/commands.md](references/commands.md).
+22 top-level commands; most have subcommands. Full option-level reference: [references/commands.md](references/commands.md).
 
 | Command | Purpose |
 |---------|---------|
 | `upload` (`push`) | Upload sources / translations per crowdin.yml |
 | `download` (`pull`) | Download translations / sources per crowdin.yml |
 | `init` | Generate crowdin.yml interactively |
+| `login` | Authorize in the browser and save the token to `~/.crowdin.yml` |
 | `status` | Translation & proofreading progress |
 | `auto-translate` | Pre-fill translations via TM / MT / AI |
 | `file` | Direct file ops without config patterns (list, upload, download, delete) |
