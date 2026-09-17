@@ -51,8 +51,8 @@ Do not code from memory when typings and docs disagree.
 import { Client, Credentials } from '@crowdin/crowdin-api-client';
 
 const credentials: Credentials = {
-  token: process.env.CROWDIN_TOKEN!,
-  organization: process.env.CROWDIN_ORG,
+  token: process.env.CROWDIN_PERSONAL_TOKEN!,
+  organization: process.env.CROWDIN_ORGANIZATION, // Crowdin Enterprise only
 };
 
 const client = new Client(credentials);
