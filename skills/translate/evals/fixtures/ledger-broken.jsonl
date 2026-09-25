@@ -1,0 +1,5 @@
+{"file":"src/locales/de/messages.po","key":"Hello {name}","source":"Hello {name}","target":"Hallo {Name}"}
+{"file":"src/locales/de/messages.po","key":"welcome","source":"Welcome <0>here</0>","target":"Willkommen hier"}
+{"file":"res/values-uk/strings.xml","key":"items_count","source":{"one":"%d item","other":"%d items"},"target":{"one":"%d елемент","other":"елементи"}}
+{"file":"res/values-uk/strings.xml","key":"shape","source":"{count} files","target":{"one":"{count} файл","few":"{count} файли","many":"{count} файлів","other":"{count} файлу"}}
+{"file":"res/values-de/strings.xml","key":"pct","source":"100%% of %d","target":"100% von %d"}

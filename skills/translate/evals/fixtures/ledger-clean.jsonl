@@ -1,0 +1,7 @@
+{"file":"src/locales/de/messages.po","key":"Order","source":"Order","target":"Bestellen"}
+{"file":"src/locales/de/messages.po","key":"Hello {name}","source":"Hello {name}","target":"Hallo {name}"}
+{"file":"src/locales/de/messages.po","key":"welcome","source":"Welcome, {{user}}! <0>Read more</0>","target":"<0>Mehr lesen</0>: Willkommen, {{user}}!"}
+{"file":"res/values-de/strings.xml","key":"pct","source":"100%% of %1$s","target":"100%% von %1$s"}
+{"file":"res/values-uk/strings.xml","key":"items_count","source":{"one":"%d item","other":"%d items"},"target":{"one":"%d елемент","few":"%d елементи","many":"%d елементів","other":"%d елемента"}}
+{"file":"src/locales/uk/messages.po","key":"cart","source":{"one":"# item in cart","other":"# items in cart"},"target":{"one":"# товар у кошику","few":"# товари у кошику","many":"# товарів у кошику","other":"# товару у кошику"}}
+{"file":"src/locales/de/messages.po","key":"Log","skipped":"noun or verb; no reference into the code"}
