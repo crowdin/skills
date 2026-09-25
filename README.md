@@ -106,6 +106,10 @@ Documents the `crowdin context` commands (`download`, `upload`, `status`, `reset
 
 Generates a starting glossary for a Crowdin project from the project's own source strings and uploads it with the CLI. Covers which terms earn an entry (product and feature names, domain vocabulary, words that are ambiguous out of context, UI objects that must stay distinct), descriptions translators can act on, the review gate before anything reaches the project, and the idempotent upload — `glossary list` first, merge into an existing glossary with `--id`, never a duplicate. Source-language terms only; translations are never invented. Works standalone on any connected project, and `i18n-setup` delegates its glossary steps here.
 
+### translate
+
+Drafts translations into a project's local resource files — whatever format `crowdin.yml` uploads — from the terminal, and uploads them to Crowdin as unapproved suggestions for review. Syncs first so nobody's finished work is drafted over, reads the project's assigned glossary, TM and style guide through the CLI, follows source references into the code when a string is ambiguous, and checks every draft's placeholders and plural categories with a format-neutral ledger before anything goes up. Never approves, never writes the source catalog, never invents a glossary term. Warns rather than refuses on large runs and names Crowdin's own pre-translation as the bulk route. `i18n-setup` delegates here when the user asks for translations during the journey.
+
 ### crowdin-api-client
 
 Guides practical usage of `@crowdin/crowdin-api-client` for production workflows. Covers client/module selection, pagination, uploads via storage + file creation, translation build/download flow, runtime options (`fetch`, retries, timeout), and error handling patterns. Ships a recipes reference with type-checked multi-step flows — waiting on long-running operations, uploading or updating files, building and downloading translations, pre-translation, CroQL filter to label to task, batch string edits, TM and glossary import and export, QA issue triage, screenshots, over-the-air releases, reports.
@@ -172,6 +176,7 @@ npx skills add crowdin/skills --skill github-action
 npx skills add crowdin/skills --skill context-extraction
 npx skills add crowdin/skills --skill crowdin-context-cli
 npx skills add crowdin/skills --skill glossary-generation
+npx skills add crowdin/skills --skill translate
 npx skills add crowdin/skills --skill crowdin-api-client
 npx skills add crowdin/skills --skill croql
 npx skills add crowdin/skills --skill graphql

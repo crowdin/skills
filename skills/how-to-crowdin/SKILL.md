@@ -104,6 +104,7 @@ Each row is a problem family: the pain in the user's terms, the cheapest rung th
 | Pain | Rung | Do this |
 |---|---|---|
 | Glossary is empty or thin | 2 | `glossary-generation` from a terminal; through the connector, propose terms from source strings and add after review |
+| Developers want the strings they just added translated now, consistently with our glossary and TM | 2 | `translate` from a terminal: drafts into the local resource files, uploads as unapproved suggestions; bulk work is pre-translation (`crowdin-cli`) |
 | Glossary has source terms but no translations | 2 | Export the glossary, upload it as a source file to be translated, import back |
 | Terms need adding or fixing while translation is underway | 2 | Find the concept, add or update the term; translators doing it inline need the editor app |
 | No style guide, so tone and formatting drift | 2 | Infer rules from approved translations, write the native Style Guide with AI instructions |
