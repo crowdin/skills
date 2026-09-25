@@ -25,6 +25,8 @@ contains "wrong plural category set is reported" "$out" "items_count	plural cate
 contains "plain source with plural target is reported" "$out" "shape	shape mismatch"
 contains "%% is not a placeholder but dropping it is reported" "$out" "pct	placeholders"
 n=$(printf '%s\n' "$out" | grep -c "	pct	"); [ "$n" = 1 ] && echo "PASS: pct reported once" || { echo "FAIL: pct reported $n times"; fail=1; }
+contains "dropped select branch is reported" "$out" "gender	select branches	source: male,other	target: other"
+n=$(printf '%s\n' "$out" | grep -c "	gender	"); [ "$n" = 1 ] && echo "PASS: select is not held to plural categories" || { echo "FAIL: gender reported $n times"; fail=1; }
 
 "$script" "$fx/ledger-invalid.jsonl" >/dev/null 2>&1; check "invalid JSON exits 2" 2 $?
 "$script" >/dev/null 2>&1; check "no arguments exits 2" 2 $?

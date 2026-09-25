@@ -15,7 +15,7 @@ Every `crowdin` command below belongs to the `crowdin-cli` skill — syntax, cre
 
 - **`crowdin.yml` exists** in the working directory. Without it, stop: say that the skill would be drafting with no glossary, no TM and no review in Crowdin, and offer the `i18n-setup` skill's connect-only path instead.
 - **The CLI is installed and authorized.** Exit code `101` means the user runs `crowdin login` in their own terminal; the token value never passes through the conversation.
-- **The CLI is current.** `--assigned`, `language list --verbose` and `style-guide` are what this skill leans on; an unknown-option or unknown-command error means an older install, and `npm install -g @crowdin/cli` is the fix.
+- **The CLI is current.** `--assigned`, `language list --verbose` and `style-guide` are what this skill leans on; an unknown-option or unknown-command error means an older install; upgrade it the way it was installed (the `crowdin-cli` skill has the line for each method).
 
 ## The run
 
@@ -38,7 +38,7 @@ crowdin download translations -l <language id> --skip-untranslated-strings
 
 Before the upload, a library that can prove its source catalog is current gets asked: `lingui check sync` for Lingui, and a failure means `lingui extract` first, so the strings that reach Crowdin are the ones in the code. Upload first, so every string about to be translated exists in Crowdin — translations uploaded for a string Crowdin has never seen are ignored. Download second, so the local files reflect what reviewers have already decided. `--skip-untranslated-strings` makes untranslated entries come back absent instead of filled with source text; without it a key-value gap becomes invisible. When the project syncs a Crowdin branch, both commands take the same `-b`; whether it does is something the user or the CI workflow says, never a guess.
 
-**Gate:** the target files are clean in git before the download, because the download overwrites them. Dirty target files are a stop-and-ask, never a silent stash.
+**Gate:** the target files are clean in git before the download, because the download overwrites them. Dirty target files are a stop-and-ask, never a silent stash. For a multilingual file (`.xcstrings`, a CSV with a `scheme`) the target is the source file itself, so the gate applies to it.
 
 Then recount the gaps and show a table per language. Strings a human translated since the last pull are no longer gaps. Server-side TM matching is not part of this step: `crowdin auto-translate --method tm` exists for projects with TM history, and the crowdin-cli skill owns it.
 
@@ -63,7 +63,7 @@ Per string, the sources of truth apply in this order, and an earlier one wins:
 4. **Context.** The translator comment, the `ai_context` if the project wrote one, and the source reference — which the agent follows into the code when the string is ambiguous. This is the step no server-side engine can do.
 5. **Style guide**, for tone, formality and formatting conventions.
 
-Every draft is recorded first as one line in the language's ledger, `.crowdin/translate/drafts-<language id>.jsonl` ([format](references/formats.md#the-drafts-ledger)), then written into the target file in place, mirroring the source file's structure: same entry order, quoting, indentation, headers and comments. A new target file mirrors the source file's structure entirely. The source catalog is never touched.
+Every draft is recorded first as one line in the language's ledger, `.crowdin/translate/drafts-<language id>.jsonl` ([format](references/formats.md#the-drafts-ledger)), then written into the target file in place, mirroring the source file's structure: same entry order, quoting, indentation, headers and comments. A new target file mirrors the source file's structure entirely. The source catalog is never touched (in a multilingual file, its source-language entries). A ledger already present for the language from a run that stopped before upload is the resume point: verify and upload from it, or start over on the user's word; never draft on top of it blindly.
 
 If the project has a catalog build step (a compile, a codegen), run it after the write so the running app shows the drafts. Which command that is belongs to the library's own skill or to the rules file `i18n-setup` rendered; this skill does not restate it.
 
@@ -97,7 +97,7 @@ Say two things plainly in the report: the suggestions appear under the account t
 
 These are hard, because they are where agent translation actually breaks production.
 
-- **Placeholders are byte-identical.** `{count}`, `{0}`, `%s`, `%1$d`, `{{name}}`, `<0>…</0>`, `#` in a plural form: same spelling, same count, same case. Reordering to fit the target grammar is fine; renaming is not.
+- **Placeholders are byte-identical.** `{count}`, `{0}`, `%s`, `%1$d`, `{{name}}`, `<0>…</0>`, `#` in a plural form: same spelling, same count, same case. Reordering to fit the target grammar is fine; renaming is not. In a plural, every placeholder the source uses in any form appears in every target form, so a `one` form keeps its number (`# Element`, not `Ein Element`): the check holds all forms to the union, and a language such as Ukrainian needs it. The one flag that is expected and resolved by hand: printf reordering (`%s of %s` → `%2$s von %1$s`), the gettext-sanctioned way to reorder, which the check reports as a rename.
 - **Plurals use the target language's categories** — the ones `language list --verbose` printed, never the source language's. `one`/`other` becomes four forms in Ukrainian and collapses to `other` in Japanese.
 - **Tags, entities, escape sequences and edge whitespace survive.** A trailing space or newline in the source is in the target too.
 - **`max_length` is respected** when the format or the string carries one.

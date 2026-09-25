@@ -39,7 +39,7 @@ crowdin style-guide list --assigned --verbose -o json
 crowdin style-guide download <id> --to .crowdin/resources/style-guide-<id>.<ext>
 ```
 
-Keep a guide when its `languageIds` is empty (it applies to every language) or contains the target language id; skip the rest. `--verbose` is what puts `languageIds` in the output. The download is the guide's document in whatever format it was uploaded — the extension follows the original file — so read it as it comes. A guide's separate AI-instructions text is not exposed by the CLI (the listing only says whether one exists), so the document is what the agent reads.
+Keep a guide when its `languageIds` is empty (it applies to every language) or, split on commas, contains the target language id as a whole item (`en` is not `en-GB`); skip the rest. `--verbose` is what puts `languageIds` in the output. The download is the guide's document in whatever format it was uploaded — the extension follows the original file — so read it as it comes. A guide's separate AI-instructions text is not exposed by the CLI (the listing only says whether one exists), so the document is what the agent reads.
 
 ## Several of everything
 

@@ -45,7 +45,9 @@ select(has("target"))
         report("placeholders"; "%% x\(.source | literal_percents)"; "%% x\(.target | literal_percents)")
       else empty end
   else
-    ([ .source[] | placeholders[] ] | unique) as $s
+    # A source keyed only by CLDR category names is a plural; any other key set is an ICU select.
+    ((.source | keys) - ["zero","one","two","few","many","other"] | length == 0) as $plural
+    | ([ .source[] | placeholders[] ] | unique) as $s
     | ([ .source[] | hashes ] | max) as $sh
     | (
         ( .target | to_entries[]
@@ -55,11 +57,17 @@ select(has("target"))
         ( .target | to_entries[]
           | select($sh > 0 and (.value | hashes) == 0)
           | report("# missing in form " + .key; "#"; "") ),
-        ( if $cats == "" then empty else
+        ( if $plural and $cats != "" then
             ($cats | split(",") | sort) as $want
             | (.target | keys | sort) as $have
             | select($want != $have)
             | report("plural categories"; $want | join(","); $have | join(","))
+          else empty end ),
+        ( if $plural then empty else
+            (.source | keys | sort) as $want
+            | (.target | keys | sort) as $have
+            | select($want != $have)
+            | report("select branches"; $want | join(","); $have | join(","))
           end )
       )
   end

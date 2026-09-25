@@ -159,7 +159,7 @@ Added by `model`:
 
 `create_project` runs first within phase 5 when it runs at all, because `write_crowdin_yml` needs the numeric project id; when the project already exists the user supplies that id instead. The other six phase-5 steps keep the order shown — that sequence is the safety gate, not a suggestion.
 
-Every phase that writes repository files ends with its commit step — `commit_setup`, `commit_wrap`, `commit_connect`, `commit_ci` — committing that phase's files on the branch `decisions.md` names. The approved plan is the consent for these commits, so none of them asks again, and a run that stops mid-journey loses at most one phase of work. Phase 6 writes only to Crowdin and the gitignored workspace, so it has no commit step; a phase whose files turn out untouched (a collapse-ladder omission) skips its commit the same way.
+Every phase that writes repository files ends with its commit step — `commit_setup`, `commit_wrap`, `commit_connect`, `commit_ci` — committing that phase's files on the branch `decisions.md` names. The approved plan is the consent for these commits, so none of them asks again, and a run that stops mid-journey loses at most one phase of work. Phase 6 writes only to Crowdin and the gitignored workspace, so it has no commit step, except that `draft_translations`, when recorded, commits the target catalogs it drafted into, so phase 7's round trip starts from clean targets; a phase whose files turn out untouched (a collapse-ladder omission) skips its commit the same way.
 
 **Before writing `plan.md`, read `references/plan-format.md`** — the format contract as one full worked `compile-time-extraction` plan — and emit yours in exactly that shape.
 

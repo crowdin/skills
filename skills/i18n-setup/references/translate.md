@@ -18,7 +18,7 @@ The step runs after `upload_glossary`, so the glossary the drafts must respect a
 
 ## What comes back
 
-A per-language table — drafted, skipped, flagged. Record the drafted counts in `decisions.md` and tick the step. Skipped strings are not a failure; they are the ones a reviewer in Crowdin answers. A run that stops before upload leaves the ledgers in `.crowdin/translate/`, and the delegate resumes from them.
+A per-language table — drafted, skipped, flagged. Record the drafted counts in `decisions.md`, commit the target catalogs the delegate drafted into (the approved plan is the consent, as for every phase's commit step; the drafts are also in Crowdin as suggestions, so the next sync brings back whatever reviewers decide), and tick the step. Skipped strings are not a failure; they are the ones a reviewer in Crowdin answers. A run that stops before upload leaves the ledgers in `.crowdin/translate/`, and the delegate resumes from them.
 
 ## The rules file
 

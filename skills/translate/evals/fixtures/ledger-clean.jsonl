@@ -5,3 +5,5 @@
 {"file":"res/values-uk/strings.xml","key":"items_count","source":{"one":"%d item","other":"%d items"},"target":{"one":"%d елемент","few":"%d елементи","many":"%d елементів","other":"%d елемента"}}
 {"file":"src/locales/uk/messages.po","key":"cart","source":{"one":"# item in cart","other":"# items in cart"},"target":{"one":"# товар у кошику","few":"# товари у кошику","many":"# товарів у кошику","other":"# товару у кошику"}}
 {"file":"src/locales/de/messages.po","key":"Log","skipped":"noun or verb; no reference into the code"}
+{"file":"src/locales/de/messages.json","key":"left","source":{"male":"He left","female":"She left","other":"They left"},"target":{"male":"Er ging","female":"Sie ging","other":"Sie gingen"}}
+{"file":"src/locales/uk/messages.json","key":"inbox","source":{"one":"You have # message","other":"You have # messages"},"target":{"one":"У вас # повідомлення","few":"У вас # повідомлення","many":"У вас # повідомлень","other":"У вас # повідомлення"}}

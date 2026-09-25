@@ -3,3 +3,4 @@
 {"file":"res/values-uk/strings.xml","key":"items_count","source":{"one":"%d item","other":"%d items"},"target":{"one":"%d елемент","other":"елементи"}}
 {"file":"res/values-uk/strings.xml","key":"shape","source":"{count} files","target":{"one":"{count} файл","few":"{count} файли","many":"{count} файлів","other":"{count} файлу"}}
 {"file":"res/values-de/strings.xml","key":"pct","source":"100%% of %d","target":"100% von %d"}
+{"file":"src/locales/de/messages.json","key":"gender","source":{"male":"He","other":"They"},"target":{"other":"Sie"}}
