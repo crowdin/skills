@@ -1,6 +1,6 @@
 # Fetching the project's resources
 
-Reached from `SKILL.md` step 3. Everything lands in `.crowdin/resources/` (gitignored). Files already present are reused; the user asks for a refresh by saying so. All four commands below are account- or project-scoped reads; the `crowdin-cli` skill owns their full option sets.
+Reached from `SKILL.md` step 3. Everything lands in `.crowdin/resources/` (gitignored). Files already present are reused; the user asks for a refresh by saying so. The commands below are account- or project-scoped reads; the `crowdin-cli` skill owns their full option sets.
 
 ## Glossary — always
 
@@ -36,10 +36,10 @@ An exact source match is reused verbatim; a partial match is a style reference.
 
 ```bash
 crowdin style-guide list --assigned --verbose -o json
-crowdin style-guide download <id> --to .crowdin/resources/style-guide-<id>.<ext>
+crowdin style-guide download <id>
 ```
 
-Keep a guide when its `languageIds` is empty (it applies to every language) or, split on commas, contains the target language id as a whole item (`en` is not `en-GB`); skip the rest. `--verbose` is what puts `languageIds` in the output. The download is the guide's document in whatever format it was uploaded — the extension follows the original file — so read it as it comes. A guide's separate AI-instructions text is not exposed by the CLI (the listing only says whether one exists), so the document is what the agent reads.
+Keep a guide when its `languageIds` is empty (it applies to every language) or, split on commas, contains the target language id as a whole item (`en` is not `en-GB`); skip the rest. `--verbose` is what puts `languageIds` in the output. The download runs without `--to`: that option takes a file path, not a directory, and the guide's file extension is not in the listing, so the CLI names the file after the guide with the original extension and prints the path; move that file into `.crowdin/resources/`. It is the guide's document in whatever format it was uploaded, so read it as it comes. A guide's separate AI-instructions text is not exposed by the CLI (the listing only says whether one exists), so the document is what the agent reads.
 
 ## Several of everything
 

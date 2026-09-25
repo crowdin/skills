@@ -47,13 +47,24 @@ select(has("target"))
   else
     # A source keyed only by CLDR category names is a plural; any other key set is an ICU select.
     ((.source | keys) - ["zero","one","two","few","many","other"] | length == 0) as $plural
-    | ([ .source[] | placeholders[] ] | unique) as $s
+    # Per source form, its placeholder set. A target form with a namesake source form must match it
+    # exactly (Lingui numbers the same expression differently per branch: {1} in one, {2} in other).
+    # A target form the source lacks (uk few/many from en one/other) may use any placeholder some
+    # source form uses and must keep every placeholder all source forms share.
+    | (.source | with_entries(.value |= (placeholders | unique))) as $forms
+    | ([ $forms[] ] | add // [] | unique) as $union
+    | ([ $forms[] ] | if length == 0 then [] else reduce .[1:][] as $f (.[0]; . - (. - $f)) end) as $inter
     | ([ .source[] | hashes ] | max) as $sh
     | (
         ( .target | to_entries[]
           | (.value | placeholders | unique) as $t
-          | select($s != $t)
-          | report("placeholders in form " + .key; $s | join(" "); $t | join(" ")) ),
+          | if $forms[.key] != null then
+              select($forms[.key] != $t)
+              | report("placeholders in form " + .key; $forms[.key] | join(" "); $t | join(" "))
+            else
+              select((($t - $union) | length) > 0 or (($inter - $t) | length) > 0)
+              | report("placeholders in form " + .key; $union | join(" "); $t | join(" "))
+            end ),
         ( .target | to_entries[]
           | select($sh > 0 and (.value | hashes) == 0)
           | report("# missing in form " + .key; "#"; "") ),

@@ -27,6 +27,8 @@ contains "%% is not a placeholder but dropping it is reported" "$out" "pct	place
 n=$(printf '%s\n' "$out" | grep -c "	pct	"); [ "$n" = 1 ] && echo "PASS: pct reported once" || { echo "FAIL: pct reported $n times"; fail=1; }
 contains "dropped select branch is reported" "$out" "gender	select branches	source: male,other	target: other"
 n=$(printf '%s\n' "$out" | grep -c "	gender	"); [ "$n" = 1 ] && echo "PASS: select is not held to plural categories" || { echo "FAIL: gender reported $n times"; fail=1; }
+contains "a form carrying another source form's placeholder is reported" "$out" "seats	placeholders in form one	source: {1}	target: {2}"
+contains "a form without a source counterpart carrying a foreign placeholder is reported" "$out" "stray	placeholders in form few	source: {count}	target: {count} {x}"
 
 "$script" "$fx/ledger-invalid.jsonl" >/dev/null 2>&1; check "invalid JSON exits 2" 2 $?
 "$script" >/dev/null 2>&1; check "no arguments exits 2" 2 $?

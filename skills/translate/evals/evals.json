@@ -6,14 +6,14 @@
       "id": 0,
       "name": "increment-into-one-language",
       "prompt": "I just added a few strings to the app. Translate the new ones to German. We use Lingui, catalogs are in src/locales/<locale>/messages.po and crowdin.yml is set up.",
-      "expected_output": "Runs lingui check sync (and lingui extract if it fails), then crowdin upload sources --cache, then crowdin download translations -l de --skip-untranslated-strings after checking the de catalog is clean in git; counts the empty msgstr entries; fetches the assigned glossary (crowdin glossary list --assigned, glossary download); drafts each string into the ledger and then the .po file, reading the #: references when a string is ambiguous; runs scripts/check-drafts.sh with the categories from crowdin language list --verbose; shows a table; uploads with crowdin upload translations -l de and no --auto-approve-imported; reports that the suggestions are unapproved and under the token owner's account.",
+      "expected_output": "Runs lingui check sync --locale en (and lingui extract if it fails, reverting the target catalogs afterwards), then crowdin upload sources --cache, then crowdin download translations -l de --skip-untranslated-strings after checking the de catalog is clean in git; counts the empty msgstr entries; fetches the assigned glossary (crowdin glossary list --assigned, glossary download); drafts each string into the ledger and then the .po file, reading the #: references when a string is ambiguous; runs scripts/check-drafts.sh with the categories from crowdin language list --verbose; shows a table; uploads with crowdin upload translations -l de and no --auto-approve-imported; reports that the suggestions are unapproved and under the token owner's account.",
       "expectations": [
         "upload sources runs before download translations, and download translations carries --skip-untranslated-strings",
         "The glossary is listed with --assigned and downloaded before drafting",
         "Every draft appears in .crowdin/translate/drafts-de.jsonl and check-drafts.sh runs on it",
-        "upload translations is called with -l de and never with --auto-approve-imported or --import-eq-suggestions",
+        "upload translations is called with -l de and never with --auto-approve-imported; --import-eq-suggestions appears only if the ledger holds a draft identical to its source, and the report lists those",
         "The report says the suggestions are unapproved and appear under the token owner's account",
-        "lingui check sync runs before upload sources, and lingui check missing --locale de --mode catalog runs after the write, or the agent notes that the project's Lingui predates the check command and applies the gap rule by hand"
+        "lingui check sync --locale <source locale> runs before upload sources, never over the target locales, and lingui check missing --locale de --mode catalog runs after the write, or the agent notes that the project's Lingui predates the check command and applies the gap rule by hand"
       ]
     },
     {
@@ -71,7 +71,7 @@
       "id": 6,
       "name": "large-run-warns-and-proceeds",
       "prompt": "We added Portuguese, Italian and Dutch to the project. Translate the whole catalog (about 900 strings) into all three.",
-      "expected_output": "Shows the count table (about 2,700 translations), says that cost scales with the count and later strings get less care in one pass, names crowdin auto-translate --method ai as the cheaper bulk route owned by crowdin-cli, and waits for a yes. On yes it proceeds, one worker per language where subagents exist, and never refuses on size.",
+      "expected_output": "Shows the count table (about 2,700 translations), says that cost scales with the count and later strings get less care in one pass, names crowdin auto-translate --method ai as the cheaper bulk route owned by crowdin-cli, and waits for a yes. On yes it proceeds where subagents exist with one worker per language and one per chunk of 100 to 150 strings within a language, behind a conventions sheet the main thread writes first, and never refuses on size.",
       "expectations": [
         "The count and the warning appear before drafting starts",
         "auto-translate --method ai is named as the alternative",
