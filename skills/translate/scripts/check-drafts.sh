@@ -54,7 +54,10 @@ select(has("target"))
     | (.source | with_entries(.value |= (placeholders | unique))) as $forms
     | ([ $forms[] ] | add // [] | unique) as $union
     | ([ $forms[] ] | if length == 0 then [] else reduce .[1:][] as $f (.[0]; . - (. - $f)) end) as $inter
-    | ([ .source[] | hashes ] | max) as $sh
+    # Same per-form rule for #: a target form needs it only when its namesake source form has it,
+    # and a form the source lacks follows the source other form, whose numbers it carves out.
+    | (.source | with_entries(.value |= hashes)) as $sh_forms
+    | ($sh_forms.other // ([ $sh_forms[] ] | max)) as $sh_other
     | (
         ( .target | to_entries[]
           | (.value | placeholders | unique) as $t
@@ -66,7 +69,8 @@ select(has("target"))
               | report("placeholders in form " + .key; $union | join(" "); $t | join(" "))
             end ),
         ( .target | to_entries[]
-          | select($sh > 0 and (.value | hashes) == 0)
+          | ($sh_forms[.key] // $sh_other) as $need
+          | select($need > 0 and (.value | hashes) == 0)
           | report("# missing in form " + .key; "#"; "") ),
         ( if $plural and $cats != "" then
             ($cats | split(",") | sort) as $want

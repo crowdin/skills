@@ -29,6 +29,8 @@ contains "dropped select branch is reported" "$out" "gender	select branches	sour
 n=$(printf '%s\n' "$out" | grep -c "	gender	"); [ "$n" = 1 ] && echo "PASS: select is not held to plural categories" || { echo "FAIL: gender reported $n times"; fail=1; }
 contains "a form carrying another source form's placeholder is reported" "$out" "seats	placeholders in form one	source: {1}	target: {2}"
 contains "a form without a source counterpart carrying a foreign placeholder is reported" "$out" "stray	placeholders in form few	source: {count}	target: {count} {x}"
+contains "a form without # whose source counterpart has none is not held to #, but a form the source lacks follows other" "$out" "devices	# missing in form few	source: #	target: "
+n=$(printf '%s\n' "$out" | grep -c "	devices	"); [ "$n" = 1 ] && echo "PASS: devices reported once (one is not held to #)" || { echo "FAIL: devices reported $n times"; fail=1; }
 
 "$script" "$fx/ledger-invalid.jsonl" >/dev/null 2>&1; check "invalid JSON exits 2" 2 $?
 "$script" >/dev/null 2>&1; check "no arguments exits 2" 2 $?

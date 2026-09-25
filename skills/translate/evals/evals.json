@@ -71,7 +71,7 @@
       "id": 6,
       "name": "large-run-warns-and-proceeds",
       "prompt": "We added Portuguese, Italian and Dutch to the project. Translate the whole catalog (about 900 strings) into all three.",
-      "expected_output": "Shows the count table (about 2,700 translations), says that cost scales with the count and later strings get less care in one pass, names crowdin auto-translate --method ai as the cheaper bulk route owned by crowdin-cli, and waits for a yes. On yes it proceeds where subagents exist with one worker per language and one per chunk of 100 to 150 strings within a language, behind a conventions sheet the main thread writes first, and never refuses on size.",
+      "expected_output": "Shows the count table (about 2,700 translations), says that cost scales with the count and later strings get less care in one pass, names crowdin auto-translate --method ai as the cheaper bulk route owned by crowdin-cli, and waits for a yes. On yes it proceeds where subagents exist with one worker per language and one per chunk of 100 to 150 strings within a language, each chunk a consecutive slice of a gap list the main thread wrote once, behind a conventions sheet the main thread writes first, and never refuses on size.",
       "expectations": [
         "The count and the warning appear before drafting starts",
         "auto-translate --method ai is named as the alternative",

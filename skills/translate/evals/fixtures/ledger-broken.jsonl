@@ -6,3 +6,4 @@
 {"file":"src/locales/de/messages.json","key":"gender","source":{"male":"He","other":"They"},"target":{"other":"Sie"}}
 {"file":"src/locales/de/messages.po","key":"seats","source":{"one":"{1} of # seat used","other":"{2} of # seats used"},"target":{"one":"{2} von # Platz belegt","other":"{2} von # Plätzen belegt"}}
 {"file":"src/locales/uk/messages.po","key":"stray","source":{"one":"{count} file","other":"{count} files"},"target":{"one":"{count} файл","few":"{count} {x} файли","many":"{count} файлів","other":"{count} файлу"}}
+{"file":"src/locales/uk/messages.po","key":"devices","source":{"one":"One other device is signed in.","other":"# other devices are signed in."},"target":{"one":"Ще один пристрій увійшов у систему.","few":"Ще пристрої увійшли в систему.","many":"Ще # пристроїв увійшли в систему.","other":"Ще # пристрою увійшли в систему."}}
