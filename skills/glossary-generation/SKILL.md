@@ -59,12 +59,12 @@ Both commands are authenticated: the token comes from the environment (`CROWDIN_
 **First, check for an existing glossary** — uploading without an id creates a *second* glossary rather than merging:
 
 ```bash
-crowdin glossary list
+crowdin glossary list --assigned
 ```
 
 - **A glossary already exists** — do not create another; import into it: `crowdin glossary upload <file> --id <id>`. Read its term count before saying anything about the merge. **`terms: 0` is an empty glossary Crowdin created with the project**, which happens on every new project and means there is nothing to preserve — import and move on. A **non-zero count is an asset somebody curated**: say plainly that the import merges into it, and let the user decline, which a project with a mature glossary usually should.
 
-  `glossary list` is account-tier — it lists every glossary on the account, not this project's — so match on the project's name rather than expecting a short list.
+  `--assigned` lists only the glossaries assigned to the project in `crowdin.yml`, which on most projects is exactly one; without the flag the list is account-wide and the project's own glossary has to be picked out by name.
 - **No glossary exists** — create one: upload without `--id`, passing `--language` the Crowdin language id of the source locale:
 
 ```bash

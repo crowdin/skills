@@ -14,7 +14,7 @@ If `lingui-best-practices` and `enhanced-message-context` are installed in this 
 
 - **Message catalogs** live at `<<catalogPath>>`, one populated directory per locale.
 - **Source locale**: `<<sourceLocale>>`. Write new source strings in this language, inside macros, so they reach the catalog.
-- **Target locales**: <<targetLocales>>. These come back translated from Crowdin — never write to them by hand.
+- **Target locales**: <<targetLocales>>. These come back translated from Crowdin — never write to them by hand. The one exception is a draft made through the `translate` skill, which uploads what it wrote to Crowdin as suggestions in the same run.
 
 ## 2. Which macro
 

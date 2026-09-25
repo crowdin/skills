@@ -50,6 +50,7 @@ Catalog: lingui-po (compile-time-extraction) · References: from manifest-snapsh
 - [ ] context_status
 - [ ] generate_glossary
 - [ ] upload_glossary
+- [ ] draft_translations — only when decisions.md records the draft-translations add-on; commits the drafted target catalogs
 
 ## Phase 7 — CI
 - [ ] write_workflow
