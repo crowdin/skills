@@ -9,7 +9,7 @@ crowdin glossary list --assigned -o json
 crowdin glossary download <id> --format csv --to .crowdin/resources/glossary-<id>.csv
 ```
 
-`--assigned` lists only the glossaries assigned to the project in `crowdin.yml`; download every one it lists. The CSV has one row per concept with per-language term and description columns — small enough to read whole. A term whose target-language column is empty is a term to keep consistent, not one to translate and record.
+`--assigned` lists only the glossaries assigned to the project in `crowdin.yml`; download every one it lists. The CSV has one row per concept with per-language term and description columns — small enough to read whole. A term whose target-language column is empty falls under the glossary rule in `SKILL.md`: rendered consistently, recorded by a translator.
 
 ## TM language pair — when earned
 
@@ -24,7 +24,7 @@ Both language options are required together. The result is one row per unit with
 
 ### Lookup
 
-A TM is never read whole. Grep it for the phrase, or a distinctive part of it, and read the handful of rows that come back:
+Grep the TM for the phrase, or a distinctive part of it, and read the handful of rows that come back:
 
 ```bash
 grep -i -F -- 'checkout' .crowdin/resources/tm-*-en-de.csv | head -20
