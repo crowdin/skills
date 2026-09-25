@@ -9,7 +9,7 @@ Condensed from the generated command documentation (https://crowdin.github.io/cr
 - [upload (push)](#upload-alias-push) · [download (pull)](#download-alias-pull)
 - [status](#status) · [auto-translate](#auto-translate)
 - [file](#file) · [string](#string) · [branch](#branch)
-- [task](#task) · [tm](#tm) · [glossary](#glossary)
+- [task](#task) · [tm](#tm) · [glossary](#glossary) · [style-guide](#style-guide)
 - [bundle](#bundle) · [distribution](#distribution)
 - [screenshot](#screenshot) · [comment](#comment) · [label](#label)
 - [language](#language) · [project](#project) · [app](#app)
@@ -214,7 +214,7 @@ Manage translation/proofreading tasks. Config: set B.
 
 Manage translation memories. Config: set C (account-level, no project ID).
 
-- `crowdin tm list`
+- `crowdin tm list` — `--assigned` (only the TMs assigned to the project in `crowdin.yml`; needs `project_id`; without it the list is account-wide)
 - `crowdin tm upload <file>` — `--id <id>` (existing TM), `--language <code>`, `--scheme <scheme...>` (required for CSV/XLSX; constants: `{language_code}`, `{column_number}` from 0), `--first-line-contains-header`
 - `crowdin tm download <id>` — `--source-language-id <code>`, `--target-language-id <code>`, `--format <tmx|csv|xlsx>`, `--to <path>`
 
@@ -222,9 +222,18 @@ Manage translation memories. Config: set C (account-level, no project ID).
 
 Manage glossaries. Config: set C.
 
-- `crowdin glossary list`
+- `crowdin glossary list` — `--assigned` (only the glossaries assigned to the project in `crowdin.yml`; needs `project_id`; without it the list is account-wide)
 - `crowdin glossary upload <file>` — `--id <id>` (import into an existing glossary; omitting it **creates a new one**, which makes `--language <code>` — the glossary's source language, a Crowdin language id — required), `--scheme <scheme...>` (mandatory for CSV/XLSX, rejected for TBX; maps column names to zero-based indexes, e.g. `term_en=0,description_en=1`; constants: `term_{language_code}`, `description_{language_code}`, `partOfSpeech_{language_code}`, `{column_number}`), `--first-line-contains-header` (CSV/XLSX; keeps the header row from importing as a term). Success prints `Imported in #<id> '<name>' glossary`.
 - `crowdin glossary download <id>` — `--format <tbx|csv|xlsx>`, `--to <path>`
+
+## style-guide
+
+Manage style guides. Config: set C.
+
+- `crowdin style-guide list` — `--assigned` (only the style guides assigned to the project; needs `project_id`), `-v/--verbose` (adds `projectIds` and `languageIds` — comma-joined; an empty `languageIds` means the guide applies to every language — and whether AI instructions exist)
+- `crowdin style-guide download <id>` — `--to <path>` (default: the guide's name plus the original file's extension)
+- `crowdin style-guide upload <file>` — `--id <id>` (replace the file of an existing guide), `--name <text>` (default: file name without extension), `--project <id>` (repeatable), `--language <code>` (repeatable), `--shared` (all projects)
+- `crowdin style-guide delete <id>`
 
 ## bundle
 
@@ -274,7 +283,7 @@ Config: set B.
 
 Config: set B.
 
-- `crowdin language list` — `--code <id|two_letters_code|three_letters_code|locale|android_code|osx_code|osx_locale>` (output format, default `id`), `--all` (all supported languages, not just the project's)
+- `crowdin language list` — `--code <id|two_letters_code|three_letters_code|locale|android_code|osx_code|osx_locale>` (output format, default `id`), `--all` (all supported languages, not just the project's), `-v/--verbose` (adds each language's text direction and plural categories; in `json`/`toon` output the keys are `textDirection` and `pluralCategoryNames`, the latter a comma-joined string such as `one,few,many,other`)
 
 ## project
 

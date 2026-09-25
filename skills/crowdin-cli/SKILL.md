@@ -133,7 +133,7 @@ Mutating file commands accept `--dryrun` to preview what would happen. Add `-v/-
 
 ## Command map
 
-22 top-level commands; most have subcommands. Full option-level reference: [references/commands.md](references/commands.md).
+23 top-level commands; most have subcommands. Full option-level reference: [references/commands.md](references/commands.md).
 
 | Command | Purpose |
 |---------|---------|
@@ -147,14 +147,15 @@ Mutating file commands accept `--dryrun` to preview what would happen. Add `-v/-
 | `string` | Manage source strings (list, add, edit, delete; CroQL filters) |
 | `branch` | Manage branches (add, list, clone, merge, edit, delete) |
 | `task` | Create and list translation/proofreading tasks |
-| `tm` | Translation memories (list, upload, download) |
-| `glossary` | Glossaries (list, upload, download) |
+| `tm` | Translation memories (list, upload, download; `list --assigned` scopes to the project) |
+| `glossary` | Glossaries (list, upload, download; `list --assigned` scopes to the project) |
+| `style-guide` | Style guides (list, download, upload, delete) |
 | `bundle` | Export bundles (list, add, download, clone, browse) |
 | `distribution` | Content distributions (add, list, edit, release) |
 | `screenshot` | Screenshots for context (list, upload, delete) |
 | `comment` | String comments and issues (list, add, resolve) |
 | `label` | Labels (list, add, delete) |
-| `language` | List project/supported languages |
+| `language` | List project/supported languages; `--verbose` adds text direction and plural categories |
 | `project` | List, add, browse projects |
 | `config` | Validate config, preview matched sources/translations |
 | `app` | Install/uninstall Crowdin apps |
@@ -175,3 +176,4 @@ Shell completion: `source <(crowdin complete zsh)` (also `bash`, `fish`, `powers
 - [crowdin-context-cli](../crowdin-context-cli/SKILL.md) — `crowdin context download/upload` for AI context enrichment
 - [croql](../croql/SKILL.md) — CroQL expressions for `--croql` filters on string commands
 - [crowdin-api-client](../crowdin-api-client/SKILL.md) — the JS/TS API client, when a CLI command doesn't cover the need
+- [translate](../translate/SKILL.md) — drafts translations into local resource files with the project's glossary, TM and style guide, and uploads them as suggestions
