@@ -1,5 +1,7 @@
 # Crowdin Skills
 
+[![skills.sh](https://skills.sh/b/crowdin/skills)](https://skills.sh/crowdin/skills)
+
 This repository contains Agent Skills for [Crowdin](https://crowdin.com), an AI-powered localization platform for teams and businesses.
 
 ## What are Agent Skills?
