@@ -1,6 +1,6 @@
 ---
 name: how-to-crowdin
-description: Answers "how do I do X in Crowdin" by mapping a localization pain to the cheapest thing Crowdin already offers - a built-in feature, a few actions through the Crowdin connector or API, an app from the Crowdin Store, or a custom app - and handing the exact how to the skill that owns it. Use whenever someone describes a Crowdin or localization problem without naming a tool ("translators keep missing our terminology", "find strings changed since the last release", "QA passes but the German is wrong"), asks whether Crowdin can do something, asks which Crowdin app to use, or names a store app and wants to know what it does or whether they need it. Not for a crowdin CLI command or crowdin.yml (crowdin-cli), a CroQL expression already in hand (croql), a GraphQL query or Playground error (graphql), code against the API client (crowdin-api-client), building an app (create-app), or internationalizing a codebase (i18n-setup).
+description: Answers "how do I do X in Crowdin" by mapping a localization pain to the cheapest thing Crowdin already offers - a built-in feature, a few actions through the Crowdin connector or API, an app from the Crowdin Store, or a custom app - and handing the exact how to the skill that owns it. Use when someone describes a Crowdin or localization problem without naming a tool ("translators keep missing our terminology", "find strings changed since the last release", "QA passes but the German is wrong"), asks if Crowdin can do something or which app to use, names a store app and asks what it does or if they need it, or asks how a built-in report is calculated or why it shows a number (Explain how the "<Report name>" report is calculated.). Not for a crowdin CLI command or crowdin.yml (crowdin-cli), a CroQL expression already in hand (croql), a GraphQL query or Playground error (graphql), code against the API client (crowdin-api-client), building an app (create-app), or internationalizing a codebase (i18n-setup).
 ---
 
 # How to Crowdin
@@ -38,6 +38,8 @@ When rung 3 or 4 wins, say in one line each why the cheaper rungs lost. That lin
 ## Answer shape
 
 Solution first, in one or two sentences. Then what it costs the user: nothing, an install, or a build. Then the steps, or the hand-off. When rung 3 or 4 won, one line per rejected cheaper rung. When the answer depends on the user's edition, plan, or what is already enabled in their project, say so rather than guessing; the catalogs cannot see their account, and neither can you without the connector.
+
+A question about how a built-in report is calculated is an explanation, not a triage: skip the ladder and answer in the shape `references/reports.md` gives.
 
 ## Guardrails
 
@@ -137,6 +139,7 @@ Each row is a problem family: the pain in the user's terms, the cheapest rung th
 | Colleagues need translations without becoming Crowdin users | 3 | Store: Translation Portal or Client Portal (Enterprise); an agent cannot be a surface for many people |
 | Recognize, reward or pay contributors | 1 | Top Members report by period and language; ranking and CSV is connector; payouts, tokens and certificates are apps |
 | How much time do translators spend | 1 | Time Spent report, fed by time logged in task comments; automatic timing in the editor is an app |
+| How is this report calculated; why does a report show this number | 1 | Answer from `references/reports.md` and the report's section in the docs; with a report archive ID, read the archive's settings and numbers through the connector first; without one, ask for the page's settings before generating the report again |
 | We are new and do not know if the project is set up right | 1 | Project Advisors tab lists what is missing; a checklist against the user's own goals is connector |
 | Run Crowdin by asking an assistant instead of clicking | 2 | This is the mechanism: Crowdin MCP Server for an outside assistant, Crowdin Copilot inside Crowdin |
 
@@ -184,3 +187,5 @@ Each row is a problem family: the pain in the user's terms, the cheapest rung th
 ## Looking things up
 
 `references/catalogs.md` says how to reach the live store and docs indexes, how to narrow them without reading everything, and what an item's `Type` tells you about its rung.
+
+`references/reports.md` says how the seven built-in reports (Cost estimate, Translation cost, Auto-Translation accuracy, Translator accuracy, Task usage, Time spent, Top members) are calculated: what each counts, which date puts work into the period, which settings change the result, the common "why this number" questions, how to read an archived result by its report archive ID, what to ask before generating again a report that has none, and when to follow the report's docs page instead.

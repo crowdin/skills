@@ -1,6 +1,6 @@
 {
   "skill_name": "how-to-crowdin",
-  "note": "Triage tests. Each prompt is what a localization manager or a developer would type to an assistant that has the Crowdin connector. What is graded is the rung the answer lands on, the hand-off it names, and whether it says why the cheaper rungs lost when it recommends an app. Half the prompts are traps: they sound like they need an app and do not, or they name an app the user does not need.",
+  "note": "Triage tests. Each prompt is what a localization manager or a developer would type to an assistant that has the Crowdin connector. What is graded is the rung the answer lands on, the hand-off it names, and whether it says why the cheaper rungs lost when it recommends an app. Half the prompts are traps: they sound like they need an app and do not, or they name an app the user does not need. Cases 10 to 20 are not triage: they ask how a built-in report counts, and are graded against references/reports.md.",
   "evals": [
     {
       "id": 0,
@@ -111,6 +111,142 @@
         "The answer neither performs nor promises bulk deletion without a backup and confirmation",
         "The answer recommends TM Cleaner and says why the connector path does not suit 200k segments",
         "The answer notes the app keeps a backup, or advises exporting the TM first"
+      ]
+    },
+    {
+      "id": 10,
+      "name": "translation-cost-several-translations",
+      "prompt": "Our Translation cost report pays for one string three times: three translators each suggested a translation, but only one of them was approved. Is that a bug? I thought only the approved translation gets paid.",
+      "expected_output": "Not a bug. Translation cost pays every person who saved a translation of a string once for it, whether or not that translation was approved, top-voted or later deleted; votes are not read. Approval is not a condition for paying the translation: the approval itself is paid separately to the approver, at the Proofread rate or, with category-based approval rates (on by default on the page), at the 100% row of the approved translation's category. The later translators' texts were compared with the translations already there, so they may sit in a cheaper Other translations match row. There is no setting to pay only for the approved translation, and no other report replaces one: Top members' Winning has no rates, counts once per approver, and one string can have several approved translations.",
+      "expectations": [
+        "The answer says each translator is paid once for the string regardless of which translation was approved",
+        "The answer says approval is not a condition for paying a translation, and that the approval is paid separately to the approver, naming its rate (the Proofread rate, or the approved translation's category with category-based approval rates)",
+        "The answer mentions that a later translation is compared with existing translations and can land in a cheaper Other translations match row",
+        "The answer says Translation cost has no way to pay only for the approved translation, and does not offer another report (such as Top members' Winning) as a way to pay only for it"
+      ]
+    },
+    {
+      "id": 11,
+      "name": "translation-cost-translation-methods",
+      "prompt": "How does the Translation cost report price a string depending on how it was translated? Some of ours are typed by hand, some come from TM, MT or AI suggestions in the editor, some are pre-translated and some come from uploaded files.",
+      "expected_output": "Each saved translation is placed, at its first save, in the cheapest Net Rate Scheme row that applies; none applies means No match at 100% of the full translation rate. TM is measured in one of two ways, chosen by Use edit distance for TM Net Rate Scheme: by default by how similar the source is to the best TM match shown, whatever was saved; with the option on, by how similar the saved text is to the TM suggestions the translator had. MT or AI by how similar the saved text is to the suggestion shown, Other translations by similarity to existing translations. An unchanged MT or AI suggestion is a 100% MT or AI match. TM, MT or AI pre-translations are not paid at all and show only as Auto-translated; a translator who edits a pre-translation is paid in Other translations, or in the TM, MT or AI scheme with Use specific categories for auto-translations. Uploaded translations are paid to the uploader and always land in No match, at the full rate.",
+      "expectations": [
+        "The answer says the cheapest applicable Net Rate Scheme row wins, and that a translation outside every row is No match at the full rate",
+        "The answer says pre-translations are not paid and appear only as Auto-translated, and that a translator who edits a pre-translation is paid (in Other translations, or in the TM, MT or AI scheme with Use specific categories for auto-translations)",
+        "The answer explains both ways TM matches are measured: by source similarity by default, and by the saved text's similarity to the TM suggestions with Use edit distance for TM Net Rate Scheme on; and that MT and AI matches compare the saved text with the suggestion",
+        "The answer says uploaded translations are paid to the person who uploaded the file, as No match at the full rate"
+      ]
+    },
+    {
+      "id": 12,
+      "name": "translation-cost-repeated-translations",
+      "prompt": "Two translators worked on the same string one after the other, and the second one also rewrote her own translation three times. How many times does Translation cost pay for that string, and to whom?",
+      "expected_output": "Twice: once to each translator. A person is paid once per string, language, plural form and source version; re-saving or rewriting a translation does not pay again, and the date and match category stay from the first save. The second translator's text was compared with the first translator's, so it may be priced in a cheaper Other translations match row. Only a change of the source text creates a new version that is paid again. Savings count only for the first translation of the string.",
+      "expectations": [
+        "The answer says the string is paid once to each of the two translators",
+        "The answer says rewriting one's own translation is not paid again and that the first save sets the date and match category",
+        "The answer says only a change of the source text makes the string payable again",
+        "The answer says the second translator's text is compared with the first translator's and may be priced in a cheaper Other translations row"
+      ]
+    },
+    {
+      "id": 13,
+      "name": "top-members-numbers-without-archive",
+      "prompt": "Explain how the \"Top members\" report is calculated.\n\nWhy does Olena show only 1,240 words in Translated? She says she translated much more than that.",
+      "expected_output": "Top members is never archived, so there is no saved result to read. The answer explains the rules that make Translated smaller than a translator expects: each person counts once per string, language, plural form and source version, dated by their first save, so re-translating or rewriting adds nothing and a string she first translated before the period does not count in it; pre-translations give no one Translated; volume is measured on the source text, not her translation. To check her actual number it first asks for the settings on the page (the period, the language and other filters, the workspace or projects outside a project) and only then generates the same report with them, instead of generating one with default settings.",
+      "expectations": [
+        "The answer says Top members has no archive, so the numbers on the page cannot be read back",
+        "The answer explains at least two rules that lower Translated: once per string and language by the first save, re-translating adds nothing, pre-translations are not counted, or volume is measured on the source text",
+        "The answer asks for the period and the filters on the page before generating the report again",
+        "The answer says a string Olena first translated before the selected period does not count in it, even if she reworked it within the period"
+      ]
+    },
+    {
+      "id": 14,
+      "name": "cost-estimate-include-auto-translated",
+      "prompt": "I read that when Include auto-translated strings is selected in the Cost estimate, a string that was auto-translated by TM or MT is left out of the estimate, and that the option is selected by default. Is that right?",
+      "expected_output": "No, it is the other way round, and the option is off by default. With it off, any translation takes a string out of Translation, a TM, MT or AI pre-translation included. With it on, unapproved strings whose only translations are pre-translations stay in Translation until they are approved or translated another way. Proofreading is not affected: every string without an approved translation is priced there either way.",
+      "expectations": [
+        "The answer says the claim is reversed: selecting the option keeps unapproved strings that only have pre-translations in Translation",
+        "The answer says the option is off by default",
+        "The answer says that with the option off, a pre-translation takes the string out of Translation like any other translation",
+        "The answer does not confirm the claim on the strength of documentation or intuition"
+      ]
+    },
+    {
+      "id": 15,
+      "name": "cost-estimate-several-translations-proofreading",
+      "prompt": "german cost estimate looks wrong to me. we're on enterprise, workflow is translate -> proofread -> final proofread. lots of strings already have 2-3 translations (three of our translators each added their own, some typed, some just clicked the MT suggestion, and the agency uploaded an xliff for one file), nothing approved yet. Translation only shows the strings nobody touched, ok. but Proofreading is charged on all ~4,000 words at full price, even for strings that got a TM discount in Translation. is there a setting to discount it too? and the untouched strings sit in both Translation and Proofreading. so we pay twice for those and once per translation for the rest?? also is the final proofread step even included?",
+      "expected_output": "Nothing is double counted, and nobody's translations are priced. The estimate prices the work still left, has no people in it, and counts each string at most once per language in each part. Any translation takes a string out of Translation, however it was made and however many people translated it: typed, an MT suggestion inserted in the Editor (an ordinary translation, not an auto-translation) or the agency's uploaded XLIFF. So Translation holds only the strings nobody has translated. Proofreading holds every string in scope without an approved translation, translated or not, once per string and language, never once per translation or per translator. The ~4,000 words are all the strings because none is approved yet. Proofreading is priced on the full source units at the Proofread rate with no TM discount: the TM rows apply only to Translation, and no estimate setting changes that. A string nobody has translated is in both parts on purpose, because it still has to be translated and then proofread. Each language's Subtotal and the Total are Translation + Proofreading, and TM Savings is shown separately. On Enterprise one approval at any step takes a string out of Proofreading, so the estimate budgets a single proofreading pass. The final proofread step is not in it and has to be budgeted separately.",
+      "expectations": [
+        "The answer says any translation takes a string out of Translation, whether it was typed, an inserted MT suggestion or the uploaded XLIFF, and however many people translated it",
+        "The answer says Proofreading counts each string without an approved translation once per language, not once per translation or per translator",
+        "The answer says a string nobody has translated is in both Translation and Proofreading by design (it still needs translating and proofreading), not double counted",
+        "The answer says Proofreading is priced on the full source units at the Proofread rate with no TM discount, and does not offer a setting (such as category-based approval rates) that would discount it",
+        "The answer says that on Enterprise one approval takes a string out of Proofreading, so the estimate covers a single proofreading pass and not the final proofread step"
+      ]
+    },
+    {
+      "id": 16,
+      "name": "auto-translation-accuracy-missing-deepl-strings",
+      "prompt": "trying to work out if DeepL is worth paying for on German. last month we pre-translated the new release with DeepL, about 900 strings, proofreading is maybe a third done. on top of that the translators use DeepL in the editor all day: click the suggestion, save, sometimes fix a word. but Auto-Translation accuracy for German, last month, shows DeepL Total 310 strings. where did the rest go? and can i see in there which translators change the DeepL output the most?",
+      "expected_output": "Most of what the user expects is left out of this report on purpose. Only auto-translations are evaluated: TM, MT or AI pre-translations, whether run by hand, automatically, by a workflow step, or added through the API marked as pre-translated. A DeepL suggestion that a translator clicks and saves in the Editor is a human translation, even when saved unchanged, so none of that Editor work reaches the DeepL section. Of the ~900 pre-translated strings, only those whose current translation is approved are counted. The roughly two thirds still waiting for proofreading are missing, which fits the 310. They will be counted in a report for the same last-month period once approved: the date that puts a string into the period is the pre-translation's, and the approval only has to happen before the report is generated, so there is no need to widen the dates. The report has no people. Results belong to TM, an MT engine or an AI prompt, so it cannot show which translators change DeepL output, and it has no member filter. A per-translator view needs another report such as Translator accuracy, where a DeepL suggestion inserted in the Editor counts as the translator's own translation and is scored against the approved text.",
+      "expectations": [
+        "The answer says DeepL suggestions clicked and saved in the Editor are human translations that this report does not evaluate at all, even when saved unchanged",
+        "The answer says a pre-translated string is counted only once its current translation is approved, so the strings still waiting for proofreading are not in the 310",
+        "The answer says those strings will be counted in a report for the same period once they are approved, because the period follows the pre-translation's date and not the approval's, and does not tell the user to widen or move the dates",
+        "The answer says the report has no per-person results (they belong to the MT engine), so it cannot show which translators edit DeepL output, and does not invent a member filter or per-translator column for it"
+      ]
+    },
+    {
+      "id": 17,
+      "name": "translator-accuracy-mt-insert-and-several-versions",
+      "prompt": "translator accuracy looks off for one string in our German project. Oksana typed a translation, then Taras clicked the DeepL suggestion in the editor and saved it as is, then Oksana added a second variant. The proofreader approved Taras's, and the next day Oksana added a third one. Now Taras gets 100% match for it and Oksana is in No Match. Taras literally just accepted MT, why does he get credit for that?? I thought machine translation was excluded from this report. And is Oksana counted three times for this string or is it her last version?",
+      "expected_output": "Taras's translation counts as his own work in this report. A TM, MT or AI suggestion inserted in the Editor is the person's translation, and only TM, MT and AI pre-translations are left out. His version is the approved one, so it is a 100% Match; the report does not check where the text came from, and no setting separates translations made from MT suggestions. Oksana is counted once for this string and language, not once per version and not by her latest one. Her versions added in the period and no later than the approval are compared with the approved text, and the closest one is scored. The third variant, added after the approval, is ignored. No Match does not mean anyone edited her translation: it is the similarity of her closest version to Taras's approved text, and that similarity falls below the lowest Match Score Category set for the report. In an export the language's Total adds the translators up, so this string counts there twice, once for each of them.",
+      "expectations": [
+        "The answer says an MT suggestion inserted in the Editor counts as Taras's own translation and only pre-translations are left out, so his approved version is a 100% Match",
+        "The answer says Oksana is scored once for the string, by her version closest to the approved text, not by her latest version and not once per version",
+        "The answer says the variant Oksana added after the approval is ignored",
+        "The answer says Oksana's No Match is her version's similarity to Taras's approved text, not a sign that a proofreader edited her translation",
+        "The answer does not invent a setting, filter or column that excludes or flags translations inserted from MT suggestions"
+      ]
+    },
+    {
+      "id": 18,
+      "name": "task-usage-several-translators-one-task",
+      "prompt": "question about the Task usage report. we had one German task, ~2,000 words, assigned to Anna, Max and Jonas. about half the strings were pre-translated with MT before they started, then all three translated the same strings (we wanted options to pick from) and Max rewrote his own translations 2-3 times. Task usage shows it as 1 task, 2,000 words in Workload and €180 in Task cost. where did all that work go, shouldn't it be 6,000+ words? where does the €180 even come from, nobody entered a price on the task. and can I just group Workload by member to see how much each of them did, so I know what to pay them?",
+      "expected_output": "Task usage reads tasks, not translations. The task counts once, and its words are the task's size recorded when it was created or its strings last changed. Three translators, Max's rewrites and the MT pre-translation add no tasks and no words. Workload grouped by member does not show each person's share: the whole task counts for each assignee, so Anna, Max and Jonas each show the full 2,000 words whatever they translated. To work out pay, use Translation cost, per member or in task mode. Translations reach Task usage only through the task's saved cost. The €180 is a cost saved on the task by a report generated for it: an Estimated cost from a Cost estimate, or an Actual cost, the translation plus proofreading total from the latest Translation cost report for this task, generated by a manager or automatically through the task's Create Translation Cost Report option. An Actual cost wins over an Estimated one. A task with neither cost saved would be missing from Task cost altogether. An Actual cost follows Translation cost rules: each of the three is paid once per string, Max's rewrites are not paid again, and the MT pre-translation is not paid at all. Task usage does not recalculate this cost from the current translations or from the task's words times a rate.",
+      "expectations": [
+        "The answer says Task usage counts tasks, not translations, so the three translators, Max's rewrites and the MT pre-translation add no tasks or words, and the 2,000 words are the task's recorded size",
+        "The answer says Workload grouped by member cannot show each person's share, because the whole task (all 2,000 words) counts for each of the three assignees",
+        "The answer says the €180 is a cost saved on the task by a report generated for it (an Estimated cost from a Cost estimate or an Actual cost from a Translation cost report), not entered by hand, and that an Actual cost wins over an Estimated one",
+        "The answer says that an Actual cost follows Translation cost rules: each translator is paid once per string, Max's rewrites are not paid again, and the MT pre-translations are not paid",
+        "The answer does not claim Task cost is computed live from the task's word count times a rate, or from the current translations"
+      ]
+    },
+    {
+      "id": 19,
+      "name": "time-spent-logged-time-not-editor-work",
+      "prompt": "Time spent for September looks wrong to me. Anna did basically the whole German task \"App 4.2 release\" in the editor: some strings she typed, a lot she just took from TM and MT suggestions, the rest were AI pre-translated and she only fixed them. Then she went back twice and redid a bunch of strings after the client changed the terminology. The report gives her 3h 20m for September, but on the task page it says 11h next to her name. And Markus, our PM, shows 1h 30m on that task although he isn't even assigned to it. Is it counting time per string or something? And how do I get her real hours into the September report?",
+      "expected_output": "Nothing in the report comes from the Editor. Time spent adds up only the time typed into Log time on a task comment, or sent with a task comment through the API. Crowdin has no Editor timer and no time per string or per translation. Typing, taking TM or MT suggestions, fixing AI pre-translations and redoing strings add nothing on their own, and going back to the task adds only the entries she logged, which simply add up. Each comment's time is one entry, credited to the comment's author with the task's language, type and workflow step. So Markus's 1h 30m is time he logged in his own comments on that task: being assigned does not matter, and managers count too. The 11h next to Anna's name on the task page is all the time she has ever logged on that task, with no period. The report counts only the entries whose time was first logged in September, within its language, task type, member and workflow step filters, so the rest was logged before or after September. An entry is dated by when time was first logged on that comment, and it cannot be backdated. Changing the amount on an older comment keeps the entry in its original period, and time she logs now lands in October, not in September. Time logged in someone else's comment is credited to that comment's author, not to her.",
+      "expectations": [
+        "The answer says the report counts only time typed into Log time on task comments (or sent with a task comment through the API), and that nothing is tracked automatically: no Editor timer and no time per string or translation, so TM or MT suggestions, AI pre-translation and redone strings add no time on their own",
+        "The answer says each logged entry is credited to the author of the comment, whether or not that person is assigned to the task, which is why Markus shows time",
+        "The answer explains the 11h on the task page as all the time Anna ever logged on that task with no period, while the report counts only the entries dated in September (within its filters)",
+        "The answer says an entry is dated by when its time was first logged on the comment, so it cannot be backdated: time she logs now goes into the current period (October), not September, and changing an older comment's amount does not move it"
+      ]
+    },
+    {
+      "id": 20,
+      "name": "top-members-pretranslate-upload-credit",
+      "prompt": "top members report for our mobile app project (last 30 days) is confusing my team. i'm the PM, i don't translate or proofread anything myself, but i'm #2 on the list: ~21k words Approved, ~6k Translated and 37 \"+\" votes received. what i did this month: pre-translated the new release from TM with auto-approve for perfect matches, then ran DeepL pre-translation on whatever was left, and uploaded the old German help center XLIFF with the approve option ticked. Marta and Jonas translate in the editor, mostly they click the DeepL suggestion and fix it a bit, and our reviewers upvote the DeepL pre-translations that are fine instead of retyping them. is the report giving me credit for Marta's and Jonas's work? and where do all the pre-translated strings show up, shouldn't they be in my Translated?",
+      "expected_output": "No. None of the PM's numbers come from Marta's or Jonas's work. Approved: the auto-approvals from the TM pre-translation and the approvals from the XLIFF upload with the approve option are credited to the account that ran the pre-translation or uploaded the file, so the ~21k is the PM's own automatic approvals. Translated: pre-translations, from TM or DeepL, give no one Translated, so the pre-translated strings are in nobody's Translated, and once approved they add to nobody's Winning. The PM's ~6k comes from the uploaded German file, because an upload counts as Translated for the person who uploaded it. With the approve option, that upload also gives the PM Approved and, since it approves the PM's own translation, Winning. The 37 \"+\" votes are mostly the reviewers' votes on the DeepL pre-translations, which go to the account that ran the pre-translation; votes on the uploaded German translations also count for the PM. Marta and Jonas get Translated for every string they saved from a DeepL suggestion in the Editor, edited or not: using a suggestion in the Editor makes it their translation, not a pre-translation. The rules answer this without generating the report. If the answer offers to check the exact numbers, it first asks for the page's period and filters.",
+      "expectations": [
+        "The answer says the PM's Approved comes from the TM pre-translation's auto-approval and the XLIFF upload with approval, both credited to the account that ran the pre-translation or uploaded the file, not from the translators' work",
+        "The answer says pre-translations (TM or DeepL) give no one Translated, so the pre-translated strings are not in the PM's Translated or anyone else's",
+        "The answer traces the PM's Translated to the uploaded German XLIFF and says an upload counts as Translated for the person who uploaded it",
+        "The answer says the \"+\" votes on the DeepL pre-translations are counted as votes received by the account that ran the pre-translation, the PM",
+        "The answer says Marta and Jonas get Translated for strings they saved from DeepL suggestions in the Editor, because using a suggestion in the Editor is not a pre-translation"
       ]
     }
   ]
