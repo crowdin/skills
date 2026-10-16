@@ -34,7 +34,7 @@ For CI and anything long-lived, use a **personal access token** — it does not 
 - crowdin.com: create the token in **Settings → API** (`https://crowdin.com/settings#api-key`). `base_url` is `https://api.crowdin.com` (the default — no need to set it).
 - Crowdin Enterprise: create it in **Account Settings → Access Tokens**. `base_url` must be set to `https://{organization}.api.crowdin.com`.
 
-The project ID is numeric — get it with `crowdin project list` once a token is configured (add `-i 1` while no `crowdin.yml` carries a `project_id`: validation demands one even though this command ignores it), or from the project page in Crowdin.
+The project ID is numeric — get it with `crowdin project list` once a token is configured (`project list` alone needs `-i 1` while no `crowdin.yml` carries a `project_id`: validation demands one even though this command ignores it), or from the project page in Crowdin.
 
 Credentials resolve in this priority order (highest wins):
 
