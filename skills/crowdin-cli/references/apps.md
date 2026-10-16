@@ -2,7 +2,7 @@
 
 Integrations (Webflow, HubSpot, Contentful, Zendesk Guide and the like) are Crowdin apps that expose API methods for importing content into Crowdin and pushing translations back. `crowdin app methods` lists and describes an installed app's methods; `crowdin app api` calls them. Syntax for every `app` subcommand: [commands.md](commands.md#app) and `crowdin app api --help`.
 
-Both need a CLI release that has them: `unknown command 'methods'` means an older install, fixed with `npm install -g @crowdin/cli`. The token needs the `application.proxy` scope.
+Both need CLI 5.4.0 or later: `unknown command 'methods'` means an older install, fixed with `npm install -g @crowdin/cli`. The token needs the `application.proxy` scope.
 
 ## The integration loop
 

@@ -73,7 +73,7 @@ Each row is a problem family: the pain in the user's terms, the cheapest rung th
 |---|---|---|
 | Translators cannot see the screen a string lives on | 1 | Screenshots with auto-tagging; upload and tag on their behalf is connector; live design embeds are apps |
 | Translators of web pages or documents cannot see the rendered result | 1 | In-Context localization and the editor's document preview; video timing is an app |
-| Nobody wrote context and translators guess | 2 | List strings with empty context, derive meaning from the codebase, batch-edit context; in a terminal, `crowdin-context-cli` plus `context-extraction` |
+| Nobody wrote context and translators guess | 2 | List strings with empty context, derive meaning from the codebase, batch-edit context; in a terminal, `context-extraction` with the `crowdin context` commands (`crowdin-cli`) |
 | Which strings lack enough context to translate correctly | 2 | Coverage: filter empty context per file and report; sufficiency judged by a model at scale is an app |
 | Spreadsheet has context columns Crowdin ignores on import | 2 | After import, batch-edit string context from the original sheet; on every import is an app |
 | Reference material lives in other tools | 1 | Project description and file context carry links; rendering a board inside Crowdin is an app |

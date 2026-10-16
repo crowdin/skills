@@ -73,9 +73,9 @@
       "id": 6,
       "name": "developer-terminal-context",
       "prompt": "I'm a developer, repo is open in this terminal, project is connected to Crowdin via crowdin.yml. Translators complain that half our strings have no context and they guess what 'Post' means. Fix it.",
-      "expected_output": "Rung 2 with a shell available: hand off to crowdin-context-cli to download the strings missing context and context-extraction to write it, then upload. No app for a user who already has the codebase.",
+      "expected_output": "Rung 2 with a shell available: hand off to context-extraction, which downloads the strings with `crowdin context download` (crowdin-cli), writes the missing context, then uploads. No app for a user who already has the codebase.",
       "expectations": [
-        "The answer hands off to crowdin-context-cli and context-extraction rather than improvising commands",
+        "The answer hands off to context-extraction and the `crowdin context` commands from crowdin-cli rather than improvising commands",
         "The answer does not recommend a store app as the primary solution",
         "The answer uses the terminal and the repository, which the user said are available"
       ]
