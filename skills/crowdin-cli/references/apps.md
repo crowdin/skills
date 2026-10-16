@@ -8,13 +8,13 @@ Both need a CLI release that has them: `unknown command 'methods'` means an olde
 
 Most integrations are built on Crowdin's app framework and share one set of methods: `integration-files`, `crowdin-files`, `crowdin-update`, `integration-update`, `job-info`, `all-jobs`, `jobs`, `file-progress`, `settings`, `sync-settings`. Every call takes `projectId`. Work through the steps in order; each ends on its done condition. An app whose methods are not this set is driven through discovery (step 2) and its own list method, with the same rules for bodies, jobs and state changes.
 
-1. **Find the app and the project.** `crowdin app list --verbose -o json`. `permissions.project` says which projects the app serves: all own projects, or a list of IDs. Done when you hold the app identifier and a project ID it serves.
+1. **Find the app and the project.** `crowdin app list --verbose -o json`. `permissions.project` says which projects the app may serve: `own` (every project the user owns) or `restricted` with a list of IDs. It does not say which project the integration is connected in, and an unconnected project answers 403. With one ID in a `restricted` list, use it; otherwise ask the user for the project. Done when you hold the app identifier and the project ID.
 2. **Discover.** `crowdin app methods <app>`, then `crowdin app methods <app> <path>` for each method you will call. Done when every planned call has its path, verb and required parameters from a description. When a description has no parameters (the app publishes no OpenAPI document), read its documentation link or ask the user. A write goes out with field names taken from a description, the app's documentation, or the user.
-3. **Read the integration tree.** `crowdin app api <app> integration-files -F projectId=<id> -o json`. Files carry a `type`; folders do not. Done when each item to import is matched to exactly one entry with a `type`; match on `path`, since names repeat.
+3. **Read the integration tree.** `crowdin app api <app> integration-files -F projectId=<id> -o json`. Files carry a `type`; folders do not. Done when each item to import is matched to exactly one entry with a `type`; match on `path`, since names repeat. An entry's `notSynced: true` marks an item never imported into Crowdin, and it turns false after the import; `synced` stays false after an import, so "not yet in Crowdin" is `select(.type and .notSynced)`.
 4. **Import into Crowdin.** Build the body from step 3's output with jq and send it with `--input` (see "Request bodies"). Send `entryIds` first; when the app answers 501, send the `files` form. Done when the call returns a `jobId`.
-5. **Follow the job.** `crowdin app api <app> job-info -F projectId=<id> -f jobId=<jobId>`, repeated until `status` is `finished` or `failed`. Done when you have seen that status. Report a failed job with its `info`; report a job you stopped polling as still running, with the command to check it.
+5. **Follow the job.** `crowdin app api <app> job-info -F projectId=<id> -f jobId=<jobId>`, repeated until `status` is `finished` or `failed`. Done when you have seen that status. Report a failed job with its `info`; report a job you stopped polling as still running, with the command to check it. `failed` with `info` "Finished with errors. See error logs." can still have delivered part of the work, and those logs are not in the API: send the user to the app's page in the Crowdin project to read them.
 6. **Map to Crowdin files.** `crowdin app api <app> crowdin-files -F projectId=<id> -o json`, matched by name under the right parent folder. Crowdin file IDs are different from the integration's IDs. Done when each imported item has its Crowdin file ID.
-7. **Translate.** In Crowdin: `crowdin auto-translate` (see SKILL.md) or the project's translators. `file-progress -F fileId=<crowdinFileId>` reports translation and approval progress per language. Done when every target language shows the progress the user asked for, or the user says to push as is.
+7. **Translate.** In Crowdin: `crowdin auto-translate` (see SKILL.md) or the project's translators. `auto-translate --file` takes the file's Crowdin path, not its ID: `crowdin file list -o json` pairs each `id` with its `path`. `file-progress -F fileId=<crowdinFileId>` reports translation and approval progress per language, keyed by the file ID: `jq --arg id <crowdinFileId> '.[$id][] | {languageId, translationProgress, approvalProgress}'`. Done when every target language shows the progress the user asked for, or the user says to push as is.
 8. **Push back.** `integration-update` with `{"projectId": <id>, "files": {"<crowdinFileId>": ["uk"]}}` through `--input`, then step 5 again. Done when the push job is `finished`.
 
 ## Request bodies
@@ -27,13 +27,13 @@ Most integrations are built on Crowdin's app framework and share one set of meth
 ```bash
 crowdin app api webflow integration-files -F projectId=12345 -o json \
   | jq --argjson p 12345 --arg path "/Example Site/Collections/Blog Posts/5 Principles Of Effective Web Design" \
-      '{projectId: $p, entryIds: [.files[] | select(.type and .path == $path) | .id]}' \
+      '{projectId: $p, files: [.files[] | select(.type and .path == $path)]}' \
   > body.json
 crowdin app api webflow crowdin-update --input body.json --dryrun   # shows the request, sends nothing
 crowdin app api webflow crowdin-update --input body.json
 ```
 
-Pass names and paths with `--arg`, never inside the jq program, so quotes in them cannot break the shell. For the `files` form, select the whole entries instead of their `id`: `files: [.files[] | select(...)]`.
+Webflow takes this `files` form, whole entries as the app returned them. An app that syncs by entry ID takes their `id` instead: `entryIds: [.files[] | select(...) | .id]`. Pass names and paths with `--arg`, never inside the jq program, so quotes in them cannot break the shell.
 
 ## Calls that change state
 

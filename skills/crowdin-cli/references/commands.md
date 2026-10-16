@@ -34,9 +34,9 @@ Condensed from the generated command documentation (https://crowdin.github.io/cr
 
 **Config option sets** — commands accept one of three tiers instead of repeating them below:
 
-- **Set A (files tier)**: `-T/--token`, `--base-url`, `--base-path`, `-i/--project-id`, `-s/--source`, `-t/--translation`, `--dest`, `--preserve-hierarchy`, `--no-preserve-hierarchy`. Accepted by `upload*`, `download*`, `auto-translate`, `config lint/sources/translations`. `--source`/`--translation` must be passed as a pair and define a single file group that replaces the config's `files`; `--dest` requires both and implies `--preserve-hierarchy`.
-- **Set B (project tier)**: `-T/--token`, `--base-url`, `--base-path`, `-i/--project-id`. Accepted by `status*`, `file*`, `string*`, `task*`, `bundle*`, `branch*`, `comment*`, `distribution*`, `screenshot*`, `label*`, `language list`, `project*`, `app*`, `context*`.
-- **Set C (account tier)**: `-T/--token`, `--base-url`, `--base-path` (no project ID). Accepted by `tm*` and `glossary*`.
+- **Set A (files tier)**: `-T/--token`, `--base-url`, `--base-path`, `-i/--project-id`, `-s/--source`, `-t/--translation`, `--dest`, `--preserve-hierarchy`, `--no-preserve-hierarchy`. Accepted by `upload*`, `download*`, `auto-translate`, `config lint/sources/translations`. `--source`/`--translation` must be passed as a pair and define a single file group that replaces the config's `files`; `--dest` requires both and implies `--preserve-hierarchy`. A `crowdin.yml` must exist even when flags carry every value (exit 102 names the missing file); outside a project, pass `-c` a file holding `"project_id": "<id>"` and `files: []`.
+- **Set B (project tier)**: `-T/--token`, `--base-url`, `--base-path`, `-i/--project-id`. Accepted by `status*`, `file*`, `string*`, `task*`, `bundle*`, `branch*`, `comment*`, `distribution*`, `screenshot*`, `label*`, `language list`, `project*`, `context*`.
+- **Set C (account tier)**: `-T/--token`, `--base-url`, `--base-path` (no project ID). Accepted by `tm*`, `glossary*` and `app*`; an app call names its project in the request (`projectId`).
 
 Parent commands (`crowdin file`, `crowdin string`, …) only dispatch subcommands. `crowdin upload`, `crowdin download`, and `crowdin status` also run their default subcommand directly with the same options.
 
@@ -171,6 +171,8 @@ crowdin auto-translate -l fr -l uk --method tm --file src/values/strings.xml
 crowdin auto-translate -l fr --method mt --engine-id 5 --file src/values/strings.xml
 ```
 
+**AI prompts.** The CLI has no command that lists them. Prompts with `action: pre_translate` are the ones `--ai-prompt` takes; list them through the API (`GET /users/{userId}/ai/prompts` on crowdin.com, `GET /ai/prompts` on Crowdin Enterprise), or ask the user for the ID. Before the run, tell the user the prompt and target languages it will use; when more than one `pre_translate` prompt fits, ask which.
+
 ## file
 
 Direct file operations, no `files` patterns needed. Config: set B.
@@ -295,7 +297,7 @@ Config: set B.
 
 ## app
 
-Manage installed Crowdin apps and call their API methods. Config: set B.
+Manage installed Crowdin apps and call their API methods. Config: set C.
 
 - `crowdin app list` — `-v/--verbose` adds the base URL and the projects each app serves
 - `crowdin app install <identifier>` — identifier from the Crowdin Store
