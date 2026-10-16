@@ -1,6 +1,6 @@
 {
   "skill_name": "how-to-crowdin",
-  "note": "Triage tests. Each prompt is what a localization manager or a developer would type to an assistant that has the Crowdin connector. What is graded is the rung the answer lands on, the hand-off it names, and whether it says why the cheaper rungs lost when it recommends an app. Half the prompts are traps: they sound like they need an app and do not, or they name an app the user does not need. Cases 10 to 20 are not triage: they ask how a built-in report counts, and are graded against references/reports.md.",
+  "note": "Triage tests. Each prompt is what a localization manager or a developer would type to an assistant that has the Crowdin connector. What is graded is the rung the answer lands on, the hand-off it names, and whether it says why the cheaper rungs lost when it recommends an app. Half the prompts are traps: they sound like they need an app and do not, or they name an app the user does not need. Cases 10 to 21 are not triage: they ask how a built-in report counts, and are graded against references/reports.md and the report files under references/reports/. Case 22 is a triage question that names a report, and must stay a triage.",
   "evals": [
     {
       "id": 0,
@@ -122,7 +122,8 @@
         "The answer says each translator is paid once for the string regardless of which translation was approved",
         "The answer says approval is not a condition for paying a translation, and that the approval is paid separately to the approver, naming its rate (the Proofread rate, or the approved translation's category with category-based approval rates)",
         "The answer mentions that a later translation is compared with existing translations and can land in a cheaper Other translations match row",
-        "The answer says Translation cost has no way to pay only for the approved translation, and does not offer another report (such as Top members' Winning) as a way to pay only for it"
+        "The answer says Translation cost has no way to pay only for the approved translation, and does not offer another report (such as Top members' Winning) as a way to pay only for it",
+        "The answer explains the report directly instead of triaging it: the explanation is not framed as a rung, and a rung or an app appears only for a part of the question the report cannot answer"
       ]
     },
     {
@@ -134,7 +135,8 @@
         "The answer says the cheapest applicable Net Rate Scheme row wins, and that a translation outside every row is No match at the full rate",
         "The answer says pre-translations are not paid and appear only as Auto-translated, and that a translator who edits a pre-translation is paid (in Other translations, or in the TM, MT or AI scheme with Use specific categories for auto-translations)",
         "The answer explains both ways TM matches are measured: by source similarity by default, and by the saved text's similarity to the TM suggestions with Use edit distance for TM Net Rate Scheme on; and that MT and AI matches compare the saved text with the suggestion",
-        "The answer says uploaded translations are paid to the person who uploaded the file, as No match at the full rate"
+        "The answer says uploaded translations are paid to the person who uploaded the file, as No match at the full rate",
+        "The answer explains the report directly instead of triaging it: the explanation is not framed as a rung, and a rung or an app appears only for a part of the question the report cannot answer"
       ]
     },
     {
@@ -146,7 +148,8 @@
         "The answer says the string is paid once to each of the two translators",
         "The answer says rewriting one's own translation is not paid again and that the first save sets the date and match category",
         "The answer says only a change of the source text makes the string payable again",
-        "The answer says the second translator's text is compared with the first translator's and may be priced in a cheaper Other translations row"
+        "The answer says the second translator's text is compared with the first translator's and may be priced in a cheaper Other translations row",
+        "The answer explains the report directly instead of triaging it: the explanation is not framed as a rung, and a rung or an app appears only for a part of the question the report cannot answer"
       ]
     },
     {
@@ -158,7 +161,8 @@
         "The answer says Top members has no archive, so the numbers on the page cannot be read back",
         "The answer explains at least two rules that lower Translated: once per string and language by the first save, re-translating adds nothing, pre-translations are not counted, or volume is measured on the source text",
         "The answer asks for the period and the filters on the page before generating the report again",
-        "The answer says a string Olena first translated before the selected period does not count in it, even if she reworked it within the period"
+        "The answer says a string Olena first translated before the selected period does not count in it, even if she reworked it within the period",
+        "The answer explains the report directly instead of triaging it: the explanation is not framed as a rung, and a rung or an app appears only for a part of the question the report cannot answer"
       ]
     },
     {
@@ -170,7 +174,8 @@
         "The answer says the claim is reversed: selecting the option keeps unapproved strings that only have pre-translations in Translation",
         "The answer says the option is off by default",
         "The answer says that with the option off, a pre-translation takes the string out of Translation like any other translation",
-        "The answer does not confirm the claim on the strength of documentation or intuition"
+        "The answer does not confirm the claim on the strength of documentation or intuition",
+        "The answer explains the report directly instead of triaging it: the explanation is not framed as a rung, and a rung or an app appears only for a part of the question the report cannot answer"
       ]
     },
     {
@@ -183,19 +188,21 @@
         "The answer says Proofreading counts each string without an approved translation once per language, not once per translation or per translator",
         "The answer says a string nobody has translated is in both Translation and Proofreading by design (it still needs translating and proofreading), not double counted",
         "The answer says Proofreading is priced on the full source units at the Proofread rate with no TM discount, and does not offer a setting (such as category-based approval rates) that would discount it",
-        "The answer says that on Enterprise one approval takes a string out of Proofreading, so the estimate covers a single proofreading pass and not the final proofread step"
+        "The answer says that on Enterprise one approval takes a string out of Proofreading, so the estimate covers a single proofreading pass and not the final proofread step",
+        "The answer explains the report directly instead of triaging it: the explanation is not framed as a rung, and a rung or an app appears only for a part of the question the report cannot answer"
       ]
     },
     {
       "id": 16,
       "name": "auto-translation-accuracy-missing-deepl-strings",
       "prompt": "trying to work out if DeepL is worth paying for on German. last month we pre-translated the new release with DeepL, about 900 strings, proofreading is maybe a third done. on top of that the translators use DeepL in the editor all day: click the suggestion, save, sometimes fix a word. but Auto-Translation accuracy for German, last month, shows DeepL Total 310 strings. where did the rest go? and can i see in there which translators change the DeepL output the most?",
-      "expected_output": "Most of what the user expects is left out of this report on purpose. Only auto-translations are evaluated: TM, MT or AI pre-translations, whether run by hand, automatically, by a workflow step, or added through the API marked as pre-translated. A DeepL suggestion that a translator clicks and saves in the Editor is a human translation, even when saved unchanged, so none of that Editor work reaches the DeepL section. Of the ~900 pre-translated strings, only those whose current translation is approved are counted. The roughly two thirds still waiting for proofreading are missing, which fits the 310. They will be counted in a report for the same last-month period once approved: the date that puts a string into the period is the pre-translation's, and the approval only has to happen before the report is generated, so there is no need to widen the dates. The report has no people. Results belong to TM, an MT engine or an AI prompt, so it cannot show which translators change DeepL output, and it has no member filter. A per-translator view needs another report such as Translator accuracy, where a DeepL suggestion inserted in the Editor counts as the translator's own translation and is scored against the approved text.",
+      "expected_output": "Most of what the user expects is left out of this report on purpose. Only auto-translations are evaluated: TM, MT or AI pre-translations, whether run by hand, automatically, by a workflow step, or added through the API marked as pre-translated. A DeepL suggestion that a translator clicks and saves in the Editor is a human translation, even when saved unchanged, so none of that Editor work reaches the DeepL section. Of the ~900 pre-translated strings, only those whose current translation is approved are counted. The roughly two thirds still waiting for proofreading are missing, which fits the 310. They will be counted in a report for the same last-month period once approved: the date that puts a string into the period is the pre-translation's, and the approval only has to happen before the report is generated, so there is no need to widen the dates. The report has no people. Results belong to TM, an MT engine or an AI prompt, so it cannot show which translators change DeepL output, and it has no member filter. A per-translator view of how much translators change DeepL suggestions is in Translation cost, whose MT match rows say per member how close the saved text was to the MT suggestion at their first save; Translator accuracy instead scores each translator's text, a DeepL suggestion inserted in the Editor included, against the approved text.",
       "expectations": [
         "The answer says DeepL suggestions clicked and saved in the Editor are human translations that this report does not evaluate at all, even when saved unchanged",
         "The answer says a pre-translated string is counted only once its current translation is approved, so the strings still waiting for proofreading are not in the 310",
         "The answer says those strings will be counted in a report for the same period once they are approved, because the period follows the pre-translation's date and not the approval's, and does not tell the user to widen or move the dates",
-        "The answer says the report has no per-person results (they belong to the MT engine), so it cannot show which translators edit DeepL output, and does not invent a member filter or per-translator column for it"
+        "The answer says the report has no per-person results (they belong to the MT engine), so it cannot show which translators edit DeepL output, and does not invent a member filter or per-translator column for it",
+        "The answer explains the report directly instead of triaging it: the explanation is not framed as a rung, and a rung or an app appears only for a part of the question the report cannot answer"
       ]
     },
     {
@@ -208,7 +215,8 @@
         "The answer says Oksana is scored once for the string, by her version closest to the approved text, not by her latest version and not once per version",
         "The answer says the variant Oksana added after the approval is ignored",
         "The answer says Oksana's No Match is her version's similarity to Taras's approved text, not a sign that a proofreader edited her translation",
-        "The answer does not invent a setting, filter or column that excludes or flags translations inserted from MT suggestions"
+        "The answer does not invent a setting, filter or column that excludes or flags translations inserted from MT suggestions",
+        "The answer explains the report directly instead of triaging it: the explanation is not framed as a rung, and a rung or an app appears only for a part of the question the report cannot answer"
       ]
     },
     {
@@ -221,7 +229,8 @@
         "The answer says Workload grouped by member cannot show each person's share, because the whole task (all 2,000 words) counts for each of the three assignees",
         "The answer says the €180 is a cost saved on the task by a report generated for it (an Estimated cost from a Cost estimate or an Actual cost from a Translation cost report), not entered by hand, and that an Actual cost wins over an Estimated one",
         "The answer says that an Actual cost follows Translation cost rules: each translator is paid once per string, Max's rewrites are not paid again, and the MT pre-translations are not paid",
-        "The answer does not claim Task cost is computed live from the task's word count times a rate, or from the current translations"
+        "The answer does not claim Task cost is computed live from the task's word count times a rate, or from the current translations",
+        "The answer explains the report directly instead of triaging it: the explanation is not framed as a rung, and a rung or an app appears only for a part of the question the report cannot answer"
       ]
     },
     {
@@ -233,7 +242,8 @@
         "The answer says the report counts only time typed into Log time on task comments (or sent with a task comment through the API), and that nothing is tracked automatically: no Editor timer and no time per string or translation, so TM or MT suggestions, AI pre-translation and redone strings add no time on their own",
         "The answer says each logged entry is credited to the author of the comment, whether or not that person is assigned to the task, which is why Markus shows time",
         "The answer explains the 11h on the task page as all the time Anna ever logged on that task with no period, while the report counts only the entries dated in September (within its filters)",
-        "The answer says an entry is dated by when its time was first logged on the comment, so it cannot be backdated: time she logs now goes into the current period (October), not September, and changing an older comment's amount does not move it"
+        "The answer says an entry is dated by when its time was first logged on the comment, so it cannot be backdated: time she logs now goes into the current period (October), not September, and changing an older comment's amount does not move it",
+        "The answer explains the report directly instead of triaging it: the explanation is not framed as a rung, and a rung or an app appears only for a part of the question the report cannot answer"
       ]
     },
     {
@@ -246,7 +256,33 @@
         "The answer says pre-translations (TM or DeepL) give no one Translated, so the pre-translated strings are not in the PM's Translated or anyone else's",
         "The answer traces the PM's Translated to the uploaded German XLIFF and says an upload counts as Translated for the person who uploaded it",
         "The answer says the \"+\" votes on the DeepL pre-translations are counted as votes received by the account that ran the pre-translation, the PM",
-        "The answer says Marta and Jonas get Translated for strings they saved from DeepL suggestions in the Editor, because using a suggestion in the Editor is not a pre-translation"
+        "The answer says Marta and Jonas get Translated for strings they saved from DeepL suggestions in the Editor, because using a suggestion in the Editor is not a pre-translation",
+        "The answer explains the report directly instead of triaging it: the explanation is not framed as a rung, and a rung or an app appears only for a part of the question the report cannot answer"
+      ]
+    },
+    {
+      "id": 21,
+      "name": "translation-cost-saved-archive",
+      "prompt": "Explain how my saved \"Translation cost\" report (ID: 917) is calculated.",
+      "expected_output": "Report 917 is a saved Translation cost result, so the answer starts from its saved settings: it reads them through the Crowdin connector, or, with no access to the account, says it needs the connector to read them, and it does not generate the report again with default settings or state settings or numbers it has not read. It explains the rules: one paid translation per person, string, language, plural form and source version, approved or not, dated by the first save; the matches recorded at that first save and the cheapest matching row winning; pre-translations never paid; one paid approval per approver, at the Proofread rate or, with Use category-based approval rates, at the 100% row of the approved translation's category. It names the saved settings that decide those rules (Use edit distance for TM Net Rate Scheme, Use category-based approval rates, Exclude approvals for edited translations and the rates) as values that come from report 917. It explains directly, without a triage ladder.",
+      "expectations": [
+        "The answer starts from report 917's saved settings: it reads them, or says it needs the Crowdin connector to read them, and does not generate the report again with default settings",
+        "The answer does not state values of report 917's settings or numbers that it did not read",
+        "The answer says each person is paid once per string and language for their translation, approved or not, and that pre-translations are not paid",
+        "The answer says approvals are paid once per approver, at the Proofread rate or, with Use category-based approval rates, at the 100% row of the approved translation's category",
+        "The answer names settings saved with the report that change the result (for example Use edit distance for TM Net Rate Scheme, Use category-based approval rates or Exclude approvals for edited translations) and says their values come from report 917",
+        "The answer explains the report directly instead of triaging it: the explanation is not framed as a rung, and a rung or an app appears only for a part of the question the report cannot answer"
+      ]
+    },
+    {
+      "id": 22,
+      "name": "top-members-reward-stays-triage",
+      "prompt": "We want to thank our most active translators every quarter. How do we find out who they are?",
+      "expected_output": "Rung 1: the built-in Top Members report, set to the quarter and, if needed, one language, ranks members by what they translated, approved and voted on; the ranking or a CSV of it can be pulled through the connector. The question is a triage, not a request to explain how the report is calculated, so the answer does not walk through how each column counts. The reward itself (certificates, tokens, payouts) is where an app may come in.",
+      "expectations": [
+        "The answer lands on rung 1: the built-in Top Members report, filtered to the quarter and, if needed, a language",
+        "The answer does not turn into an explanation of how Top members counts each column (a sentence on what a column means is fine), because the user did not ask how the report is calculated",
+        "If the answer names an app, it is only for the reward itself (certificates, tokens, payouts), not for finding the most active translators"
       ]
     }
   ]
