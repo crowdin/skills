@@ -295,11 +295,12 @@ Config: set B.
 
 ## app
 
-Manage Crowdin apps. Config: set B.
+Manage installed Crowdin apps and call their API methods. Config: set B.
 
-- `crowdin app list`
+- `crowdin app list` — `-v/--verbose` adds the base URL and the projects each app serves
 - `crowdin app install <identifier>` — identifier from the Crowdin Store
 - `crowdin app uninstall <identifier>` — `--force`
+- `crowdin app methods <identifier> [path]` and `crowdin app api <identifier> <path>` — see [apps.md](apps.md)
 
 ## context
 

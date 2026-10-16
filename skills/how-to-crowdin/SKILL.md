@@ -161,6 +161,7 @@ Each row is a problem family: the pain in the user's terms, the cheapest rung th
 | Site visitors should be able to suggest better translations | 3 | Store: Website Proofreader |
 | Audio or video needs dubbing or voiceover | 3 | Store: Dubbing Studio; only the subtitle text half is native |
 | Connect a CMS, repository, design tool, storage, help center, marketing or e-commerce platform | 3 | Store category for that kind; native integrations exist for the major repository hosts and design tools, check the docs first |
+| An installed integration should import content or push translations now, from the terminal or by an agent | 3 | The app is already there: its import, push and jobs run through `crowdin app api` (`crowdin-cli`) |
 | Crowdin does not parse my file format | 1 | Native format list and the generic JSON, XML, CSV and spreadsheet parsers with column mapping; then a store File Formats app; then `create-app` |
 | Add a machine translation engine | 1 | Native MT engines under project settings; others are store Machine Translation connectors |
 | Notify a chat tool | 1 | Native webhooks; Slack, Teams and Discord apps are in the store's Team Chat category |
@@ -174,6 +175,7 @@ Each row is a problem family: the pain in the user's terms, the cheapest rung th
 | a GraphQL query, or a Playground error | `graphql` |
 | a script against the API | `crowdin-api-client` |
 | syncing files, or anything `crowdin` on the command line | `crowdin-cli` |
+| running an installed app's import, push or sync settings | `crowdin-cli` |
 | a GitHub workflow that syncs and opens the translation PR | `github-action` |
 | writing translator context or a glossary from the source strings | `context-extraction`, `glossary-generation` |
 | a Crowdin app, because nothing on rungs 1 to 3 fits | `create-app` |

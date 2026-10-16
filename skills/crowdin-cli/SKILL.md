@@ -1,6 +1,6 @@
 ---
 name: crowdin-cli
-description: Guides correct usage of Crowdin CLI - the `crowdin` command that syncs localization files between a local project and Crowdin. Use whenever the user runs, scripts, or debugs `crowdin` commands, authorizes the CLI, creates or edits a crowdin.yml configuration, uploads sources, downloads translations, checks translation status, auto-translates a project, wires localization into CI/CD, or migrates scripts from CLI v4 to v5 - even if they just say "sync translations" or "push strings to Crowdin" without naming the CLI.
+description: Guides correct usage of Crowdin CLI - the `crowdin` command that syncs localization files between a local project and Crowdin. Use whenever the user runs, scripts, or debugs `crowdin` commands, authorizes the CLI, creates or edits a crowdin.yml configuration, uploads sources, downloads translations, checks translation status, auto-translates a project, imports content from or pushes translations to an integration such as Webflow, HubSpot, Contentful or Zendesk through its installed Crowdin app, wires localization into CI/CD, or migrates scripts from CLI v4 to v5 - even if they just say "sync translations" or "push strings to Crowdin" without naming the CLI.
 ---
 
 # Crowdin CLI
@@ -102,6 +102,10 @@ Everything is branch-aware: pass `-b <name>` to scope upload/download/status to 
 
 `auto-translate` (v4's `pre-translate`) applies TM (`--method tm`), machine translation (`--method mt --engine-id <id>`), or AI (`--method ai --ai-prompt <id>`), with fine-grained control: `--scope untranslated|translated|all`, `--skip-approved-translations`, `--label`/`--exclude-label`, `--replace-translations-option`, `--translation-modified-before`, and more — see [references/commands.md](references/commands.md#auto-translate).
 
+## Integrations through Crowdin apps
+
+When the content lives in a CMS, marketing tool, help center or other platform connected through an installed Crowdin app, the sync runs through the app's API methods (`crowdin app methods`, `crowdin app api`), not `upload`/`download`. Read [references/apps.md](references/apps.md) before the first call: it has the import, job and push loop, how to pass the app's IDs, and which calls replace settings.
+
 ## Output for scripts and agents
 
 The global `-o/--output` option changes any command's output format:
@@ -158,7 +162,7 @@ Mutating file commands accept `--dryrun` to preview what would happen. Add `-v/-
 | `language` | List project/supported languages; `--verbose` adds text direction and plural categories |
 | `project` | List, add, browse projects |
 | `config` | Validate config, preview matched sources/translations |
-| `app` | Install/uninstall Crowdin apps |
+| `app` | Installed apps: list, install, uninstall, and call their API methods (an integration's import, push and jobs) — see [references/apps.md](references/apps.md) |
 | `context` | AI context for strings — covered by the [crowdin-context-cli](../crowdin-context-cli/SKILL.md) skill |
 
 Shell completion: `source <(crowdin complete zsh)` (also `bash`, `fish`, `powershell`).
