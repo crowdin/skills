@@ -165,10 +165,21 @@ Apply Translation Memory, Machine Translation, or AI to project strings. Renamed
 - `--translate-with-perfect-match-only` / `--no-translate-with-perfect-match-only` — TM perfect-match behavior
 - `--label <label>` / `--exclude-label <label>` — include/exclude by labels (repeatable)
 - `--source-language <code>` — translate from a specific source language
+- `--async` — start the job and exit without waiting; prints the job identifier (alone with `-o plain`; `identifier` and `status` in json/toon)
 
 ```bash
 crowdin auto-translate -l fr -l uk --method tm --file src/values/strings.xml
 crowdin auto-translate -l fr --method mt --engine-id 5 --file src/values/strings.xml
+```
+
+Without `--async` the command blocks until the job finishes, which on a large project or with `--method ai` can outlast an agent's shell timeout. Start long runs with `--async` and check on them:
+
+- `crowdin auto-translate status <id>` — status and progress; `--wait` blocks until the job finishes; `-v` adds the report totals (files, phrases, words, skipped) once it has. Exits 1 when the job failed or was canceled. Config: set B.
+- `crowdin auto-translate list` — the project's auto-translation jobs with status, progress, method and timestamps; `-v` adds languages and file or branch counts. Config: set B.
+
+```bash
+id=$(crowdin auto-translate -l fr --method ai --ai-prompt 7 --async -o plain)
+crowdin auto-translate status "$id" --wait
 ```
 
 **AI prompts.** The CLI has no command that lists them. Prompts with `action: pre_translate` are the ones `--ai-prompt` takes; list them through the API (`GET /users/{userId}/ai/prompts` on crowdin.com, `GET /ai/prompts` on Crowdin Enterprise), or ask the user for the ID. Before the run, tell the user the prompt and target languages it will use; when more than one `pre_translate` prompt fits, ask which.
@@ -180,7 +191,7 @@ Direct file operations, no `files` patterns needed. Config: set B.
 - `crowdin file list [-b <branch>] [--tree]` — list project source files
 - `crowdin file upload <file>` — upload one file:
   `-b/--branch`, `-l/--language` (for translation files), `--xliff` (file for offline translation), `--no-auto-update` (don't update existing), `--label` (repeatable), `-d/--dest <path>` (destination in Crowdin), `--context <text>`, `--type <type>` + `--parser-version <n>`, `--excluded-language <code>` (repeatable), `--cleanup-mode` (string-based projects: delete strings absent from the file), `--update-strings` (string-based projects: update strings with same keys)
-- `crowdin file download <file> [-d <dest>] [-l <language>] [-b <branch>]` — download one file (source, or translation with `-l`)
+- `crowdin file download <file> [-d <dest>] [-l <language>] [-b <branch>]` — download one file (source, or translation with `-l`); a translation comes back whole, untranslated and unapproved strings included, whatever the project's export settings
 - `crowdin file delete <file> [-b <branch>]` — delete a file
 
 ## string
@@ -262,7 +273,7 @@ Manage content distributions. Config: set B.
 Manage screenshots that give translators context. Config: set B.
 
 - `crowdin screenshot list` — `--string-id <id>` (repeatable), `--search <term>` (matches name, tagged strings, or file names), `--label` / `--exclude-label` (repeatable)
-- `crowdin screenshot upload <file>` — `--auto-tag`, and with it: `-f/--file <path>`, `-b/--branch <name>`, `-d/--directory <path>`; `--label` (repeatable)
+- `crowdin screenshot upload <path>` — `--auto-tag`, and with it: `-f/--file <path>`, `-b/--branch <name>`, `-d/--directory <path>`; `--label` (repeatable). An upsert keyed by file name: a screenshot with the same name is replaced. `<path>` can be a directory: every `jpeg`, `jpg`, `png` and `gif` under it, subdirectories included, hidden ones skipped, with the options applied to each. File names must be unique across the tree — two `login.png` in different folders abort the run before anything is uploaded. A failed image does not stop the rest; the command exits non-zero at the end. With `--auto-tag` the images go one at a time, since auto-tagging locks the project.
 - `crowdin screenshot delete <id>`
 
 ## comment
@@ -306,14 +317,7 @@ Manage installed Crowdin apps and call their API methods. Config: set C.
 
 ## context
 
-AI context for strings — download, enrich, upload. Covered in depth by the **crowdin-context-cli** skill; summary:
-
-- `crowdin context download` — `--to <path>` (default `crowdin-context.jsonl`), filters: `-f/--file <glob>`, `--label`, `-b/--branch`, `--croql`, `--since <YYYY-MM-DD>`, `--status <empty|ai|manual>`
-- `crowdin context upload` — `--from <path>`, `--overwrite`, `--dryrun`
-- `crowdin context status` — coverage stats; filters: `-f/--file`, `--label`, `-b/--branch`, `--croql`, `--since` (no `--status`), plus `--by-file` for a per-file breakdown
-- `crowdin context reset` — remove AI-generated context (keeps manual); filters: `-f/--file`, `--label`, `-b/--branch`, `--croql`, `--since` (no `--status`), plus `--dryrun`, and `--all` required when no filter is given
-
-`--croql` cannot be combined with the other filters.
+AI context for strings: `crowdin context download`, `upload`, `status` and `reset`. Options, the JSONL format and the enrichment loop: [context.md](context.md).
 
 ## config
 

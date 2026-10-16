@@ -1,9 +1,19 @@
 ---
 name: context-extraction
-description: Writes meaningful ai_context values in Crowdin JSONL files for strings that need translator context. Use when extracting context, filling ai_context fields, adding context to ambiguous strings, or working with Crowdin JSONL context files.
+description: Writes translator context (`ai_context`) for Crowdin strings - downloads them with `crowdin context`, fills the JSONL file, uploads it back. Use when enriching a Crowdin project's strings context, when a Crowdin JSONL context file needs its ai_context filled, or when translators guess at ambiguous strings for lack of context.
 ---
 
 # Context Extraction
+
+## The loop
+
+Commands, filters and the file format: the crowdin-cli skill's [context reference](../crowdin-cli/references/context.md). Read it before the download; its `--status` filter does not mean "needs context". With a JSONL file already in hand, start at step 3.
+
+1. **Coverage** (optional): `crowdin context status`. Done when you can tell the user how many strings have manual, AI and no context.
+2. **Download**: `crowdin context download`, with no `--status`. Done when `crowdin-context.jsonl` exists and holds one line per string in scope.
+3. **Fill** `ai_context` following the rest of this skill. Done when every line that needs context (see "Strings that need context") has a value, and every changed line passes the validity checklist.
+4. **Preview**: `crowdin context upload --dryrun`. Done when it lists exactly the strings you filled.
+5. **Upload**: `crowdin context upload`, then `crowdin context status`. Done when the upload lists the same strings the dry run did; report how many, and the new coverage, to the user.
 
 ## Information sources (priority order)
 

@@ -192,7 +192,7 @@ Upload → pre-translate → download, as **three** steps: a `command` step runs
           CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
 ```
 
-AI output is only as good as the context it gets. Adding string context and screenshots before pre-translating raises quality far more than prompt tuning does — the [crowdin-context-cli](../../crowdin-context-cli/SKILL.md) skill covers extracting context in the same pipeline.
+AI output is only as good as the context it gets. Adding string context and screenshots before pre-translating raises quality far more than prompt tuning does. String context is written by an agent before the pipeline runs: the [context-extraction](../../context-extraction/SKILL.md) skill.
 
 ## Crowdin Enterprise
 

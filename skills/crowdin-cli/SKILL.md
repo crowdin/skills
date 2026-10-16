@@ -100,11 +100,15 @@ crowdin download sources                     # pull sources back from Crowdin
 
 Everything is branch-aware: pass `-b <name>` to scope upload/download/status to a Crowdin branch (create it with `crowdin branch add`).
 
-`auto-translate` (v4's `pre-translate`) applies TM (`--method tm`), machine translation (`--method mt --engine-id <id>`), or AI (`--method ai --ai-prompt <id>`), with fine-grained control: `--scope untranslated|translated|all`, `--skip-approved-translations`, `--label`/`--exclude-label`, `--replace-translations-option`, `--translation-modified-before`, and more — see [references/commands.md](references/commands.md#auto-translate).
+`auto-translate` (v4's `pre-translate`) applies TM (`--method tm`), machine translation (`--method mt --engine-id <id>`), or AI (`--method ai --ai-prompt <id>`), with fine-grained control: `--scope untranslated|translated|all`, `--skip-approved-translations`, `--label`/`--exclude-label`, `--replace-translations-option`, `--translation-modified-before`, and more — see [references/commands.md](references/commands.md#auto-translate). It waits for the job to finish; `--async` returns the job identifier at once, for `crowdin auto-translate status <id> [--wait]` to check later.
 
 ## Integrations through Crowdin apps
 
 When the content lives in a CMS, marketing tool, help center or other platform connected through an installed Crowdin app, the sync runs through the app's API methods (`crowdin app methods`, `crowdin app api`), not `upload`/`download`. Read [references/apps.md](references/apps.md) before the first call: it has the import, job and push loop, how to pass the app's IDs, and which calls replace settings.
+
+## Strings context for AI enrichment
+
+Enriching a project's strings context (download, fill `ai_context`, upload) is the [context-extraction](../context-extraction/SKILL.md) skill's loop. The `crowdin context` commands and the JSONL format: [references/context.md](references/context.md); its `--status` filter does not mean "needs context".
 
 ## Output for scripts and agents
 
@@ -146,7 +150,7 @@ Mutating file commands accept `--dryrun` to preview what would happen. Add `-v/-
 | `init` | Generate crowdin.yml interactively |
 | `login` | Authorize in the browser and save the token to `~/.crowdin.yml` |
 | `status` | Translation & proofreading progress |
-| `auto-translate` | Pre-fill translations via TM / MT / AI |
+| `auto-translate` | Pre-fill translations via TM / MT / AI (status, list) |
 | `file` | Direct file ops without config patterns (list, upload, download, delete) |
 | `string` | Manage source strings (list, add, edit, delete; CroQL filters) |
 | `branch` | Manage branches (add, list, clone, merge, edit, delete) |
@@ -156,14 +160,14 @@ Mutating file commands accept `--dryrun` to preview what would happen. Add `-v/-
 | `style-guide` | Style guides (list, download, upload, delete) |
 | `bundle` | Export bundles (list, add, download, clone, browse) |
 | `distribution` | Content distributions (add, list, edit, release) |
-| `screenshot` | Screenshots for context (list, upload, delete) |
+| `screenshot` | Screenshots for context (list, upload a file or a directory, delete) |
 | `comment` | String comments and issues (list, add, resolve) |
 | `label` | Labels (list, add, delete) |
 | `language` | List project/supported languages; `--verbose` adds text direction and plural categories |
 | `project` | List, add, browse projects |
 | `config` | Validate config, preview matched sources/translations |
 | `app` | Installed apps: list, install, uninstall, and call their API methods (an integration's import, push and jobs) — see [references/apps.md](references/apps.md) |
-| `context` | AI context for strings — covered by the [crowdin-context-cli](../crowdin-context-cli/SKILL.md) skill |
+| `context` | AI context for strings: download, upload, coverage status, reset — see [references/context.md](references/context.md) |
 
 Shell completion: `source <(crowdin complete zsh)` (also `bash`, `fish`, `powershell`).
 
@@ -177,7 +181,7 @@ Shell completion: `source <(crowdin complete zsh)` (also `bash`, `fish`, `powers
 
 ## Related skills
 
-- [crowdin-context-cli](../crowdin-context-cli/SKILL.md) — `crowdin context download/upload` for AI context enrichment
+- [context-extraction](../context-extraction/SKILL.md) — writes the `ai_context` values that `crowdin context upload` sends
 - [croql](../croql/SKILL.md) — CroQL expressions for `--croql` filters on string commands
 - [crowdin-api-client](../crowdin-api-client/SKILL.md) — the JS/TS API client, when a CLI command doesn't cover the need
 - [translate](../translate/SKILL.md) — drafts translations into local resource files with the project's glossary, TM and style guide, and uploads them as suggestions

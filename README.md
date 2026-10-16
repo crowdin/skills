@@ -90,7 +90,7 @@ Builds a Crowdin app end to end and leaves the user looking at it: scaffolds wit
 
 ### crowdin-cli
 
-Guides correct usage of the Crowdin CLI — the `crowdin` command that syncs localization files between a local project and Crowdin. Covers installation and authentication, `crowdin.yml` configuration (placeholders, file groups, language mapping), the core upload/download workflow, `auto-translate`, machine-readable output for scripts and agents (`-o json|toon|plain`), exit codes, CI/CD patterns, and migration from CLI v4.
+Guides correct usage of the Crowdin CLI — the `crowdin` command that syncs localization files between a local project and Crowdin. Covers installation and authentication, `crowdin.yml` configuration (placeholders, file groups, language mapping), the core upload/download workflow, `auto-translate`, the `crowdin context` commands for AI context enrichment, integrations driven through installed Crowdin apps, machine-readable output for scripts and agents (`-o json|toon|plain`), exit codes, CI/CD patterns, and migration from CLI v4.
 
 ### github-action
 
@@ -98,11 +98,7 @@ Sets up, reviews, and debugs [crowdin/github-action](https://github.com/crowdin/
 
 ### context-extraction
 
-Fills `ai_context` in Crowdin JSONL files so translators get clear context. Covers which strings need context (ambiguous short words, plurals, inline tags, etc.), how to write 1–3 sentence descriptions (UI element type, placement), and safe editing rules (only edit `ai_context`, validity checklist).
-
-### crowdin-context-cli
-
-Documents the `crowdin context` commands (`download`, `upload`, `status`, `reset`) for AI enrichment. Covers CLI options (filters, output path, overwrite/dryrun), coverage statistics, JSONL format, and the workflow: download → fill `ai_context` (e.g. with context-extraction) → upload.
+Fills `ai_context` in Crowdin JSONL files so translators get clear context. Covers which strings need context (ambiguous short words, plurals, inline tags, etc.), how to write 1–3 sentence descriptions (UI element type, placement), and safe editing rules (only edit `ai_context`, validity checklist). Runs the loop around them: `crowdin context download` → fill `ai_context` → `crowdin context upload`.
 
 ### glossary-generation
 
@@ -176,7 +172,6 @@ npx skills add crowdin/skills --skill create-app
 npx skills add crowdin/skills --skill crowdin-cli
 npx skills add crowdin/skills --skill github-action
 npx skills add crowdin/skills --skill context-extraction
-npx skills add crowdin/skills --skill crowdin-context-cli
 npx skills add crowdin/skills --skill glossary-generation
 npx skills add crowdin/skills --skill translate
 npx skills add crowdin/skills --skill crowdin-api-client
