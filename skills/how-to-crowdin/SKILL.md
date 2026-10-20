@@ -107,7 +107,7 @@ Each row is a problem family: the pain in the user's terms, the cheapest rung th
 |---|---|---|
 | Glossary is empty or thin | 2 | `glossary-terms-extraction`, through the connector or from a terminal: terms mined from the project's content and added after review |
 | Developers want the strings they just added translated now, consistently with our glossary and TM | 2 | `translate` from a terminal: drafts into the local resource files, uploads as unapproved suggestions; bulk work is pre-translation (`crowdin-cli`) |
-| Glossary has source terms but no translations | 2 | Export the glossary, upload it as a source file to be translated, import back |
+| Glossary has source terms but no translations | 2 | When the project's strings already translate them, `glossary-term-translations` through the connector lifts those translations into Draft terms for review; otherwise export the glossary, upload it as a source file to be translated, import back |
 | Terms need adding or fixing while translation is underway | 2 | Find the concept, add or update the term; translators doing it inline need the editor app |
 | No style guide, so tone and formatting drift | 2 | Infer rules from approved translations, write the native Style Guide with AI instructions |
 | Translations went stale after a glossary or style guide change | 1 | Known term rename: Replace in Translations, or CroQL plus a label when each one needs review; a style rule or continuous watching is an app |
@@ -181,6 +181,7 @@ Each row is a problem family: the pain in the user's terms, the cheapest rung th
 | running an installed app's import, push or sync settings | `crowdin-cli` |
 | a GitHub workflow that syncs and opens the translation PR | `github-action` |
 | writing translator context or a glossary from the source strings | `context-extraction`, `glossary-terms-extraction` |
+| filling in glossary term translations from the project's own translations | `glossary-term-translations` |
 | a Crowdin app, because nothing on rungs 1 to 3 fits | `create-app` |
 | the whole journey from hardcoded strings to continuous translation | `i18n-setup` |
 

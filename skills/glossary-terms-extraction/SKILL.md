@@ -1,6 +1,6 @@
 ---
 name: glossary-terms-extraction
-description: Builds or expands a Crowdin glossary from the project's real content. Use when someone wants a glossary created or topped up, asks which terms to add or what is missing, or wants product and feature names found in their strings, docs or files and marked do-not-translate. Not for adding one named term, importing or exporting a glossary file as is, editing existing entries, or the full internationalize-and-connect journey (i18n-setup).
+description: Builds or expands a Crowdin glossary from the project's real content. Use when someone wants a glossary created or topped up, asks which terms to add or what is missing, or wants product and feature names found in their strings, docs or files and marked do-not-translate. Not for adding one named term, filling in term translations from the project's own translations (glossary-term-translations), importing or exporting a glossary file as is, editing existing entries, or the full internationalize-and-connect journey (i18n-setup).
 ---
 
 # Glossary terms extraction
@@ -49,7 +49,7 @@ Leave out ordinary words every translator already handles (`Save`, `Cancel`, `pa
 
 - **Dictionary form.** Nominative singular for nouns, infinitive for verbs, not whatever inflected form the source shows. Heavily inflected languages spread one noun over many surface forms; they are one term, and Crowdin matches the inflections itself.
 - **A description that answers a practical question**: what this is in this product, and whether to translate it. "The paid tier; a plan name, keep in English" helps. "A plan is an intention to do something" does not.
-- **Translations only from paired material** - the user's own content with its translation: a file and its translated version, a site and its `/de` mirror, a bilingual export. Lift each term's translation from it, and check that every occurrence maps to the same target word. Inflections of one word are fine; a different word or root is a conflict to show the user with both options, because the glossary's choice becomes every future translator's answer. Without paired material, entries are source-language only, including when the user asks to fill translations in: a machine-guessed glossary translation carries the authority of a decision. Offer the source-only entries, and translations later from paired material.
+- **Translations only from paired material** - the user's own content with its translation: a file and its translated version, a site and its `/de` mirror, a bilingual export. Lift each term's translation from it, and check that every occurrence maps to the same target word. Inflections of one word are fine; a different word or root is a conflict to show the user with both options, because the glossary's choice becomes every future translator's answer. Without paired material, entries are source-language only, including when the user asks to fill translations in: a machine-guessed glossary translation carries the authority of a decision. Offer the source-only entries, and translations later from paired material. In a Crowdin project whose strings are already translated, those translations are the paired material: add the source terms here and hand their translations to `glossary-term-translations`, which lifts them from the project's final translations.
 
 ## The review gate
 
