@@ -105,7 +105,7 @@ Each row is a problem family: the pain in the user's terms, the cheapest rung th
 
 | Pain | Rung | Do this |
 |---|---|---|
-| Glossary is empty or thin | 2 | `glossary-generation`, through the connector or from a terminal: terms mined from the project's content and added after review |
+| Glossary is empty or thin | 2 | `glossary-terms-extraction`, through the connector or from a terminal: terms mined from the project's content and added after review |
 | Developers want the strings they just added translated now, consistently with our glossary and TM | 2 | `translate` from a terminal: drafts into the local resource files, uploads as unapproved suggestions; bulk work is pre-translation (`crowdin-cli`) |
 | Glossary has source terms but no translations | 2 | Export the glossary, upload it as a source file to be translated, import back |
 | Terms need adding or fixing while translation is underway | 2 | Find the concept, add or update the term; translators doing it inline need the editor app |
@@ -180,7 +180,7 @@ Each row is a problem family: the pain in the user's terms, the cheapest rung th
 | syncing files, or anything `crowdin` on the command line | `crowdin-cli` |
 | running an installed app's import, push or sync settings | `crowdin-cli` |
 | a GitHub workflow that syncs and opens the translation PR | `github-action` |
-| writing translator context or a glossary from the source strings | `context-extraction`, `glossary-generation` |
+| writing translator context or a glossary from the source strings | `context-extraction`, `glossary-terms-extraction` |
 | a Crowdin app, because nothing on rungs 1 to 3 fits | `create-app` |
 | the whole journey from hardcoded strings to continuous translation | `i18n-setup` |
 

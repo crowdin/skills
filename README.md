@@ -100,7 +100,7 @@ Sets up, reviews, and debugs [crowdin/github-action](https://github.com/crowdin/
 
 Fills `ai_context` in Crowdin JSONL files so translators get clear context. Covers which strings need context (ambiguous short words, plurals, inline tags, etc.), how to write 1–3 sentence descriptions (UI element type, placement), and safe editing rules (only edit `ai_context`, validity checklist). Runs the loop around them: `crowdin context download` → fill `ai_context` → `crowdin context upload`.
 
-### glossary-generation
+### glossary-terms-extraction
 
 Builds or tops up a Crowdin glossary from real content — the project's source strings plus any docs, websites or files the user supplies — and adds terms only after the user reviews them. Covers which terms earn an entry (product and feature names, domain vocabulary, words that are ambiguous out of context, objects that must stay distinct), dictionary forms and descriptions translators can act on, and translations lifted only from the user's own translated material, never invented. Runs two ways: through the Crowdin connector's tools in reviewed rounds of about ten, with each definition on the concept and brand names marked non-translatable; or from a terminal, as a reviewed CSV draft and an idempotent `crowdin glossary upload` — `glossary list` first, merge into an existing glossary with `--id`, never a duplicate. `i18n-setup` delegates its glossary steps here.
 
@@ -142,7 +142,7 @@ flowchart TD
     P6 --> P7["Continuous sync — delegated to github-action"]
 ```
 
-The Lingui stack requires the `lingui` plugin — the setup, wrapping, and recall passes are delegated to it rather than duplicated here. A run installs it when missing and stops to ask only when that install can't run — never improvising library guidance in its place. The glossary and CI phases delegate the same way to the `glossary-generation` and `github-action` skills below, which ship in this repository — installing the whole set, or the plugin, already covers them.
+The Lingui stack requires the `lingui` plugin — the setup, wrapping, and recall passes are delegated to it rather than duplicated here. A run installs it when missing and stops to ask only when that install can't run — never improvising library guidance in its place. The glossary and CI phases delegate the same way to the `glossary-terms-extraction` and `github-action` skills below, which ship in this repository — installing the whole set, or the plugin, already covers them.
 
 ### feedback
 
@@ -172,7 +172,7 @@ npx skills add crowdin/skills --skill create-app
 npx skills add crowdin/skills --skill crowdin-cli
 npx skills add crowdin/skills --skill github-action
 npx skills add crowdin/skills --skill context-extraction
-npx skills add crowdin/skills --skill glossary-generation
+npx skills add crowdin/skills --skill glossary-terms-extraction
 npx skills add crowdin/skills --skill translate
 npx skills add crowdin/skills --skill crowdin-api-client
 npx skills add crowdin/skills --skill croql

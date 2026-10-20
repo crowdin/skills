@@ -1,5 +1,5 @@
 {
-  "skill_name": "glossary-generation",
+  "skill_name": "glossary-terms-extraction",
   "note": "Behaviour specification. `prompt` is what a real user types - someone who wants their Crowdin glossary seeded or topped up with consistent terminology. Evals 1-4 run in a terminal with the Crowdin CLI and a crowdin.yml; evals 5-7 run with the Crowdin connector's tools (as in Crowdin Copilot) and no shell. The two rules that matter most hold on both paths and are the ones a helpful answer breaks first: nothing is written to the glossary before the user reviews it, and translations are never invented. On the CLI path the idempotency prompt matters next: `glossary upload` without --id silently creates a second glossary, so `glossary list` must come first. On the connector path, every added term gets its definition on the concept, not on the term.",
   "evals": [
     {

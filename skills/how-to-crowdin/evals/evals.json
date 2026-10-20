@@ -54,7 +54,7 @@
       "expected_output": "Restates the symptom as a terminology gap rather than a QA misconfiguration. The glossary is probably empty or thin: draft terms and add them after review, then the Consistent Terminology check has something to enforce.",
       "expectations": [
         "The answer identifies the pain as missing or thin glossary terminology, not a QA-check setting",
-        "The answer proposes filling the glossary through glossary-generation, terms added after review",
+        "The answer proposes filling the glossary through glossary-terms-extraction, terms added after review",
         "The answer does not lead with installing a store app"
       ]
     },
