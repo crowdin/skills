@@ -102,7 +102,7 @@ Fills `ai_context` in Crowdin JSONL files so translators get clear context. Cove
 
 ### glossary-generation
 
-Generates a starting glossary for a Crowdin project from the project's own source strings and uploads it with the CLI. Covers which terms earn an entry (product and feature names, domain vocabulary, words that are ambiguous out of context, UI objects that must stay distinct), descriptions translators can act on, the review gate before anything reaches the project, and the idempotent upload — `glossary list` first, merge into an existing glossary with `--id`, never a duplicate. Source-language terms only; translations are never invented. Works standalone on any connected project, and `i18n-setup` delegates its glossary steps here.
+Builds or tops up a Crowdin glossary from real content — the project's source strings plus any docs, websites or files the user supplies — and adds terms only after the user reviews them. Covers which terms earn an entry (product and feature names, domain vocabulary, words that are ambiguous out of context, objects that must stay distinct), dictionary forms and descriptions translators can act on, and translations lifted only from the user's own translated material, never invented. Runs two ways: through the Crowdin connector's tools in reviewed rounds of about ten, with each definition on the concept and brand names marked non-translatable; or from a terminal, as a reviewed CSV draft and an idempotent `crowdin glossary upload` — `glossary list` first, merge into an existing glossary with `--id`, never a duplicate. `i18n-setup` delegates its glossary steps here.
 
 ### translate
 
