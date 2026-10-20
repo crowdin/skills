@@ -1,9 +1,9 @@
 ---
-name: glossary-generation
+name: glossary-terms-extraction
 description: Builds or expands a Crowdin glossary from the project's real content. Use when someone wants a glossary created or topped up, asks which terms to add or what is missing, or wants product and feature names found in their strings, docs or files and marked do-not-translate. Not for adding one named term, importing or exporting a glossary file as is, editing existing entries, or the full internationalize-and-connect journey (i18n-setup).
 ---
 
-# Glossary generation
+# Glossary terms extraction
 
 Translators meet a product's vocabulary one string at a time, with no way to tell which words are the product's own. A glossary is where a term gets decided once - translated one way everywhere, or not translated at all. This skill finds the terms worth deciding in the user's real content and adds them only after the user has reviewed them.
 

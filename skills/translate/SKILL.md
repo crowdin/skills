@@ -126,5 +126,5 @@ The `i18n-setup` journey delegates its `draft_translations` step here. A caller 
 ## Related skills
 
 - **`crowdin-cli`** — every command this skill runs.
-- **`glossary-generation`** — produces the glossary this skill consumes.
+- **`glossary-terms-extraction`** — produces the glossary this skill consumes.
 - **`i18n-setup`** — the full journey; its phase 6 delegates here when the user asked for translations.
