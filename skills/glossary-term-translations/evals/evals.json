@@ -1,6 +1,6 @@
 {
   "skill_name": "glossary-term-translations",
-  "note": "Behaviour specification. `prompt` is what a real user types to an assistant with the Crowdin connector, in a project whose strings are already translated into several languages. The rules that matter most are the ones a helpful answer breaks first: nothing is written before the round is shown and confirmed, every counterpart comes from the project's final translations and is never invented, a term rendered with different roots is put to the user, and the only write is a Draft add_term into the project's default glossary. A user who cannot see the glossary is never asked for its ID. Run against a real project with writes recorded instead of executed, three runs each: 176 of 177 checks passed in Claude Code and 177 of 177 in Crowdin Copilot, against 74 of 177 for Claude Code without the skill.",
+  "note": "Behaviour specification. `prompt` is what a real user types to an assistant with the Crowdin connector, in a project whose strings are already translated into several languages. The rules that matter most are the ones a helpful answer breaks first: nothing is written before the round is shown and confirmed, every counterpart comes from the project's final translations and is never invented, a term rendered with different roots is put to the user, and the only write is a Draft add_term into the project's default glossary. A user who cannot see the glossary is never asked for its ID. Run against a real project with writes recorded instead of executed, three runs each: 177 of 177 checks passed in Claude Code and 176 of 177 in Crowdin Copilot, against 74 of 177 for Claude Code without the skill.",
   "evals": [
     {
       "id": 0,
@@ -96,7 +96,7 @@
       "files": [],
       "expectations": [
         "Never asks the user for a glossary ID",
-        "Writes nothing and makes no glossary reads",
+        "Writes nothing and makes no list_terms or get_glossary call",
         "Explains that the backfill needs glossary access or a project manager"
       ]
     }
