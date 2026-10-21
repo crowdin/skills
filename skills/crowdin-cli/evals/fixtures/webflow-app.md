@@ -1,4 +1,4 @@
-# Recorded CLI outputs (crowdin CLI 5.4.0, project 12345, Webflow app installed)
+# Recorded CLI outputs (crowdin CLI 5.5.0, project 12345, Webflow app installed)
 
 Agents cannot run commands in these evals. When an agent "runs" a command, it reads the recorded output here. If a command is not recorded, it says what it expects and continues.
 
@@ -107,11 +107,12 @@ Body (application/json):
 (exit code 1)
 
 ## Any crowdin-update or integration-update call without -X POST and without --input
-■  Crowdin returned 405 for 'webflow': Method Not Allowed
-(exit code 1)
+■  Application 'webflow' declares 'crowdin-update' for POST, not GET. Pass -X POST or --input
+(exit code 102)
+(integration-update answers the same with its own path)
 
 ## Any crowdin app api webflow call to a path the app does not declare (e.g. a typo: crowdin-updates)
-■  Application 'webflow' is not installed or does not declare 'GET crowdin-updates'. Run 'crowdin app methods webflow' to list its methods, and pass --method for anything but GET
+■  Application 'webflow' does not declare 'GET crowdin-updates'. Run 'crowdin app methods webflow' to list its methods
 (exit code 102)
 
 ## Any crowdin app api webflow call with --input <file> --dryrun   (here sync-settings; nothing is sent)

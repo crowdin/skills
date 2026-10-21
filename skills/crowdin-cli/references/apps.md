@@ -65,8 +65,9 @@ The CLI prints the app's own message when the app sends one. Exit codes are the 
 |---|---|---|
 | `'<app>' returned 4xx: <message>` | The app rejected the request | Fix the request per the message |
 | `'<app>' returned 501: ... does not support syncing by entry ID` | The app cannot filter by entry ID | Send the `files` form (step 4) |
-| `Crowdin returned 405 for '<app>': Method Not Allowed` | The path is declared for another verb; a write sent without `-X POST` or `--input` goes out as GET | Add `-X POST` or `--input`; `crowdin app methods <app>` lists the declared verbs |
-| `... is not installed or does not declare '<VERB> <path>'` (exit 102) | The app declares no such path: a typo, or an app that is not installed | Check the path against `crowdin app methods <app>` and the identifier against `crowdin app list` |
+| `Application '<app>' declares '<path>' for POST, not GET. Pass -X POST or --input` (exit 102) | The path is declared for another verb; a write sent without `-X POST` or `--input` goes out as GET | Add the flag the message names |
+| `Application '<app>' does not declare '<VERB> <path>'` (exit 102) | The app has no such path, usually a typo | Check the path against `crowdin app methods <app>` |
+| `Application '<app>' is not installed` (exit 102) | No installed app has that identifier | Check it against `crowdin app list` |
 | Exit 103 | The token lacks `application.proxy` | A token with that scope |
 | `Request to '<app>' failed with status N` | The response carried no readable message | Report the status and the command; the app gave no details |
 

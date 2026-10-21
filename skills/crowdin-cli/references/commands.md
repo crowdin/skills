@@ -9,7 +9,7 @@ Condensed from the generated command documentation (https://crowdin.github.io/cr
 - [upload (push)](#upload-alias-push) · [download (pull)](#download-alias-pull)
 - [status](#status) · [auto-translate](#auto-translate)
 - [file](#file) · [string](#string) · [branch](#branch)
-- [task](#task) · [tm](#tm) · [glossary](#glossary) · [style-guide](#style-guide)
+- [task](#task) · [tm](#tm) · [glossary](#glossary) · [style-guide](#style-guide) · [ai-prompt](#ai-prompt)
 - [bundle](#bundle) · [distribution](#distribution)
 - [screenshot](#screenshot) · [comment](#comment) · [label](#label)
 - [language](#language) · [project](#project) · [app](#app)
@@ -34,9 +34,9 @@ Condensed from the generated command documentation (https://crowdin.github.io/cr
 
 **Config option sets** — commands accept one of three tiers instead of repeating them below:
 
-- **Set A (files tier)**: `-T/--token`, `--base-url`, `--base-path`, `-i/--project-id`, `-s/--source`, `-t/--translation`, `--dest`, `--preserve-hierarchy`, `--no-preserve-hierarchy`. Accepted by `upload*`, `download*`, `auto-translate`, `config lint/sources/translations`. `--source`/`--translation` must be passed as a pair and define a single file group that replaces the config's `files`; `--dest` requires both and implies `--preserve-hierarchy`. A `crowdin.yml` must exist even when flags carry every value (exit 102 names the missing file); outside a project, pass `-c` a file holding `"project_id": "<id>"` and `files: []`.
-- **Set B (project tier)**: `-T/--token`, `--base-url`, `--base-path`, `-i/--project-id`. Accepted by `status*`, `file*`, `string*`, `task*`, `bundle*`, `branch*`, `comment*`, `distribution*`, `screenshot*`, `label*`, `language list`, `project*`, `context*`.
-- **Set C (account tier)**: `-T/--token`, `--base-url`, `--base-path` (no project ID). Accepted by `tm*`, `glossary*` and `app*`; an app call names its project in the request (`projectId`).
+- **Set A (files tier)**: `-T/--token`, `--base-url`, `--base-path`, `-i/--project-id`, `-s/--source`, `-t/--translation`, `--dest`, `--preserve-hierarchy`, `--no-preserve-hierarchy`. Accepted by `upload*`, `download*`, `config lint/sources/translations`. `--source`/`--translation` must be passed as a pair and define a single file group that replaces the config's `files`; `--dest` requires both and implies `--preserve-hierarchy`. Without that pair a `crowdin.yml` must exist (exit 102 names the missing file).
+- **Set B (project tier)**: `-T/--token`, `--base-url`, `--base-path`, `-i/--project-id`. Accepted by `status*`, `auto-translate*`, `file*`, `string*`, `task*`, `bundle*`, `branch*`, `comment*`, `distribution*`, `screenshot*`, `label*`, `language list`, `project*`, `context*`.
+- **Set C (account tier)**: `-T/--token`, `--base-url`, `--base-path` (no project ID). Accepted by `tm*`, `glossary*`, `style-guide*`, `ai-prompt*` and `app*`; an app call names its project in the request (`projectId`).
 
 Parent commands (`crowdin file`, `crowdin string`, …) only dispatch subcommands. `crowdin upload`, `crowdin download`, and `crowdin status` also run their default subcommand directly with the same options.
 
@@ -147,7 +147,7 @@ Show translation and proofreading progress. Config: set B.
 crowdin auto-translate [options]
 ```
 
-Apply Translation Memory, Machine Translation, or AI to project strings. Renamed from v4's `pre-translate` — no alias. Config: set A.
+Apply Translation Memory, Machine Translation, or AI to project strings. Renamed from v4's `pre-translate` — no alias. Config: set B; outside a project, `-i <id>` stands in for `crowdin.yml`.
 
 - `--method <mt|tm|ai>` — auto-translation method
 - `--engine-id <id>` — MT engine (for `mt`)
@@ -182,7 +182,7 @@ id=$(crowdin auto-translate -l fr --method ai --ai-prompt 7 --async -o plain)
 crowdin auto-translate status "$id" --wait
 ```
 
-**AI prompts.** The CLI has no command that lists them. Prompts with `action: pre_translate` are the ones `--ai-prompt` takes; list them through the API (`GET /users/{userId}/ai/prompts` on crowdin.com, `GET /ai/prompts` on Crowdin Enterprise), or ask the user for the ID. Before the run, tell the user the prompt and target languages it will use; when more than one `pre_translate` prompt fits, ask which.
+**AI prompts.** `crowdin ai-prompt list --action pre_translate --assigned` lists the prompts `--ai-prompt` takes for this project (see [ai-prompt](#ai-prompt)). Before the run, tell the user the prompt and target languages it will use; when more than one `pre_translate` prompt fits, ask which.
 
 ## file
 
@@ -247,6 +247,12 @@ Manage style guides. Config: set C.
 - `crowdin style-guide download <id>` — `--to <path>` (default: the guide's name plus the original file's extension)
 - `crowdin style-guide upload <file>` — `--id <id>` (replace the file of an existing guide), `--name <text>` (default: file name without extension), `--project <id>` (repeatable), `--language <code>` (repeatable), `--shared` (all projects)
 - `crowdin style-guide delete <id>`
+
+## ai-prompt
+
+List AI prompts. Config: set C.
+
+- `crowdin ai-prompt list` — `--action <pre_translate|alignment|qa_check>` (only prompts for that action), `--assigned` (only the prompts the project in `crowdin.yml` may use; needs `project_id`; without it the list is every prompt the account sees), `-v/--verbose` (adds the projects each prompt is enabled in — `all` in text, `null` in json — provider, model and last use). Text shows `#<id> <name> (<action>)` and marks disabled prompts; json/toon keys are `id`, `name`, `action`, `isEnabled`, plus `enabledProjectIds`, `aiProviderId`, `aiModelId`, `lastUsedAt` with `-v`.
 
 ## bundle
 

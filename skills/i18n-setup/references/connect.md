@@ -98,7 +98,7 @@ Only once all four have passed does the real `crowdin upload sources` run, pushi
 
 ## Optional add-on: auto-translate
 
-`crowdin auto-translate --method tm` runs only when the user opted into it back at Decide (the add-ons recorded in `decisions.md`) — it is off by default, and this step does not re-open that question. Never reach for `--method mt` or `--method ai` unless the project already has a machine translation engine or an AI prompt configured in Crowdin; running either method against a project with nothing configured for it is a wasted call at best. See the `crowdin-cli` skill's [commands reference, auto-translate section](../../crowdin-cli/references/commands.md#auto-translate) for the full option set (`--scope`, `--label`, `--auto-approve-option`, and the rest) if the user wants finer control than the bare TM call.
+`crowdin auto-translate --method tm` runs only when the user opted into it back at Decide (the add-ons recorded in `decisions.md`) — it is off by default, and this step does not re-open that question. Never reach for `--method mt` or `--method ai` unless the project already has a machine translation engine or an AI prompt configured in Crowdin (`crowdin ai-prompt list --action pre_translate --assigned` shows the prompts it may use); running either method against a project with nothing configured for it is a wasted call at best. See the `crowdin-cli` skill's [commands reference, auto-translate section](../../crowdin-cli/references/commands.md#auto-translate) for the full option set (`--scope`, `--label`, `--auto-approve-option`, and the rest) if the user wants finer control than the bare TM call.
 
 ## Wrap-up
 

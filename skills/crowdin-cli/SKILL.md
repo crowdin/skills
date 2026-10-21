@@ -100,7 +100,7 @@ crowdin download sources                     # pull sources back from Crowdin
 
 Everything is branch-aware: pass `-b <name>` to scope upload/download/status to a Crowdin branch (create it with `crowdin branch add`).
 
-`auto-translate` (v4's `pre-translate`) applies TM (`--method tm`), machine translation (`--method mt --engine-id <id>`), or AI (`--method ai --ai-prompt <id>`), with fine-grained control: `--scope untranslated|translated|all`, `--skip-approved-translations`, `--label`/`--exclude-label`, `--replace-translations-option`, `--translation-modified-before`, and more — see [references/commands.md](references/commands.md#auto-translate). It waits for the job to finish; `--async` returns the job identifier at once, for `crowdin auto-translate status <id> [--wait]` to check later.
+`auto-translate` (v4's `pre-translate`) applies TM (`--method tm`), machine translation (`--method mt --engine-id <id>`), or AI (`--method ai --ai-prompt <id>`; `crowdin ai-prompt list --action pre_translate --assigned` lists the prompt IDs), with fine-grained control: `--scope untranslated|translated|all`, `--skip-approved-translations`, `--label`/`--exclude-label`, `--replace-translations-option`, `--translation-modified-before`, and more — see [references/commands.md](references/commands.md#auto-translate). It waits for the job to finish; `--async` returns the job identifier at once, for `crowdin auto-translate status <id> [--wait]` to check later.
 
 ## Integrations through Crowdin apps
 
@@ -141,7 +141,7 @@ Mutating file commands accept `--dryrun` to preview what would happen. Add `-v/-
 
 ## Command map
 
-23 top-level commands; most have subcommands. Full option-level reference: [references/commands.md](references/commands.md).
+24 top-level commands; most have subcommands. Full option-level reference: [references/commands.md](references/commands.md).
 
 | Command | Purpose |
 |---------|---------|
@@ -158,6 +158,7 @@ Mutating file commands accept `--dryrun` to preview what would happen. Add `-v/-
 | `tm` | Translation memories (list, upload, download; `list --assigned` scopes to the project) |
 | `glossary` | Glossaries (list, upload, download; `list --assigned` scopes to the project) |
 | `style-guide` | Style guides (list, download, upload, delete) |
+| `ai-prompt` | AI prompts (list; `--action pre_translate --assigned` finds the IDs `auto-translate --method ai` takes) |
 | `bundle` | Export bundles (list, add, download, clone, browse) |
 | `distribution` | Content distributions (add, list, edit, release) |
 | `screenshot` | Screenshots for context (list, upload a file or a directory, delete) |
