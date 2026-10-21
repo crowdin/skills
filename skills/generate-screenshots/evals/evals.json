@@ -94,6 +94,19 @@
         "Asks for explicit confirmation before any deletion",
         "Never bulk-deletes unprompted"
       ]
+    },
+    {
+      "id": 8,
+      "prompt": "Our product is an Electron desktop app, already connected to Crowdin. We don't want any test tooling added to the repo. Can you get screenshots into Crowdin anyway? You have computer use enabled.",
+      "expected_output": "Takes the computer-use path, naming its cost: no capture definition is left behind, so a re-run is another session. Still measures coverage and reviews a screen plan first. Reaches each state by driving the app, then writes each image with a command on the machine (`screencapture -x -R` on macOS, the Snipping Tool's file moved under the contract name on Windows) into .crowdin/screenshots/, never passing off an image it merely viewed. Uploads the folder with one command and records the screen list with reach steps in the report.",
+      "files": [],
+      "expectations": [
+        "Chooses computer use for a desktop app the other engines cannot reach, and states that it leaves no re-runnable definition",
+        "Keeps the coverage query and the plan review before any clicking",
+        "Writes screenshots with a capture command on the machine, never from an image the agent looked at",
+        "Uploads the folder with the single CLI command",
+        "Records the screen list and reach steps in the report in place of a committed definition"
+      ]
     }
   ]
 }

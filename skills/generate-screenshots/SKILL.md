@@ -1,6 +1,6 @@
 ---
 name: generate-screenshots
-description: Captures screenshots of a running web or mobile app and uploads them to Crowdin as visual context, auto-tagged to the strings they show. Use when someone wants to add screenshots to a Crowdin project, show translators where strings appear in the UI, or find which strings still have no screenshot - including bare phrasings like "translators can't see where this string is used". Works standalone on any project already connected to Crowdin, for web, iOS, Android, React Native and Flutter apps; re-runs update existing screenshots instead of duplicating them. Not for `crowdin screenshot` command syntax on its own (that is `crowdin-cli`), not for textual string context or `ai_context` (that is `context-extraction`), and not for the full internationalize-and-connect journey (that is `i18n-setup`, which delegates its screenshots add-on here).
+description: Captures screenshots of a running web, mobile or desktop app and uploads them to Crowdin as visual context, auto-tagged to the strings they show. Use when someone wants to add screenshots to a Crowdin project, show translators where strings appear in the UI, or find which strings still have no screenshot - including bare phrasings like "translators can't see where this string is used". Works standalone on any project already connected to Crowdin, for web, iOS, Android, React Native and Flutter apps, and desktop apps where the agent can drive the screen; re-runs update existing screenshots instead of duplicating them. Not for `crowdin screenshot` command syntax on its own (that is `crowdin-cli`), not for textual string context or `ai_context` (that is `context-extraction`), and not for the full internationalize-and-connect journey (that is `i18n-setup`, which delegates its screenshots add-on here).
 ---
 
 # Generate screenshots
@@ -31,7 +31,7 @@ Every engine ends in the same place: `.crowdin/screenshots/`, a flat folder of P
 
 The unit of work is a **screen**: one capture-worthy UI state - a route, a modal, a drawer, each tab of a tab set, a select or menu open, a form after an empty submit and after a wrong one, an empty or error variant. Strings group under the screen that shows them, and shared chrome (navigation, tab bar, footer) is covered by whichever screen is shot first. Never plan one screenshot per string: an app with a thousand strings usually collapses to a few dozen screens, and one image contextualizes everything visible on it.
 
-Screens come from the app's own structure, deep-linkable ones first: the router on the web (file-based routes, a route config), the navigator registrations or `app/` tree in React Native and Expo, storyboards, `NavigationStack` destinations or deep-link handlers on iOS, the navigation graph on Android. A screen a URL or deep link reaches is a one-line capture; a screen only a tap sequence reaches gets a flow. The agent's own browser or simulator, when it has one, is for scouting a screen before writing its flow - what renders, how it is reached - never for capture: a screenshot the agent looks at is not a file on disk.
+Screens come from the app's own structure, deep-linkable ones first: the router on the web (file-based routes, a route config), the navigator registrations or `app/` tree in React Native and Expo, storyboards, `NavigationStack` destinations or deep-link handlers on iOS, the navigation graph on Android. A screen a URL or deep link reaches is a one-line capture; a screen only a tap sequence reaches gets a flow. The agent's own browser or simulator, when it has one, is for scouting a screen before writing its flow - what renders, how it is reached - never for capture: a screenshot the agent looks at is not a file on disk. The same holds for an agent driving the desktop; there the capture is a command on the machine, as [references/computer-use.md](references/computer-use.md) lays out.
 
 ## The engine
 
@@ -43,8 +43,9 @@ Pick by what the project already has, in this order, and read only that referenc
 | Expo or React Native already running screenmap | screenmap | its output folder, renamed into the contract | [references/expo-screenmap.md](references/expo-screenmap.md) |
 | Any mobile app - iOS, Android, React Native, Flutter | Maestro | YAML flows under `.maestro/crowdin/` | [references/mobile-maestro.md](references/mobile-maestro.md) |
 | Web | Playwright | a spec file, one test per screen | [references/web-playwright.md](references/web-playwright.md) |
+| A desktop app, a few one-off states, or no test code wanted - when the agent can drive the desktop | Computer use | none; the report carries the screen list | [references/computer-use.md](references/computer-use.md) |
 
-Maestro is the mobile default because one YAML dialect covers every mobile stack and a flow reads as the list of taps it is. A project that already drives its UI with something else - Detox, Espresso, Flutter integration tests - keeps it: the contract is the folder, and any engine that writes named PNGs into it qualifies. Installing an engine is a change to the project's dev dependencies; say what gets installed and get a yes before installing.
+Maestro is the mobile default because one YAML dialect covers every mobile stack and a flow reads as the list of taps it is. A project that already drives its UI with something else - Detox, Espresso, Flutter integration tests - keeps it: the contract is the folder, and any engine that writes named PNGs into it qualifies. Computer use is the one engine that leaves no definition behind, so it is offered with that cost named, after the others. Installing an engine is a change to the project's dev dependencies; say what gets installed and get a yes before installing.
 
 ## The journey
 
@@ -84,7 +85,7 @@ The success condition is the upload. Auto-tag is OCR against source strings, and
 
 ## Publish-only mode
 
-When no engine can run here - no Node for Playwright, no simulator on this machine, a CI box with no display - say so plainly and fall back: the inventory still produces the plan, the user captures the screens themselves and drops the images into `.crowdin/screenshots/` under the plan's names, and the skill uploads and reports. Never claim a capture happened when it did not, and never generate or mock an image of the app: a fabricated screenshot teaches every translator a UI that does not exist.
+When no engine can run here - no Node for Playwright, no simulator on this machine, no desktop the agent can drive, a CI box with no display - say so plainly and fall back: the inventory still produces the plan, the user captures the screens themselves and drops the images into `.crowdin/screenshots/` under the plan's names, and the skill uploads and reports. Never claim a capture happened when it did not, and never generate or mock an image of the app: a fabricated screenshot teaches every translator a UI that does not exist.
 
 ## Failure modes
 
