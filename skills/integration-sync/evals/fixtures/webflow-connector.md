@@ -2,7 +2,7 @@
 
 Agents call no tools in these evals. When an agent "calls" a Crowdin connector tool, it reads the recorded output here. If a call is not recorded, it says what it expects and continues.
 
-Recorded on 2026-10-21 from the Crowdin MCP server against a live Webflow app; the project is anonymized to 12345, the site to "Example Site", the user to 1001. Webflow IDs, Crowdin file IDs and job IDs are as returned. Every tool takes `applicationIdentifier: "webflow"` and `projectId: 12345`. The tree is a representative subset of the full tree, which had the same shape with more pages, posts and components.
+Recorded on 2026-10-21 from the Crowdin MCP server against a live Webflow app; the project is anonymized to 12345, the site to "Example Site", the user to 1001. Webflow IDs, Crowdin file IDs and job IDs are as returned. Every tool takes `applicationIdentifier: "webflow"` and `projectId: 12345`. One section, the push response, is synthesized rather than recorded and says so. The tree is a representative subset of the full tree, which had the same shape with more pages, posts and components.
 
 ## list_application_installations, fields ["permissions", "modules"]
 
@@ -493,7 +493,7 @@ Nothing scheduled: an empty object.
 
 ## get_application_settings
 
-Values are typed (booleans, strings). `update_application_settings` takes `config` as a map of strings; how a string value is coerced back is not recorded. `schedule` and `new-integration-files` are the auto-sync frequency and the "add new platform items automatically" switch.
+Values are typed (booleans, strings). `update_application_settings` takes `config` as a map of strings; the write sections below show how a string value comes back. `schedule` and `new-integration-files` are the auto-sync frequency and the "add new platform items automatically" switch.
 
 ```json
 {
@@ -593,4 +593,20 @@ The About entry sent whole, with `tooltip`, `path`, `isNew`, `notSynced`, `synce
 
 ```json
 {"data":{"id":"5e5acc2e-b403-406f-9c8c-a6869eebc41a","info":null,"data":"{}","attempt":0,"payload":"[{\"id\":\"{\\\"type\\\":\\\"dom\\\",\\\"id\\\":\\\"6630fb7a547d803086a8d013\\\",\\\"name\\\":\\\"About\\\",\\\"slug\\\":\\\"about\\\",\\\"siteId\\\":\\\"6630fb7a547d803086a8cfda\\\",\\\"siteName\\\":\\\"Example Site\\\",\\\"primaryLocale\\\":\\\"6630fb7a547d803086a8d020\\\"}\",\"name\":\"About\",\"parentId\":\"pages\",\"type\":\"webxml\"}]","progress":100,"status":"finished","title":"Sync files to Crowdin","type":"updateCrowdin","createdAt":"2026-10-21T15:10:35.674Z","updatedAt":"2026-10-21T15:10:37.161Z","finishedAt":"2026-10-21T15:10:37.161Z"}}
+```
+
+## get_integration_file_sync_progress, fileId 34790
+
+Keyed by the Crowdin file ID. One entry per target language; each carries `languageId`, `words`, `phrases`, `translationProgress`, `approvalProgress` and `qaChecksStatus`, plus a full `language` object omitted here. Trimmed to two languages; the live response had nine.
+
+```json
+{"data":{"34790":[{"languageId":"de","words":{"total":342,"translated":342,"preTranslateAppliedTo":0,"approved":0},"phrases":{"total":27,"translated":27,"preTranslateAppliedTo":0,"approved":0},"translationProgress":100,"approvalProgress":0,"qaChecksStatus":{"total":22,"inProgress":0,"passed":13,"failed":9}},{"languageId":"uk","words":{"total":342,"translated":342,"preTranslateAppliedTo":0,"approved":0},"phrases":{"total":27,"translated":27,"preTranslateAppliedTo":0,"approved":0},"translationProgress":100,"approvalProgress":0,"qaChecksStatus":{"total":22,"inProgress":0,"passed":12,"failed":10}}]}}
+```
+
+## update_integration_files, files {"34790": ["uk"]}
+
+Not recorded: no push was made. Synthesized from the import's response shape; the `list_jobs` section above shows the `updateIntegration` job such a push leaves behind.
+
+```json
+{"data":{"jobId":"00000000-0000-4000-8000-000000000001"}}
 ```

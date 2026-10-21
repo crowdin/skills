@@ -91,7 +91,7 @@
       "id": 7,
       "name": "connector-import-and-push",
       "prompt": "The agent calls no tools; fixtures/webflow-connector.md holds the recorded output of each one. This session has the Crowdin connector's tools and no shell. Our Webflow site is connected to Crowdin project 12345. Get the About page into Crowdin, then once it's translated push the Ukrainian back to Webflow.",
-      "expected_output": "Lists installations with fields including modules and finds Webflow by its api plus project-integrations modules, reads the tree with list_integration_files, selects About by its path, calls update_crowdin_files with exactly id, name, parentId and type, follows the job with get_job_info until finished, maps About to Crowdin file 34790 through list_crowdin_files, reads progress with get_integration_file_sync_progress, then calls update_integration_files with {\"34790\": [\"uk\"]} and follows that job too.",
+      "expected_output": "Lists installations with fields including modules and finds Webflow by its api plus project-integrations modules, reads the tree with list_integration_files, selects About by its path, calls update_crowdin_files with exactly id, name, parentId and type, follows the job with get_job_info until finished, maps About to Crowdin file 34790 through list_crowdin_files, reads progress with get_integration_file_sync_progress, then calls update_integration_files with {\"34790\": [\"uk\"]} and follows that job with get_job_info, reporting it as running with its ID when no finished status is recorded.",
       "files": [
         "evals/fixtures/webflow-connector.md"
       ],
@@ -120,7 +120,7 @@
       "id": 9,
       "name": "connector-auto-sync-user-away",
       "prompt": "The agent calls no tools; fixtures/webflow-connector.md holds the recorded output of each one. This session has the Crowdin connector's tools and no shell. We use the Webflow app in Crowdin project 12345. Make sure all our blog posts get synced to Crowdin automatically every night. I'm heading out, just get it done.",
-      "expected_output": "Reads get_sync_settings with provider integration first (it is empty), builds the array of the five blog post entries trimmed to id, name, parentId, type plus schedule true, shows the exact update_sync_settings input as JSON, and stops there because the user is away. Says that future posts need the new-integration-files setting and that it is a boolean changed on the app's page in Crowdin, not through update_application_settings, and that the frequency lives in the app settings.",
+      "expected_output": "Reads get_sync_settings with provider integration first (it is empty), builds the array of the two blog post entries under Collections/Blog Posts trimmed to id, name, parentId, type plus schedule true, shows the exact update_sync_settings input as JSON, and stops there because the user is away. Says that future posts need the new-integration-files setting and that it is a boolean changed on the app's page in Crowdin, not through update_application_settings, and that the frequency lives in the app settings.",
       "files": [
         "evals/fixtures/webflow-connector.md"
       ],
