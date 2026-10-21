@@ -104,6 +104,10 @@ Fills `ai_context` in Crowdin JSONL files so translators get clear context. Cove
 
 Builds or tops up a Crowdin glossary from real content — the project's source strings plus any docs, websites or files the user supplies — and adds terms only after the user reviews them. Covers which terms earn an entry (product and feature names, domain vocabulary, words that are ambiguous out of context, objects that must stay distinct), dictionary forms and descriptions translators can act on, and translations lifted only from the user's own translated material, never invented. Runs two ways: through the Crowdin connector's tools in reviewed rounds of about ten, with each definition on the concept and brand names marked non-translatable; or from a terminal, as a reviewed CSV draft and an idempotent `crowdin glossary upload` — `glossary list` first, merge into an existing glossary with `--id`, never a duplicate. `i18n-setup` delegates its glossary steps here.
 
+### glossary-term-translations
+
+Fills in the translations of glossary terms from how the project already translated them, through the Crowdin connector. For each term it finds the strings that contain it, reads their final translations, picks the counterpart in each language and writes it as a Draft term under the term's concept, with a review link per concept. Nothing is invented: a language with no clear counterpart stays empty, different renderings of the same term are put to the user to pick, and every round is shown as a table and confirmed before anything is written. Also backfills the languages existing concepts lack. A user who cannot see the project's glossary, usually a translator, is shown what the translations say and told who can write them. Complements `glossary-terms-extraction`, which finds the terms worth adding.
+
 ### translate
 
 Drafts translations into the project's own resource files — whatever format `crowdin.yml` uploads — from the terminal, and uploads them to Crowdin as unapproved suggestions for review. Syncs first so nobody's finished work is drafted over, reads the project's assigned glossary, TM and style guide through the CLI, follows source references into the code when a string is ambiguous, and checks every draft's placeholders and plural categories with a format-neutral ledger before anything goes up. Never approves, never writes the source catalog, never invents a glossary term. Warns rather than refuses on large runs and names Crowdin's own pre-translation as the bulk route. `i18n-setup` delegates here when the user asks for translations during the journey.
@@ -173,6 +177,7 @@ npx skills add crowdin/skills --skill crowdin-cli
 npx skills add crowdin/skills --skill github-action
 npx skills add crowdin/skills --skill context-extraction
 npx skills add crowdin/skills --skill glossary-terms-extraction
+npx skills add crowdin/skills --skill glossary-term-translations
 npx skills add crowdin/skills --skill translate
 npx skills add crowdin/skills --skill crowdin-api-client
 npx skills add crowdin/skills --skill croql
