@@ -24,7 +24,7 @@ The loop in SKILL.md, run with the Crowdin MCP server's tools. The tools wrap th
 ## Rules
 
 - **Direction.** `update_crowdin_files` imports from the platform into Crowdin. `update_integration_files` pushes translations out and overwrites what the platform has. Name the direction before calling either.
-- **Trim import entries.** `update_crowdin_files` accepts exactly `id`, `name`, `parentId`, `type` per entry (and the aliases `node_type`, `parent_id`) and rejects any other key, so an entry copied whole from `list_integration_files` fails. Select by `path`, then send those four keys with the `id` byte for byte. There is no entry-ID form on this path.
+- **Trim import entries.** The `update_crowdin_files` schema declares `id`, `name`, `parentId`, `type` per entry (and the aliases `node_type`, `parent_id`). The server strips any other key from an entry copied whole from `list_integration_files` and runs the import, but a client that validates tool inputs against the schema refuses the extra keys, so select by `path` and send those four keys, with the `id` byte for byte. There is no entry-ID form on this path.
 - **Show, then send.** There is no dry run. The confirmation protocol's "show the exact command" is "show the exact tool input as JSON in the conversation", and the call goes out on the user's yes.
 - **Follow a job by repeating `get_job_info`.** An agent that cannot wait reports the job as running with its ID.
 - **A settings write is a job too.** `update_application_settings` and the sync-settings write return `data.jobId`, of type `integrationSettingsSave`; it finishes at once.
