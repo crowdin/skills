@@ -4,7 +4,7 @@ Reached from `SKILL.md`'s engine table for a web app. Playwright is the capture 
 
 ## What the project has
 
-`@playwright/test` in `package.json` and a `playwright.config.*` mean the project already has the engine: reuse its config, its test directory, its conventions. Without them, the install is `npm i -D @playwright/test` (the project's package manager in place of npm) plus a browser. The lighter choice is the Chrome already on the machine, `channel: 'chrome'` in the config below, which skips the download; `npx playwright install chromium` fetches Playwright's own build instead, and is the fallback when no Chrome is installed or the bundled build is wanted for CI. Some machines refuse to launch the bundled headless shell at all, and `channel: 'chrome'` is the fix there too. Either way it is a dev dependency, so say so and get a yes first - the same yes as the plan's.
+`@playwright/test` in `package.json` and a `playwright.config.*` mean the project already has the engine: reuse its config, its test directory, its conventions. Without them, the install is two commands - `npm i -D @playwright/test` and `npx playwright install chromium` (the project's package manager in place of npm) - and it adds a dev dependency plus a browser download, so say so and get a yes first - the same yes as the plan's. Playwright's own Chromium is the default because it is the same everywhere, on a CI runner included. When the machine will not launch it, or the user would rather not download a browser, `channel: 'chrome'` in the config's `use` block drives the Chrome already installed instead; the config then depends on that machine having Chrome, so the choice is recorded in a comment beside it.
 
 ## A config of its own
 
@@ -19,9 +19,8 @@ export default defineConfig({
   workers: 1,
   outputDir: '.crowdin/test-results',        // Playwright's run bookkeeping, out of the repo root
   use: {
-    baseURL: 'http://localhost:3000',
-    channel: 'chrome',                     // the installed Chrome; drop for Playwright's bundled build
-    viewport: { width: 1440, height: 900 },
+    baseURL: 'http://localhost:3000',      // where the app's dev server listens
+    viewport: { width: 1440, height: 900 },  // one framing for every shot; a narrower app picks its own
     colorScheme: 'light',
     locale: 'en-US',                       // the project's source locale
     storageState: '.crowdin/auth.json',    // see "Signing in"
@@ -91,8 +90,8 @@ What spoils a capture that still passed its test, and the line that keeps it out
 | Fonts still loading, so the fallback face is in the image | `await page.evaluate(() => document.fonts.ready)` after navigation |
 | A dialog, menu or accordion caught mid-animation | wait for finite animations: `document.getAnimations()` filtered to those whose timing has no infinite iterations, then `await` their `finished` |
 | A hover state on the last thing clicked | `await page.mouse.move(0, 0)` before the shot |
-| A dev-tools overlay the dev server mounts (router or query devtools, a framework's dev badge) | `page.screenshot({ path, style: '<selector> { display: none !important }' })` - hidden for the image only |
-| Content scrolled to a heading sits under a sticky header | after `scrollIntoView`, `window.scrollBy(0, -(headerHeight + margin))` |
+| An overlay the dev server mounts that is not part of the app (a framework's dev badge, devtools panels, a cookie banner the plan does not want) | `page.screenshot({ path, style: '<selector> { display: none !important }' })` - hidden for the image only |
+| Content scrolled to a heading sits under a fixed or sticky header | after `scrollIntoView`, `window.scrollBy(0, -(headerHeight + margin))`, with the height read from the app's own header |
 
 ## Running it
 
