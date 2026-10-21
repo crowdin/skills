@@ -22,7 +22,7 @@
     {
       "id": 2,
       "name": "wrong-verb-405",
-      "prompt": "The agent runs no commands; fixtures/webflow-app.md holds the recorded output of each one. I ran `crowdin app api webflow crowdin-update -F projectId=12345 -f 'entryIds[]=abc'` and it failed with \"Crowdin returned 405 for 'webflow': Method Not Allowed\". Why, and what should I run?",
+      "prompt": "The agent runs no commands; fixtures/webflow-app.md holds the recorded output of each one. I ran `crowdin app api webflow crowdin-update -F projectId=12345 -f 'entryIds[]=abc'` and it failed with \"Application 'webflow' declares 'crowdin-update' for POST, not GET. Pass -X POST or --input\". Why, and what should I run?",
       "expected_output": "Explains that fields never change the verb, so the call went out as GET to a POST-only method, and that the app is installed. Points out that 'abc' is not an entry ID the app knows, and gives the jq-built --input command.",
       "files": [
         "evals/fixtures/webflow-app.md"
