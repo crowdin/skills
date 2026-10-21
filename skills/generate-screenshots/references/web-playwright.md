@@ -4,7 +4,7 @@ Reached from `SKILL.md`'s engine table for a web app. Playwright is the capture 
 
 ## What the project has
 
-`@playwright/test` in `package.json` and a `playwright.config.*` mean the project already has the engine: reuse its config, its test directory, its conventions. Without them, the install is two commands - `npm i -D @playwright/test` and `npx playwright install chromium` (the project's package manager in place of npm) - and it adds a dev dependency plus a browser download, so say so and get a yes first.
+`@playwright/test` in `package.json` and a `playwright.config.*` mean the project already has the engine: reuse its config, its test directory, its conventions. Without them, the install is `npm i -D @playwright/test` (the project's package manager in place of npm) plus a browser. The lighter choice is the Chrome already on the machine, `channel: 'chrome'` in the config below, which skips the download; `npx playwright install chromium` fetches Playwright's own build instead, and is the fallback when no Chrome is installed or the bundled build is wanted for CI. Some machines refuse to launch the bundled headless shell at all, and `channel: 'chrome'` is the fix there too. Either way it is a dev dependency, so say so and get a yes first - the same yes as the plan's.
 
 ## A config of its own
 
@@ -17,8 +17,10 @@ export default defineConfig({
   testDir: './e2e',
   testMatch: 'crowdin-screenshots.ts',
   workers: 1,
+  outputDir: '.crowdin/test-results',        // Playwright's run bookkeeping, out of the repo root
   use: {
     baseURL: 'http://localhost:3000',
+    channel: 'chrome',                     // the installed Chrome; drop for Playwright's bundled build
     viewport: { width: 1440, height: 900 },
     colorScheme: 'light',
     locale: 'en-US',                       // the project's source locale
@@ -78,9 +80,19 @@ test('invite-dialog', async ({ page }) => {
 Rules that the example shows and the plan relies on:
 
 - **Wait for the screen's own content** before shooting - a heading, the dialog, the list - never a fixed timeout. A screenshot of a spinner is not context.
-- **Viewport, not full page, by default.** Translators read a screen the way users see it; a `fullPage: true` capture of a long page is one image with tiny text, and auto-tag reads it worse. A long page is several screens, scrolled to each.
+- **Viewport, not full page, by default.** Translators read a screen the way users see it; a `fullPage: true` capture of a long page is one image with tiny text, and auto-tag reads it worse. A page taller than the viewport is several screens, by one convention: the first is `<name>`, then `<name>-2`, `<name>-3`, each scrolled one viewport less an overlap of about 120px further down, so a line cut at the bottom of one is whole at the top of the next. A helper that loops over `scrollHeight` does it for every page in the list.
 - **Locators by role and visible text** are fine here, unlike in locale-switching tests: the run is always in the source language.
 - **Variants are their own tests** - `checkout-empty`, `signup-errors` - reached by the state that shows them, with the user's seeded data or a form submitted empty.
+
+What spoils a capture that still passed its test, and the line that keeps it out - put these in one `shoot` helper every test calls:
+
+| Spoiler | Guard |
+|---|---|
+| Fonts still loading, so the fallback face is in the image | `await page.evaluate(() => document.fonts.ready)` after navigation |
+| A dialog, menu or accordion caught mid-animation | wait for finite animations: `document.getAnimations()` filtered to those whose timing has no infinite iterations, then `await` their `finished` |
+| A hover state on the last thing clicked | `await page.mouse.move(0, 0)` before the shot |
+| A dev-tools overlay the dev server mounts (router or query devtools, a framework's dev badge) | `page.screenshot({ path, style: '<selector> { display: none !important }' })` - hidden for the image only |
+| Content scrolled to a heading sits under a sticky header | after `scrollIntoView`, `window.scrollBy(0, -(headerHeight + margin))` |
 
 ## Running it
 
