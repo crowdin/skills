@@ -4,11 +4,11 @@ Reached from `SKILL.md`'s engine table for an iOS, Android, React Native or Flut
 
 ## What the project has
 
-A `.maestro/` directory means the project already runs Maestro: keep its conventions and put the screenshot flows in a subfolder of it. The directory's absence says nothing about the CLI, so check `maestro --version` before proposing an install. When it is missing, the CLI installs with `curl -fsSL "https://get.maestro.mobile.dev" | bash` (Homebrew: `brew tap mobile-dev-inc/tap` then `brew install mobile-dev-inc/tap/maestro`) and needs Java 17 or later; say so and get a yes before installing anything.
+A `.maestro/` directory means the project already runs Maestro: keep its conventions and put the screenshot flows in a subfolder of it. The directory's absence says nothing about the CLI, so check `maestro --version` before proposing an install. When it is missing, the CLI installs with `curl -fsSL "https://get.maestro.mobile.dev" | bash` (Homebrew: `brew tap mobile-dev-inc/tap` then `brew install mobile-dev-inc/tap/maestro`) and needs Java 17 or later.
 
 ## The device and the session
 
-The user builds and installs the app on a simulator or emulator the way they always do - Xcode, Android Studio, `expo run:ios`, `flutter run` - and signs in on it. A release-configuration build is the easiest subject: a development client opens on its launcher before the app, and Expo Go is a different app with a different id. Maestro drives the device as it is: `launchApp` restarts the app without clearing its state, so a sign-in the app persists survives it and no credentials pass through the agent; an app that keeps its session in memory comes back signed out, and that is a stop-and-ask, not a flow to script around. Seeded data is the user's job too.
+The user builds and installs the app on a simulator or emulator the way they always do - Xcode, Android Studio, `expo run:ios`, `flutter run` - and signs in on it. A release-configuration build is the easiest subject: a development client opens on its launcher before the app, and Expo Go is a different app with a different id. Maestro drives the device as it is: `launchApp` restarts the app without clearing its state, so a sign-in the app persists survives it; an app that keeps its session in memory comes back signed out, and that is a stop-and-ask, not a flow to script around. Seeded data is the user's job too.
 
 Device ids come from `xcrun simctl list devices booted` and `adb devices`. Scouting a screen before writing its flow is `maestro hierarchy` for the view tree, or one look at `xcrun simctl io booted screenshot` / `adb exec-out screencap -p` - looking, not capturing.
 
@@ -71,4 +71,4 @@ find .crowdin/maestro/android -path '*/takeScreenshot/*.png' -exec sh -c 'cp "$1
 ls .crowdin/screenshots
 ```
 
-A single-platform app needs no suffix. A top-up run passes the changed flows' paths instead of the folder. Then the upload in `SKILL.md`, and the lines above go into the report so the next person can re-run them without this skill.
+A single-platform app needs no suffix. A top-up run passes the changed flows' paths instead of the folder.

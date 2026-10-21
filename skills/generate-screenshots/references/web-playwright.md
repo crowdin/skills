@@ -4,7 +4,7 @@ Reached from `SKILL.md`'s engine table for a web app. Playwright is the capture 
 
 ## What the project has
 
-`@playwright/test` in `package.json` and a `playwright.config.*` mean the project already has the engine: reuse its config, its test directory, its conventions. Without them, the install is two commands - `npm i -D @playwright/test` and `npx playwright install chromium` (the project's package manager in place of npm) - and it adds a dev dependency plus a browser download, so say so and get a yes first - the same yes as the plan's. Playwright's own Chromium is the default because it is the same everywhere, on a CI runner included. When the machine will not launch it, or the user would rather not download a browser, `channel: 'chrome'` in the config's `use` block drives the Chrome already installed instead; the config then depends on that machine having Chrome, so the choice is recorded in a comment beside it.
+`@playwright/test` in `package.json` and a `playwright.config.*` mean the project already has the engine: reuse its config, its test directory, its conventions. Without them, the install is two commands - `npm i -D @playwright/test` and `npx playwright install chromium` (the project's package manager in place of npm) - a dev dependency plus a browser download. Playwright's own Chromium is the default because it is the same everywhere, on a CI runner included. When the machine will not launch it, or the user would rather not download a browser, `channel: 'chrome'` in the config's `use` block drives the Chrome already installed instead; the config then depends on that machine having Chrome, so the choice is recorded in a comment beside it.
 
 ## A config of its own
 
@@ -45,7 +45,7 @@ The user signs in once, interactively, and Playwright saves the session:
 npx playwright codegen --save-storage=.crowdin/auth.json http://localhost:3000
 ```
 
-A browser opens; the user signs in and closes it; cookies and local storage land in `.crowdin/auth.json`, inside the gitignored workspace. The config's `storageState` loads that file into every test. Nothing about the account passes through the agent. A session that expires shows up as the sign-in page in every screenshot: re-run the command. An app with no sign-in drops the `storageState` line.
+A browser opens; the user signs in and closes it; cookies and local storage land in `.crowdin/auth.json`, inside the gitignored workspace. The config's `storageState` loads that file into every test. A session that expires shows up as the sign-in page in every screenshot: re-run the command. An app with no sign-in drops the `storageState` line.
 
 ## The spec
 
@@ -100,4 +100,4 @@ rm -rf .crowdin/screenshots && mkdir -p .crowdin/screenshots
 npx playwright test -c playwright.crowdin.config.ts
 ```
 
-A top-up run names its screens: `npx playwright test -c playwright.crowdin.config.ts -g "settings-profile|billing"`. Then the upload in `SKILL.md`. Both lines, plus the sign-in command, go into the report so the next person can re-run them without this skill.
+A top-up run names its screens: `npx playwright test -c playwright.crowdin.config.ts -g "settings-profile|billing"`.

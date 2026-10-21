@@ -34,9 +34,9 @@ final class CrowdinScreenshots: XCTestCase {
 }
 ```
 
-The direct write works because a UI test runner on the simulator runs on the Mac and sees its disk; a physical device cannot write there, and this skill does not need one. Attaching the screenshot with `XCTAttachment` instead keeps it in the result bundle, which is the Xcode-native place for test media but not a folder the CLI can upload; the direct write is the shorter path to the contract.
+The direct write works because a UI test runner on the simulator runs on the Mac and sees its disk; a physical device cannot write there, and this skill does not need one. Confirm on the first run that the file appears in the folder. If the runner cannot write there, attach the screenshot with `XCTAttachment` instead and export it from the result bundle with `xcrun xcresulttool export attachments`, then move it under the contract's name; the direct write is the shorter path whenever it works.
 
-Signing in is the user's: they sign in on the simulator, and the test launches without resetting the app's state. A flow that must start signed out gets its own `launchArguments` the app already understands, never credentials in the test.
+The user signs in on the simulator, and the test launches without resetting the app's state. A flow that must start signed out gets its own `launchArguments` the app already understands.
 
 ## Running it
 
@@ -49,4 +49,4 @@ xcodebuild test -scheme <Scheme> -destination 'platform=iOS Simulator,name=<Devi
   -only-testing:<UITestTarget>/CrowdinScreenshots
 ```
 
-A top-up run names its tests: `-only-testing:<UITestTarget>/CrowdinScreenshots/testSettings`. Then the upload in `SKILL.md`, and the lines above go into the report. An existing fastlane `snapshot` lane is a working capture definition already: its output folder, gathered into the contract with the device suffix dropped, is the batch.
+A top-up run names its tests: `-only-testing:<UITestTarget>/CrowdinScreenshots/testSettings`. An existing fastlane `snapshot` lane is a working capture definition already: its output folder, gathered into the contract with the device suffix dropped, is the batch.

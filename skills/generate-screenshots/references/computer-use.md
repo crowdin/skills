@@ -16,7 +16,7 @@ screencapture -x -R <x,y,w,h> .crowdin/screenshots/settings.png                #
 
 On macOS the region is the app window's frame, read once and reused for every shot so the framing stays one. On Windows the Snipping Tool saves its capture under its own name; the file is moved under the contract's name in the same step. The simulator and emulator commands capture the device, never the window around it, which is why they are preferred for mobile over a region of the screen.
 
-The rules from `SKILL.md` hold unchanged: the plan is reviewed before the first click, the user signs in themselves, the batch folder is emptied first, every image in it is one the command wrote this run, and the folder is listed and looked at before upload. The one rule that matters more here than anywhere: never pass an image the agent merely saw as a capture, and never compose one.
+The journey's rules hold unchanged, and a capture here is a file one of these commands wrote this run.
 
 ## What the report records instead of a definition
 
