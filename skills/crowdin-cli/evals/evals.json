@@ -1,88 +1,17 @@
 {
   "skill_name": "crowdin-cli",
-  "note": "Covers the apps reference (references/apps.md). Recorded outputs come from a live Webflow app run on 2026-10-15; agents read them instead of running the CLI.",
+  "note": "Covers the hand-off to integration-sync for app calls.",
   "evals": [
     {
       "id": 1,
-      "name": "webflow-import-and-push",
-      "prompt": "The agent runs no commands; fixtures/webflow-app.md holds the recorded output of each one. Our Webflow site is connected to Crowdin project 12345 through the Webflow app. Import the blog post '5 Principles Of Effective Web Design' into Crowdin, then push its Ukrainian translation back to Webflow once it's translated.",
-      "expected_output": "Discovers the methods, selects the post's entry from integration-files with jq and sends crowdin-update through --input, falls back to the files form on the 501, follows the job until finished, maps the post to Crowdin file 1024, pushes {\"1024\": [\"uk\"]} through --input and follows that job too.",
-      "files": [
-        "evals/fixtures/webflow-app.md"
-      ],
-      "expectations": [
-        "No entry ID is typed or reconstructed by hand; bodies are built with jq from the app's own output",
-        "Names or paths are passed to jq with --arg, not inside the single-quoted program",
-        "Every write uses -X POST or --input; no write goes out as a GET",
-        "On the 501 for entryIds, the next attempt uses the files form",
-        "The integration-update body is the nested {fileId: [languages]} map sent through --input",
-        "The final message reports each job as finished only when a finished status was seen, and otherwise gives the job-info command"
-      ]
-    },
-    {
-      "id": 2,
-      "name": "wrong-verb-405",
-      "prompt": "The agent runs no commands; fixtures/webflow-app.md holds the recorded output of each one. I ran `crowdin app api webflow crowdin-update -F projectId=12345 -f 'entryIds[]=abc'` and it failed with \"Application 'webflow' declares 'crowdin-update' for POST, not GET. Pass -X POST or --input\". Why, and what should I run?",
-      "expected_output": "Explains that fields never change the verb, so the call went out as GET to a POST-only method, and that the app is installed. Points out that 'abc' is not an entry ID the app knows, and gives the jq-built --input command.",
-      "files": [
-        "evals/fixtures/webflow-app.md"
-      ],
-      "expectations": [
-        "Names the missing -X POST or --input as the cause, not a missing app",
-        "Says entry IDs must be copied from integration-files output",
-        "Mentions the files form as the fallback when entryIds returns 501"
-      ]
-    },
-    {
-      "id": 3,
-      "name": "undescribed-method",
-      "prompt": "The agent runs no commands; fixtures/webflow-app.md holds the recorded output of each one. Recorded outputs: `crowdin app methods acme-dam` lists GET assets and POST assets/sync; describing assets/sync shows no parameters and a documentation link, because the app publishes no OpenAPI document; `crowdin app api acme-dam assets -F projectId=12345` returns {\"items\":[{\"assetId\":\"a-77\",\"title\":\"Spring banner\"}]}. User: \"Sync the asset called 'Spring banner' from Acme DAM into Crowdin project 12345.\"",
-      "expected_output": "Finds the asset with the read method, then stops before the write: the body of assets/sync is unknown, so it points to the documentation link or asks the user for the field name.",
-      "files": [
-        "evals/fixtures/webflow-app.md"
-      ],
-      "expectations": [
-        "Does not send a POST to assets/sync with a guessed field name",
-        "Uses the read-only list method to find the asset's ID",
-        "Names the documentation link or asks the user for the body shape"
-      ]
-    },
-    {
-      "id": 4,
-      "name": "auto-sync-user-away",
-      "prompt": "The agent runs no commands; fixtures/webflow-app.md holds the recorded output of each one. We use the Webflow app in Crowdin project 12345. Make sure all our blog posts get synced to Crowdin automatically every night. I'm heading out, just get it done.",
-      "expected_output": "Uses provider=integration, reads the current auto-sync list first, builds current plus the blog posts with jq, previews with --dryrun, and stops there because the user is away, reporting the prepared body and the command. Mentions new-integration-files for future posts and that the frequency lives in settings.",
-      "files": [
-        "evals/fixtures/webflow-app.md"
-      ],
-      "expectations": [
-        "Uses provider=integration for platform-to-Crowdin auto-sync",
-        "Reads the current sync-settings list before building the new one, and keeps the About page",
-        "Does not send the sync-settings or settings POST",
-        "The final message gives the prepared command to apply the change",
-        "Mentions that future posts need the new-integration-files setting, or says the app may not offer it"
-      ]
-    },
-    {
-      "id": 5,
-      "name": "trigger-integration-task",
-      "prompt": "translate the latest 3 HubSpot campaigns into German",
-      "expected_output": "The crowdin-cli skill is loaded and references/apps.md is read before any app call; the work runs through crowdin app list, methods and api.",
+      "name": "app-command-hands-off",
+      "prompt": "I ran `crowdin app api webflow crowdin-update -F projectId=12345 -f 'entryIds[]=abc'` and it failed with \"Application 'webflow' declares 'crowdin-update' for POST, not GET. Pass -X POST or --input\". Why, and what should I run?",
+      "expected_output": "crowdin-cli loads on the pasted crowdin app api command and hands off to integration-sync, whose CLI reference explains the verb rule and gives the jq-built --input command.",
       "files": [],
       "expectations": [
-        "crowdin-cli is loaded for the task",
-        "references/apps.md is read before the first crowdin app api call"
-      ]
-    },
-    {
-      "id": 6,
-      "name": "no-trigger-which-app",
-      "prompt": "what's the best Crowdin app for syncing a Shopify store?",
-      "expected_output": "Answered by how-to-crowdin as a store question; no crowdin app api calls.",
-      "files": [],
-      "expectations": [
-        "No crowdin app api call is made",
-        "The answer treats it as choosing an app, not running one"
+        "crowdin-cli is loaded",
+        "integration-sync is loaded before the answer",
+        "The answer does not restate the integration loop from crowdin-cli's own text"
       ]
     }
   ]

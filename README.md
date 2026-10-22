@@ -96,6 +96,10 @@ Guides correct usage of the Crowdin CLI — the `crowdin` command that syncs loc
 
 Sets up, reviews, and debugs [crowdin/github-action](https://github.com/crowdin/github-action) — the workflow step that syncs sources and translations and opens the translation PR. Covers the fixed pipeline a single step runs (and the defaults that surprise people), the git half it performs after a download, secrets, token scopes and the permissions PR creation needs, the `command` escape hatch and what it silently skips, and a symptom → cause table for runs that produce no PR or no CI checks. Ships a full inputs/outputs reference and recipes for the patterns upstream doesn't document — split upload/download workflows, GitHub App auth, post-processing before the PR — linking to the action's own examples for the rest.
 
+### integration-sync
+
+Runs an installed Crowdin integration app's sync loop: imports content from the connected platform (Webflow, HubSpot, Contentful, Zendesk Guide, Braze and the other store integrations) into Crowdin, follows the job, pushes translations back, and reads or changes the auto-sync schedule. Runs through the Crowdin connector in Cowork, Claude.ai, ChatGPT or Crowdin Copilot, and through `crowdin app api` in a terminal, with the same rules on both: IDs are copied from the app's own output, every state-changing call is shown before it is sent, and a job is reported finished only once that status was seen.
+
 ### context-extraction
 
 Fills `ai_context` in Crowdin JSONL files so translators get clear context. Covers which strings need context (ambiguous short words, plurals, inline tags, etc.), how to write 1–3 sentence descriptions (UI element type, placement), and safe editing rules (only edit `ai_context`, validity checklist). Runs the loop around them: `crowdin context download` → fill `ai_context` → `crowdin context upload`.
@@ -179,6 +183,7 @@ If you prefer, you can install specific skills:
 npx skills add crowdin/skills --skill create-app
 npx skills add crowdin/skills --skill crowdin-cli
 npx skills add crowdin/skills --skill github-action
+npx skills add crowdin/skills --skill integration-sync
 npx skills add crowdin/skills --skill context-extraction
 npx skills add crowdin/skills --skill glossary-terms-extraction
 npx skills add crowdin/skills --skill glossary-term-translations

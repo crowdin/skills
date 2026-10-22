@@ -319,7 +319,7 @@ Manage installed Crowdin apps and call their API methods. Config: set C.
 - `crowdin app list` — `-v/--verbose` adds the base URL and the projects each app serves
 - `crowdin app install <identifier>` — identifier from the Crowdin Store
 - `crowdin app uninstall <identifier>` — `--force`
-- `crowdin app methods <identifier> [path]` and `crowdin app api <identifier> <path>` — see [apps.md](apps.md)
+- `crowdin app methods <identifier> [path]` and `crowdin app api <identifier> <path>` — the loop is in the `integration-sync` skill
 
 ## context
 
