@@ -33,7 +33,7 @@ The platform gains module types, manifest fields, SDK methods and scopes over ti
 | [building-app/user-interface.md](https://crowdin.github.io/serverless-apps/building-app/user-interface.md) | The UI kit |
 | [building-app/i18n.md](https://crowdin.github.io/serverless-apps/building-app/i18n.md) | Localization |
 | [development/troubleshooting.md](https://crowdin.github.io/serverless-apps/development/troubleshooting.md) | Known failures |
-| [understanding-scopes](https://support.crowdin.com/developer/understanding-scopes/) | The scope catalogue |
+| [understanding-scopes](https://support.crowdin.com/developer/understanding-scopes/) | What each scope grants |
 | [llms-full.txt](https://crowdin.github.io/serverless-apps/llms-full.txt) | Everything, one fetch |
 
 The division of labour: **the docs are authoritative on what exists, this skill on what order to do it in and what breaks.** When a list here disagrees with the docs, the docs win and the list here is stale - reach for a capability the docs describe even if it is absent from these pages. When something works but breaks in a way the docs do not mention, that is what this skill is for.
@@ -66,7 +66,7 @@ If they send nothing, the CLI's own state file holds the edition after login: `~
 
 ## Ask sparingly, and only in their words
 
-**Derive, do not ask:** who the user is, what data the app touches, the `scopes` ([scopes.md](references/scopes.md)), the edition and project (from their link), editor `modes` (declare **every mode the docs list** by default, so the panel is there wherever the user happens to be working - narrow it only if they ask, because a module is simply absent from any mode its manifest omits and the user has no way to know why), and a sensible app name. The template is fixed: always `projects-dashboard-cli`.
+**Derive, do not ask:** who the user is, what data the app touches, the `scopes` (an output of the green gate, not an input to the brief - [scopes.md](references/scopes.md)), the edition and project (from their link), editor `modes` (declare **every mode the docs list** by default, so the panel is there wherever the user happens to be working - narrow it only if they ask, because a module is simply absent from any mode its manifest omits and the user has no way to know why), and a sensible app name. The template is fixed: always `projects-dashboard-cli`.
 
 **State, do not ask:** put everything you derived into a short brief and let them correct it. Write it in the language they wrote to you in, and in plain words - "a panel on the right in the editor, next to the string", never "editor-right-panel, modes translate/review". A list of claims is easier to object to than a list of questions.
 
@@ -177,7 +177,9 @@ pnpm typecheck && pnpm lint
 npx crowdin-serverless-apps manifest validate
 ```
 
-Do not hand code over while any of the three is red. `typecheck` catches invented SDK APIs; neither it nor `lint` reads `manifest.json`, which is what `manifest validate` is for. Validation is offline - no login, no app link, not even `node_modules` - so run it the moment the manifest changes. It exits 1 on an invalid manifest or malformed JSON, groups problems by section and prints a `fix` line under each; read that hint, it spells out the accepted values.
+Do not hand code over while any of the three is red. `typecheck` catches invented SDK APIs; neither it nor `lint` reads `manifest.json`, which is what `manifest validate` is for. It checks the file against the schema, and it checks `scopes` against the code: every call the app makes through the API client is matched to the scope that method needs, `createStorage()` to `application.storage`, and the result compared with the manifest. A call the manifest does not cover is a problem with the exact string to add; a declared scope no call uses is a note. Validation is offline - no login, no app link - but the scope half reads the packages in `node_modules`, so run it after `pnpm install` and again whenever the manifest or the API calls change. It exits 1 on a problem, groups problems by section and prints a `fix` line under each; read that hint, it spells out the accepted values, scope strings included.
+
+A green run that carries a `scope check skipped` note has not looked at the scopes. Do what the note says - `pnpm install`, or `pnpm update @crowdin/serverless-apps-cli @crowdin/crowdin-api-client` in an app that predates the check - and run it again ([scopes.md](references/scopes.md)).
 
 Passing does not mean Crowdin will accept the manifest, only that the cheap mistakes are gone.
 
@@ -248,8 +250,9 @@ Never ask for a token in chat. On a machine with no browser at all, `CROWDIN_PER
 | Blank iframe, or the host reports the app did not start | Manifest type, `prepare*` and `context.app.type` disagree, or a registration is not at the top level, or two modules of one type without keys. |
 | App published but absent from the UI slot | `manifest push` skipped, or a string-based project without `stringBasedAvailable`. |
 | App opens but shows nothing | Empty data, or the first-project fallback landed somewhere with no glossary/TM/strings. Check before blaming the code. |
-| 403 or an empty list at runtime, all checks green | A scope. See [scopes.md](references/scopes.md), including the read-looking calls that need the bare scope. |
-| Every storage call rejected | `application.storage` missing from the manifest `scopes`, or the manifest change not pushed. |
+| 403 `Endpoint isn't allowed for token scopes.` at runtime | A manifest scope. Run `manifest validate`: it names the call and the string to add. If validate is green, run `manifest status` - the scope is on disk but not pushed. If it printed `scope check skipped`, do what the note says first; a green run with that note has not looked at the scopes ([scopes.md](references/scopes.md)). |
+| Any other 403, or an empty list, all checks green | The viewer's own rights, not the manifest: calls run as whoever opened the app, and no check can see that. Build for what that person may do, or narrow the audience. |
+| Every storage call rejected | `application.storage` missing from the manifest `scopes` - `manifest validate` names the `createStorage()` call that needs it - or, if validate is green, the manifest change not pushed. |
 | `kv.user.*` throws while shared keys work | The viewer is anonymous - no user identity. Check `user.id` in the context before offering per-user features. |
 | A write under `module:...:` rejected | The key names a module other than the one the app is currently running as, or an unknown one. On reads the same situation is silent: `get` resolves `undefined`, listings skip the records. |
 | `You have no accessible projects to preview this module in.` | Either no project access, or a crowdsource module needing a public project. |
@@ -263,5 +266,5 @@ Never ask for a token in chat. On a machine with no browser at all, `CROWDIN_PER
 
 - [references/modules.md](references/modules.md) - every module type: placement, `prepare*`, manifest fields, edition lock, what `preview` can open
 - [references/sdk.md](references/sdk.md) - verified SDK snippets and the traps types do not catch
-- [references/scopes.md](references/scopes.md) - the scope catalogue and the read-needs-write cases
+- [references/scopes.md](references/scopes.md) - how `manifest validate` derives the scopes from the code, and what it cannot see
 - [references/cli.md](references/cli.md) - command and flag reference, env vars, what each command writes

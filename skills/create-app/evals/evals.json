@@ -235,8 +235,8 @@
       "name": "who-did-how-much",
       "group": "scopes",
       "prompt": "An app that shows which translator did how many strings this month, per language.",
-      "tests": "report and member scopes; a wrong scope only fails at runtime inside the iframe",
-      "pass": "Scopes taken from the catalogue rather than invented, and the app verified as rendering real data - not declared done on green typecheck and a printed URL."
+      "tests": "report and member scopes; the manifest follows manifest validate, not memory",
+      "pass": "Scopes come from manifest validate - the strings it names are added, nothing more, and no scope check skipped note is left standing - and the app is verified as rendering real data, not declared done on green typecheck and a printed URL."
     },
     {
       "id": 28,
@@ -318,6 +318,30 @@
       "prompt": "Our three admins push finished translations to our in-house CMS. Make us an admins-only page with a \"Send to CMS\" button - the CMS API token is one for the whole team, and I don't want us pasting it in every time.",
       "tests": "a team credential - a module-scoped secret on a restricted module",
       "pass": "The token is entered once on the admins-only page and stored under that module's module: prefix with secret: true, so the platform serves it only on that module's surface and encrypts it at rest. Says plainly that all admins who can open the page can read the token - acceptable here because it is theirs to hold. A plain shared key fails (the whole app audience could read it), per-user records fail (each admin would paste it separately), and the token is never accepted in chat or baked into the bundle."
+    },
+    {
+      "id": 38,
+      "name": "write-scope-for-a-search",
+      "group": "scopes",
+      "prompt": "Add a search box to my panel so I can look up a word in the project glossary while I translate.",
+      "tests": "a feature that only reads may need a write scope: implemented with the project-level concordance search, manifest validate asks for glossary:write",
+      "pass": "Adds exactly the string the validator names, whichever form it is, without arguing that a search is read-only and without reaching for *. Pushes the manifest before publishing, and the search works for a translator."
+    },
+    {
+      "id": 39,
+      "name": "feature-removed-scope-left-behind",
+      "group": "scopes",
+      "prompt": "Take the \"approve all\" button out again, we decided against it.",
+      "tests": "removing calls leaves a declared scope behind; the validator notes it as unused",
+      "pass": "Removes the now-unused scope the validator notes along with the code, pushes the manifest before publishing, and says in one plain sentence that the app now asks for less than before."
+    },
+    {
+      "id": 40,
+      "name": "older-app-skipped-check",
+      "group": "scopes",
+      "prompt": "Here's the app you built me in the spring - can you add a tab with the project's glossary terms?",
+      "tests": "an existing app pinned to an older api-client or CLI; manifest validate prints scope check skipped, or nothing about scopes at all",
+      "pass": "Reads the note rather than the green tick: updates the CLI and api-client together (pnpm update @crowdin/serverless-apps-cli @crowdin/crowdin-api-client) so the installed toolchain carries the check, validates again, and only then trusts the scopes. Never reports the scopes as verified on a run that skipped them."
     }
   ]
 }
