@@ -146,7 +146,7 @@ If no registration matches what the host sent, the SDK deliberately does not cal
 
 `name`, `description`, `logo`, `bundle` (managed by the CLI), `scopes`, `stringBasedAvailable`, and `default_permissions`.
 
-`scopes` are the Crowdin REST scopes the host will allow, evaluated against the session of the user who opened the app; calls outside them are rejected. Narrow with `:read` or `:write` postfixes, and note `:write` does not imply read. Keep the list to what the app's calls actually need - a reviewer sees this list, and so does every admin who installs the app. The scaffold ships a realistic example:
+`scopes` are the Crowdin REST scopes the host will allow, evaluated against the session of the user who opened the app; calls outside them are rejected. `manifest validate` derives the list from the app's calls and names what is missing or unused - see [scopes.md](scopes.md). The scaffold ships a realistic example:
 
 ```json
 "scopes": ["project.settings:read", "project.status.progress:read", "group:read"]

@@ -1,81 +1,52 @@
 # Scopes
 
-`scopes` in the manifest is the list of Crowdin REST permissions the host will allow the app to exercise. The host runs every call under the session of whoever opened the app and rejects anything outside this list, so a wrong or missing scope does not fail `typecheck`, `lint`, `manifest validate` or `publish` - it 403s at runtime, inside the iframe, where nothing in the build checks. Get it right from this list rather than from memory.
+`scopes` in the manifest is the list of Crowdin REST permissions the host will allow the app to exercise. The host runs every call under the session of whoever opened the app and rejects anything outside this list with a 403 `Endpoint isn't allowed for token scopes.` - at runtime, inside the iframe, where `typecheck`, `lint` and `publish` see nothing. `manifest validate` is the check that does see it: it matches every call the app makes through the API client to the scope that method needs and compares the result with the manifest. So the list is not composed from memory - write the calls, run `manifest validate`, add the strings it names.
 
-Keep the list to what the app's calls actually need. A reviewer sees it, and so does every admin who installs the app.
+Keep the list to what the app's calls actually need. A reviewer sees it, and so does every admin who installs the app - and the validator notes every declared scope no call uses, so there is no reason to leave one in.
 
 ## Postfixes
 
-Most scopes take `:read` or `:write`. `:write` does **not** imply read, so an app that lists and edits needs both or the bare scope. Read-only scopes take no postfix at all - adding one is invalid.
+Most scopes take `:read` or `:write`; the bare scope grants both. `:write` does **not** imply read, so an app that lists and edits needs both or the bare scope - when the validator has asked for both forms of one scope, the bare form is the same grant in one entry. A parent covers its descendants: the bare `project` covers every `project.*` call, `project:read` covers their `:read` calls only, and `project:write` covers all of them, reads included. The narrower child is still the better declaration when it fits - the scaffold ships `project.status.progress:read`, not `project.status`. Read-only scopes such as `vendor` or `security-log` take `:read` like any other; that is the form the validator names.
 
-Verbs in the request are a decent first guess (`shows` is read, `adds` or `changes` is write) but not a rule: see [when read needs write](#when-a-read-looking-call-needs-the-write-scope).
+## Where a call's scope comes from
 
-## The list
+Every method of `@crowdin/crowdin-api-client` carries a `@requiredScope` tag in its JSDoc - `project.member:read`, `glossary:write`, or `none` for the few endpoints any session may call. Your editor shows it on hover; `manifest validate` reads it from the copy installed in the app, so a newer client brings newer scopes without a CLI update. `createStorage()` counts as a call needing `application.storage`.
 
-The authority is [understanding-scopes](https://support.crowdin.com/developer/understanding-scopes/) - fetch it when a scope you need is not below, since the catalogue grows. The table is an orientation copy, and the sections after it are what the docs do not tell you.
+Trust the tag over the verb of the operation. Some read-shaped endpoints are `POST` calls the backend guards at write level - project-level glossary and TM concordance search are `glossary:write` and `tm:write` - so a `:write` in the `fix` line under a search feature is the platform's rule, not a mistake to argue with. Add exactly what the validator names; never reach for `*`, which covers everything, passes the check silently and asks every admin who installs the app for the whole organization.
 
-| Scope | Covers |
-|---|---|
-| `project` | Accessible projects |
-| `project.settings` | View, create and update project settings |
-| `project.status` | Translation status. Read-only |
-| `project.member` | Project members and teams |
-| `project.task` | Project tasks |
-| `project.report` | Generate and export project reports |
-| `project.source` | Branches, files, source strings |
-| `project.translation` | Add and manage translations |
-| `project.screenshot` | Screenshots and tags |
-| `project.webhook` | Project webhook configuration |
-| `project.advisor` | Context Advisor checks and insights |
-| `tm` | Translation memories |
-| `glossary` | Glossaries and terms |
-| `style-guide` | Style guides and their assignment to projects |
-| `group` | Project groups (Enterprise) |
-| `language` | Organization languages |
-| `user` | Users (Enterprise) |
-| `team` | User teams (Enterprise) |
-| `field` | Organization fields (Enterprise) |
-| `vendor` | Organization vendors (Enterprise). Read-only |
-| `client` | Organization clients (Enterprise). Read-only |
-| `organization` | Organization info (Enterprise). Read-only |
-| `notification` | Notification settings and subscriptions |
-| `mt` | Machine translation engines |
-| `ai`, `ai.provider`, `ai.prompt`, `ai.fine-tuning` | AI providers, prompts, fine-tuning |
-| `ai.proxy` | Proxying requests to AI providers. Read-only |
-| `ai.translate` | AI translation of strings and files |
-| `ai.request-log` | AI request logs. Read-only |
-| `security-log` | Security logs. Read-only |
-| `application` | Everything applications - installations, request proxying, consents, storage. An umbrella over the four below; prefer the narrow form |
-| `application.installation` | Install, update and remove applications |
-| `application.proxy` | Request proxying to the API of installed applications |
-| `application.consent` | User consents granted to applications |
-| `application.storage` | The app's own Crowdin Storage records. Required for `createStorage()` |
-| `webhook` | Organization webhooks |
-| `automation`, `automation.rule`, `automation.rule.execution` | Automation rules (Enterprise) |
-| `custom-spellchecker`, `external-qa-check` | Enterprise, read-only |
-| `*` | Everything. Never declare this in an app you ship |
+For what a scope actually grants, the authority is [understanding-scopes](https://support.crowdin.com/developer/understanding-scopes/).
 
-Finer-grained sub-scopes exist beyond this table - the scaffold ships `project.status.progress:read`, a narrower slice of `project.status`. When a narrower form fits, prefer it.
+## What it prints
 
-## Common combinations
+A call the manifest does not cover is a problem under `scopes`, with the call that needs it and the string to add:
 
-Taken from apps that work, not composed here:
+```
+✗ scopes
+    "glossary:read" is needed by glossariesApi.listGlossaries at src/corpus.tsx:78
+    fix    add "glossary:read" to scopes
+```
 
-- projects and progress dashboard - `project.settings:read`, `project.status.progress:read`, `group:read`
-- translation memories - `tm:read`
-- glossary lookup in the editor - `glossary` (see below)
-- untranslated counts per language - `project.status.progress:read`
-- comments and issues on strings - a `project.source` scope is required; `project.translation` alone returns a uniform 403. Two runs hit this and reported it slightly differently (`project.source.string` versus `project.source:read` alongside `project.translation:read`), so treat the exact minimal pair as unsettled: start from the narrowest that has actually worked for someone (`project.source.string:read`) and widen only on a real 403 rather than guessing
-- who translated how much - `project.report`, plus `project.member:read` for names
-- anything the app remembers between sessions (settings, notes, shared state) - `application.storage`
+Notes come after the problems, and a green run can carry notes too, so read past the tick:
 
-## When a read-looking call needs the write scope
+```
+3 notes
+- computed method on usersApi at src/corpus.tsx:67; scope cannot be determined
+- possible call usersApi.listUsers at src/untyped.js:3 (type unknown); needs user:read if this is the Crowdin client
+- "tm:read": no call in src/ uses it
+```
 
-Some read-shaped endpoints are `POST` calls that the backend guards at write level, so the narrow `:read` form gets a 403 on an obviously read-only feature. The known case: glossary concordance search (`POST /projects/{id}/glossaries/concordance`) needs the bare `glossary`, not `glossary:read`.
+An unused-scope note appears when the scan found calls, or found nothing at all. It stays quiet when it found no typed call but did print a note - an untyped receiver or a computed method name - because that call may be the one using the scope.
 
-Confirmed by a second run: **translation-memory concordance search behaves the same way** - the bare `tm`, not `tm:read`. Treat concordance endpoints as write-guarded in general.
+## What the check cannot see
 
-The general rule: when a call 403s despite a read-only intent, widen that one scope from `:read` to the bare form rather than adding unrelated scopes. Do not paper over it with `*`.
+Four outputs are not a clean bill:
+
+- `scope check skipped: ...` - the SDK is not installed, or the installed `@crowdin/crowdin-api-client` has no tags (the note says so: `update it to 1.60.0 or later`). `pnpm install`, or `pnpm update @crowdin/serverless-apps-cli @crowdin/crowdin-api-client`, then run it again: a green manifest with this note has not been checked for scopes. If the note survives the update - a pinned or age-gated install - take the scopes from [understanding-scopes](https://support.crowdin.com/developer/understanding-scopes/) for now and validate again once the note goes.
+- `possible call <api>.<method> at ... (type unknown)` - a receiver the compiler could not type: a `.js` file, or an explicit `any`. Give it the `Client` type from `@crowdin/crowdin-api-client` and run again.
+- `computed method on <api> at ...; scope cannot be determined` - the method name is a variable, as in `client.usersApi[name]()`. Call it by name so the tag can be read.
+- An app that predates the check: its pinned CLI validates the schema only and prints nothing about scopes, which looks exactly like a pass. The same update brings the check and the tags together; validate after it.
+
+The scan follows types, not names: files the tsconfig neither includes nor reaches through an import are not scanned, and no check can see a viewer's rights: a 403 without `Endpoint isn't allowed for token scopes.` is the person, not the manifest.
 
 ## Checking what an installed app actually got
 

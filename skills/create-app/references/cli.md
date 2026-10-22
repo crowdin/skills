@@ -34,7 +34,7 @@ What you do have to handle: commands that need an answer will still wait for one
 | `list` | `--print`, `--json`. Lists your apps. Doubles as a read-only auth probe. |
 | `link` | `--app-id <id>`. Links the working directory to an app that already exists. |
 | `manifest status` | Diffs local `manifest.json` against Crowdin. **Exit code 1 means they differ**, which makes it a check you can act on. |
-| `manifest validate` | Checks `manifest.json` against the manifest schema, plus forbidden root keys, unknown module types and duplicate keys. Offline: no login, no app link, no `node_modules`. **Exit code 1** when invalid or not valid JSON. Run it after every manifest edit, before `push`. |
+| `manifest validate` | Checks `manifest.json` against the manifest schema, plus forbidden root keys, unknown module types and duplicate keys - and checks `scopes` against the API calls in `src/`, read through the TypeScript compiler and the `@requiredScope` tag of each method in the app's installed `@crowdin/crowdin-api-client`. Offline: no login, no app link; the scope check needs `node_modules` and is skipped with a note without them. **Exit code 1** when invalid, not valid JSON, or a call lacks its scope. Run it after every manifest edit and after writing API calls, before `push`. |
 | `manifest push` | Applies the local manifest to Crowdin. |
 | `manifest pull` | Overwrites the local manifest from Crowdin. |
 | `login` | `--file-storage`, `--port <n>` (one of 26140-26144). OAuth in the browser; stores the token. |
@@ -89,4 +89,4 @@ pnpm format
 pnpm typecheck      # tsc --noEmit
 ```
 
-There are no tests in the scaffold, so `typecheck` plus `lint` is the whole automated safety net. Both must be green before the app goes to the user.
+There are no tests in the scaffold, so `typecheck`, `lint` and `manifest validate` are the whole automated safety net. All three must be green before the app goes to the user.

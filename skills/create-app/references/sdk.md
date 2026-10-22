@@ -100,7 +100,7 @@ export function App() {
 
 Create the client once (`useMemo`) rather than per render. Use `.withFetchAll()` on list calls to page through everything instead of hand-rolling pagination.
 
-Scopes do not always follow the verb of the operation. Some read-shaped endpoints are `POST` calls and the backend guards them at write level, so the narrow `:read` scope gets a 403: glossary concordance search (`POST /projects/{id}/glossaries/concordance`) needs the bare `glossary` scope, not `glossary:read`. When a call 403s despite an obviously read-only intent, widen that one scope from `:read` to the bare form rather than adding unrelated scopes.
+Every method carries its scope in its JSDoc - `@requiredScope project.member:read`, visible on hover and read by `manifest validate` - so the manifest follows the code, not the verb: project-level concordance search is `glossary:write` and `tm:write` although it only reads, and the validator will say so. Add the string it names rather than second-guessing it ([scopes.md](scopes.md)).
 
 Three hard limits of the proxy:
 
@@ -110,7 +110,7 @@ Three hard limits of the proxy:
 
 ## Keeping data: Crowdin Storage
 
-`createStorage()` returns the app's Crowdin-hosted key-value store - the same viewer-session model as the API client, no token. It works only with `application.storage` in the manifest `scopes`; without it every call is rejected. A value is any JSON value except `null`, up to 240 KiB serialized.
+`createStorage()` returns the app's Crowdin-hosted key-value store - the same viewer-session model as the API client, no token. It works only with `application.storage` in the manifest `scopes`; without it every call is rejected, and `manifest validate` flags a `createStorage()` the manifest does not cover. A value is any JSON value except `null`, up to 240 KiB serialized.
 
 The key prefix *is* the access model, so pick it by who the data belongs to - the decision table is in [SKILL.md](../SKILL.md#when-the-app-needs-to-remember-something):
 
