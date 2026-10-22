@@ -16,7 +16,7 @@ The shared method set is `integration-files`, `crowdin-files`, `crowdin-update`,
 4. **Import into Crowdin**: build the body from step 3's output with jq and send it with `--input` (see "Request bodies"). Send `entryIds` first; when the app answers 501, send the `files` form.
 5. **Follow the job**: `crowdin app api <app> job-info -F projectId=<id> -f jobId=<jobId>`, repeated until `status` is `finished` or `failed`. A job you stopped polling is reported with this command for the user to run.
 6. **Map to Crowdin files**: `crowdin app api <app> crowdin-files -F projectId=<id> -o json`.
-7. **Translate**: `crowdin auto-translate` (in the `crowdin-cli` skill). `auto-translate --file` takes the file's Crowdin path, not its ID: `crowdin file list -o json` pairs each `id` with its `path`. Progress: `file-progress -F projectId=<id> -F fileId=<crowdinFileId>`, keyed by the file ID: `jq --arg id <crowdinFileId> '.[$id][] | {languageId, translationProgress, approvalProgress}'`.
+7. **Translate**: `crowdin auto-translate` (in the `crowdin-cli` skill). `auto-translate --file` takes the file's Crowdin path, not its ID: `crowdin file list -o json` pairs each `id` with its `path`. Progress: `file-progress -F projectId=<id> -F fileId=<crowdinFileId>`, keyed by the file ID: `jq --arg id <crowdinFileId> '.[$id][] | {languageId, translationProgress, approvalProgress}'`. What a run applied shows in this progress read before and after it: a `translationProgress` that did not move means it applied nothing.
 8. **Push back**: `integration-update` with `{"projectId": <id>, "files": {"<crowdinFileId>": ["uk"]}}` through `--input`, then step 5 again.
 
 ## Request bodies
