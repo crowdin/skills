@@ -2,11 +2,11 @@
 
 Agents call no tools in these evals. When an agent "calls" a Crowdin connector tool, it reads the recorded output here. If a call is not recorded, it says what it expects and continues.
 
-Recorded on 2026-10-21 from the Crowdin MCP server against a live Webflow app; the project is anonymized to 12345, the site to "Example Site", the user to 1001. Webflow IDs, Crowdin file IDs and job IDs are as returned. Every tool takes `applicationIdentifier: "webflow"` and `projectId: 12345`. One section, the push response, is synthesized rather than recorded and says so. The tree is a representative subset of the full tree, which had the same shape with more pages, posts and components.
+Recorded on 2026-10-21 from the Crowdin MCP server against a live Webflow app; the project is anonymized to 12345, the site to "Example Site", the user to 1001. Webflow IDs, Crowdin file IDs and job IDs are as returned. Every tool takes `applicationIdentifier: "webflow"` and `projectId: 12345`. Sections marked 2026-10-22 were recorded a day later against the same app and project. Two sections, the push response and the `apply_pre_translation` response, are synthesized rather than recorded and say so. The tree is a representative subset of the full tree, which had the same shape with more pages, posts and components.
 
-## list_application_installations, fields ["permissions", "modules"]
+## list_application_installations, limit 500
 
-Three of the 26 installed apps, trimmed to the fields that matter. `permissions` and `modules` are not in the default fields and had to be requested. GitHub has `project-integrations` without `api`: it is a native integration, not driven by the integration tools. Contentful and Webflow have both.
+Recorded on 2026-10-22. Default fields only, trimmed to five of the 26 installed apps. An identifier is not always the app's name. With the default `limit` of 25 the first page held 25 apps and Webflow, the 26th, was not on it; that page requested with `fields: ["permissions", "modules"]` ran to about 59,000 characters.
 
 ```json
 {
@@ -15,160 +15,230 @@ Three of the 26 installed apps, trimmed to the fields that matter. `permissions`
    "data": {
     "identifier": "github",
     "name": "GitHub",
-    "baseUrl": "https://system-app.app.crowdin.net",
-    "permissions": {
-     "user": {
-      "value": "all",
-      "ids": []
-     },
-     "project": {
-      "value": "own",
-      "ids": []
-     }
-    },
-    "modules": [
-     {
-      "key": "github",
-      "type": "project-integrations"
-     }
-    ]
+    "description": null,
+    "logo": "/github.svg",
+    "baseUrl": "https://system-app.app.crowdin.net"
    }
   },
   {
    "data": {
     "identifier": "contentful",
     "name": "Contentful",
-    "baseUrl": "https://contentful.app.crowdin.net",
-    "permissions": {
-     "user": {
-      "value": "owner",
-      "ids": []
-     },
-     "project": {
-      "value": "own",
-      "ids": []
-     }
-    },
-    "modules": [
-     {
-      "key": "contentful-int",
-      "type": "project-integrations"
-     },
-     {
-      "key": "crowdin-files-api",
-      "type": "api"
-     },
-     {
-      "key": "crowdin-files-api",
-      "type": "api"
-     },
-     {
-      "key": "integration-files-api",
-      "type": "api"
-     },
-     {
-      "key": "crowdin-update-api",
-      "type": "api"
-     },
-     {
-      "key": "integration-update-api",
-      "type": "api"
-     },
-     {
-      "key": "settings-api",
-      "type": "api"
-     },
-     {
-      "key": "settings-update-api",
-      "type": "api"
-     },
-     {
-      "key": "sync-settings-api",
-      "type": "api"
-     },
-     {
-      "key": "sync-settings-update-api",
-      "type": "api"
-     }
-    ]
+    "description": null,
+    "logo": "/logo.png",
+    "baseUrl": "https://contentful.app.crowdin.net"
+   }
+  },
+  {
+   "data": {
+    "identifier": "iterable-app",
+    "name": "Iterable",
+    "description": null,
+    "logo": "/logo.png",
+    "baseUrl": "https://iterable-app.awesome-crowdin.com"
+   }
+  },
+  {
+   "data": {
+    "identifier": "braze-content-translation",
+    "name": "Braze Campaigns & Canvas",
+    "description": null,
+    "logo": "/logo.svg",
+    "baseUrl": "https://braze.app.crowdin.net"
    }
   },
   {
    "data": {
     "identifier": "webflow",
     "name": "Webflow",
-    "baseUrl": "https://webflow.app.crowdin.net",
-    "permissions": {
-     "user": {
-      "value": "owner",
-      "ids": []
-     },
-     "project": {
-      "value": "own",
-      "ids": []
-     }
-    },
-    "modules": [
-     {
-      "key": "webflow-int",
-      "type": "project-integrations"
-     },
-     {
-      "key": "crowdin-files-api",
-      "type": "api"
-     },
-     {
-      "key": "file-translation-progress-api",
-      "type": "api"
-     },
-     {
-      "key": "integration-files-api",
-      "type": "api"
-     },
-     {
-      "key": "crowdin-update-api",
-      "type": "api"
-     },
-     {
-      "key": "integration-update-api",
-      "type": "api"
-     },
-     {
-      "key": "job-list-api",
-      "type": "api"
-     },
-     {
-      "key": "job-info-api",
-      "type": "api"
-     },
-     {
-      "key": "job-cancel-api",
-      "type": "api"
-     },
-     {
-      "key": "settings-schema-api",
-      "type": "api"
-     },
-     {
-      "key": "settings-api",
-      "type": "api"
-     },
-     {
-      "key": "settings-update-api",
-      "type": "api"
-     },
-     {
-      "key": "sync-settings-api",
-      "type": "api"
-     },
-     {
-      "key": "sync-settings-update-api",
-      "type": "api"
-     }
-    ]
+    "description": null,
+    "logo": "/logo.png",
+    "baseUrl": "https://webflow.app.crowdin.net"
    }
   }
- ]
+ ],
+ "pagination": {
+  "offset": 0,
+  "limit": 500
+ }
+}
+```
+
+## get_application_installation, identifier "webflow"
+
+Recorded on 2026-10-22. The tool takes `identifier` and has no `fields` parameter; `permissions` and `modules` come back by default. Trimmed to the fields that matter, each module to its `key` and `type`.
+
+```json
+{
+ "data": {
+  "identifier": "webflow",
+  "name": "Webflow",
+  "baseUrl": "https://webflow.app.crowdin.net",
+  "permissions": {
+   "user": {
+    "value": "owner",
+    "ids": []
+   },
+   "project": {
+    "value": "own",
+    "ids": []
+   }
+  },
+  "modules": [
+   {
+    "key": "webflow-int",
+    "type": "project-integrations"
+   },
+   {
+    "key": "crowdin-files-api",
+    "type": "api"
+   },
+   {
+    "key": "file-translation-progress-api",
+    "type": "api"
+   },
+   {
+    "key": "integration-files-api",
+    "type": "api"
+   },
+   {
+    "key": "crowdin-update-api",
+    "type": "api"
+   },
+   {
+    "key": "integration-update-api",
+    "type": "api"
+   },
+   {
+    "key": "job-list-api",
+    "type": "api"
+   },
+   {
+    "key": "job-info-api",
+    "type": "api"
+   },
+   {
+    "key": "job-cancel-api",
+    "type": "api"
+   },
+   {
+    "key": "settings-schema-api",
+    "type": "api"
+   },
+   {
+    "key": "settings-api",
+    "type": "api"
+   },
+   {
+    "key": "settings-update-api",
+    "type": "api"
+   },
+   {
+    "key": "sync-settings-api",
+    "type": "api"
+   },
+   {
+    "key": "sync-settings-update-api",
+    "type": "api"
+   }
+  ]
+ }
+}
+```
+
+## get_application_installation, identifier "contentful"
+
+Recorded on 2026-10-22, trimmed the same way. Contentful has `project-integrations` and `api` but no job keys and no `file-translation-progress-api`; it lists `crowdin-files-api` twice.
+
+```json
+{
+ "data": {
+  "identifier": "contentful",
+  "name": "Contentful",
+  "baseUrl": "https://contentful.app.crowdin.net",
+  "permissions": {
+   "user": {
+    "value": "owner",
+    "ids": []
+   },
+   "project": {
+    "value": "own",
+    "ids": []
+   }
+  },
+  "modules": [
+   {
+    "key": "contentful-int",
+    "type": "project-integrations"
+   },
+   {
+    "key": "crowdin-files-api",
+    "type": "api"
+   },
+   {
+    "key": "crowdin-files-api",
+    "type": "api"
+   },
+   {
+    "key": "integration-files-api",
+    "type": "api"
+   },
+   {
+    "key": "crowdin-update-api",
+    "type": "api"
+   },
+   {
+    "key": "integration-update-api",
+    "type": "api"
+   },
+   {
+    "key": "settings-api",
+    "type": "api"
+   },
+   {
+    "key": "settings-update-api",
+    "type": "api"
+   },
+   {
+    "key": "sync-settings-api",
+    "type": "api"
+   },
+   {
+    "key": "sync-settings-update-api",
+    "type": "api"
+   }
+  ]
+ }
+}
+```
+
+## get_application_installation, identifier "github"
+
+Recorded on 2026-10-22, trimmed the same way. GitHub has `project-integrations` without `api`: a native integration, not driven by the integration tools.
+
+```json
+{
+ "data": {
+  "identifier": "github",
+  "name": "GitHub",
+  "baseUrl": "https://system-app.app.crowdin.net",
+  "permissions": {
+   "user": {
+    "value": "all",
+    "ids": []
+   },
+   "project": {
+    "value": "own",
+    "ids": []
+   }
+  },
+  "modules": [
+   {
+    "key": "github",
+    "type": "project-integrations"
+   }
+  ]
+ }
 }
 ```
 
@@ -324,7 +394,7 @@ Folders have no `type`. Files have `type`, `tooltip`, `path` and the four flags.
 
 ## list_crowdin_files, applicationIdentifier "webflow", projectId 12345
 
-Crowdin-side IDs are strings here, and unrelated to the integration's IDs. Folders again have no `type`.
+Crowdin-side IDs are strings here, and unrelated to the integration's IDs. Folders again have no `type`. The `Components` folder and `Footer` are from 2026-10-22, after Footer was imported.
 
 ```json
 {
@@ -347,6 +417,11 @@ Crowdin-side IDs are strings here, and unrelated to the integration's IDs. Folde
    "id": "34786",
    "parentId": "34770",
    "name": "Pages"
+  },
+  {
+   "id": "34798",
+   "parentId": "34770",
+   "name": "Components"
   },
   {
    "id": "34776",
@@ -394,6 +469,13 @@ Crowdin-side IDs are strings here, and unrelated to the integration's IDs. Folde
    "id": "34794",
    "parentId": "34786",
    "name": "Password",
+   "type": "webxml",
+   "excludedTargetLanguages": null
+  },
+  {
+   "id": "34800",
+   "parentId": "34798",
+   "name": "Footer",
    "type": "webxml",
    "excludedTargetLanguages": null
   }
@@ -473,6 +555,14 @@ A failed push. `payload` and `data` are JSON text. `payload` is the file-to-lang
   "finishedAt": "2026-10-16T09:25:41.723Z"
  }
 }
+```
+
+## get_job_info, jobId "ecab29c8-a8b4-4184-a8a5-5be204d49d92"
+
+Recorded on 2026-10-22. The push of Password (Crowdin file 34794) in Ukrainian, at 14:22 on 2026-10-21. Password's tooltip in the tree reads "Last update: Oct 21, 2026, 14:22": the date moved when this push wrote the translation into Webflow, with no edit to the source.
+
+```json
+{"data":{"id":"ecab29c8-a8b4-4184-a8a5-5be204d49d92","info":null,"data":"{}","attempt":0,"payload":"{\"34794\":[\"uk\"]}","progress":100,"status":"finished","title":"Sync files to Webflow","type":"updateIntegration","createdAt":"2026-10-21T14:22:15.449Z","updatedAt":"2026-10-21T14:22:16.812Z","finishedAt":"2026-10-21T14:22:16.812Z"}}
 ```
 
 ## get_sync_settings, provider "integration"
@@ -593,6 +683,38 @@ The About entry sent whole, with `tooltip`, `path`, `isNew`, `notSynced`, `synce
 
 ```json
 {"data":{"id":"5e5acc2e-b403-406f-9c8c-a6869eebc41a","info":null,"data":"{}","attempt":0,"payload":"[{\"id\":\"{\\\"type\\\":\\\"dom\\\",\\\"id\\\":\\\"6630fb7a547d803086a8d013\\\",\\\"name\\\":\\\"About\\\",\\\"slug\\\":\\\"about\\\",\\\"siteId\\\":\\\"6630fb7a547d803086a8cfda\\\",\\\"siteName\\\":\\\"Example Site\\\",\\\"primaryLocale\\\":\\\"6630fb7a547d803086a8d020\\\"}\",\"name\":\"About\",\"parentId\":\"pages\",\"type\":\"webxml\"}]","progress":100,"status":"finished","title":"Sync files to Crowdin","type":"updateCrowdin","createdAt":"2026-10-21T15:10:35.674Z","updatedAt":"2026-10-21T15:10:37.161Z","finishedAt":"2026-10-21T15:10:37.161Z"}}
+```
+
+## apply_pre_translation, fileIds [34800], languageIds ["uk"], method "mt", engineId 280492
+
+Not recorded: the call was made from another session, which kept only the job identifier. Synthesized from the job's recorded status below. Engine 280492 is the project's DeepL engine, which lists `uk` among its supported languages.
+
+```json
+{"data":{"identifier":"4cc5b169-1f15-4357-b2a0-b1583c26dc73","status":"created","progress":0,"attributes":{"scope":"untranslated","method":"mt","fileIds":[34800],"engineId":280492,"languageIds":["uk"],"autoApproveOption":"none"},"createdAt":"2026-10-22T08:29:36+00:00","updatedAt":"2026-10-22T08:29:36+00:00","startedAt":null,"finishedAt":null,"eta":"1 second"}}
+```
+
+## pre_translation_status, jobIdentifier "4cc5b169-1f15-4357-b2a0-b1583c26dc73"
+
+Recorded on 2026-10-22, trimmed to the attributes that matter. Finished at 100.
+
+```json
+{"data":{"identifier":"4cc5b169-1f15-4357-b2a0-b1583c26dc73","status":"finished","progress":100,"attributes":{"scope":"untranslated","method":"mt","fileIds":[34800],"engineId":280492,"languageIds":["uk"],"autoApproveOption":"none"},"createdAt":"2026-10-22T08:29:36+00:00","updatedAt":"2026-10-22T08:29:39+00:00","startedAt":"2026-10-22T08:29:37+00:00","finishedAt":"2026-10-22T08:29:39+00:00","eta":"2 seconds"}}
+```
+
+## pre_translation_report, jobIdentifier "4cc5b169-1f15-4357-b2a0-b1583c26dc73"
+
+Recorded on 2026-10-22. The finished DeepL job applied nothing: no language in the report.
+
+```json
+{"data":{"languages":[],"preTranslateType":"mt"}}
+```
+
+## pre_translation_report, a run that applied translations
+
+Recorded on 2026-10-22 for the same file and language with engine 1479 (Crowdin's own MT), run after the user chose it, and trimmed to the Footer file. For the shape of a non-empty report.
+
+```json
+{"data":{"languages":[{"id":"uk","files":[{"id":34800,"statistics":{"phrases":2,"words":4}}],"skipped":[],"skippedQaCheckCategories":[]}],"preTranslateType":"mt"}}
 ```
 
 ## get_integration_file_sync_progress, fileId 34790

@@ -1,6 +1,6 @@
 {
   "skill_name": "integration-sync",
-  "note": "Behaviour specification for the integration loop on both paths. Evals 1-4 run with a shell and the Crowdin CLI; fixtures/webflow-cli.md holds recorded CLI outputs (live Webflow app, 2026-10-15). Evals 7-11 run with the Crowdin connector's tools and no shell; fixtures/webflow-connector.md holds recorded MCP tool outputs (live Webflow app, 2026-10-21). Evals 5 and 6 check triggering. The rules that matter most hold on both paths: IDs are copied from the app's own output, a state-changing call goes out only when the user asked for that change, and a job is reported finished only after that status was seen. Why the rules are what they are, from the live runs behind the fixtures: entry IDs are copied byte for byte because Webflow's are JSON text with quotes, and a reconstructed one matched nothing; the files form follows an entryIds 501 because the Webflow app does not filter by entry ID; names go to jq through --arg because an apostrophe in a path broke the quoted program; a settings or sync-settings write is shown before it is sent because a test agent turned on auto-sync unasked, and the write replaces the whole list; boolean app settings go to the Crowdin UI on the connector path because update_application_settings stores every value as the string it was sent and the app read \"false\" as true; tree entries are trimmed to the declared keys because the server strips the rest and a validating client refuses them; the api module keys name an app's tools because Contentful lacks the job keys and get_job_info has nothing to call on it; the direction is named before a write because update_crowdin_files imports and update_integration_files overwrites, and the names do not say so; the connector shows the exact tool input because it has no dry run.",
+  "note": "Behaviour specification for the integration loop on both paths. Evals 1-4 run with a shell and the Crowdin CLI; fixtures/webflow-cli.md holds recorded CLI outputs (live Webflow app, 2026-10-15). Evals 7-13 run with the Crowdin connector's tools and no shell; fixtures/webflow-connector.md holds recorded MCP tool outputs (live Webflow app, 2026-10-21 and 2026-10-22). Evals 5 and 6 check triggering. The rules that matter most hold on both paths: IDs are copied from the app's own output, a state-changing call goes out only when the user asked for that change, and a job is reported finished only after that status was seen. Why the rules are what they are, from the live runs behind the fixtures: entry IDs are copied byte for byte because Webflow's are JSON text with quotes, and a reconstructed one matched nothing; the files form follows an entryIds 501 because the Webflow app does not filter by entry ID; names go to jq through --arg because an apostrophe in a path broke the quoted program; a settings or sync-settings write is shown before it is sent because a test agent turned on auto-sync unasked, and the write replaces the whole list; boolean app settings go to the Crowdin UI on the connector path because update_application_settings stores every value as the string it was sent and the app read \"false\" as true; tree entries are trimmed to the declared keys because the server strips the rest and a validating client refuses them; the api module keys name an app's tools because Contentful lacks the job keys and get_job_info has nothing to call on it; the direction is named before a write because update_crowdin_files imports and update_integration_files overwrites, and the names do not say so; the connector shows the exact tool input because it has no dry run; the app is read with get_application_installation because modules requested for the whole installation list overflowed the output and the default page of 25 left Webflow, the 26th app, off it; a pre-translation's result is read from its report because a DeepL run ended finished and applied nothing; edits are not inferred from a tooltip date or isUpdated because Webflow's \"Last update\" moved when a push wrote Ukrainian back, and isUpdated read false everywhere; the approval state is named with a push because a push sent unapproved machine translation to the live site.",
   "evals": [
     {
       "id": 1,
@@ -91,7 +91,7 @@
       "id": 7,
       "name": "connector-import-and-push",
       "prompt": "The agent calls no tools; fixtures/webflow-connector.md holds the recorded output of each one. This session has the Crowdin connector's tools and no shell. Our Webflow site is connected to Crowdin project 12345. Get the About page into Crowdin, then once it's translated push the Ukrainian back to Webflow.",
-      "expected_output": "Lists installations with fields including modules and finds Webflow by its api plus project-integrations modules, reads the tree with list_integration_files, selects About by its path, calls update_crowdin_files with exactly id, name, parentId and type, follows the job with get_job_info until finished, maps About to Crowdin file 34790 through list_crowdin_files, reads progress with get_integration_file_sync_progress, then calls update_integration_files with {\"34790\": [\"uk\"]} and follows that job with get_job_info, reporting it as running with its ID when no finished status is recorded.",
+      "expected_output": "Reads Webflow with get_application_installation (listing installations without modules first if it needs the identifier) and recognizes it by its api plus project-integrations modules, reads the tree with list_integration_files, selects About by its path, calls update_crowdin_files with exactly id, name, parentId and type, follows the job with get_job_info until finished, maps About to Crowdin file 34790 through list_crowdin_files, reads progress with get_integration_file_sync_progress, then calls update_integration_files with {\"34790\": [\"uk\"]} and follows that job with get_job_info, reporting it as running with its ID when no finished status is recorded, and says the Ukrainian it sent back is not approved (approvalProgress 0).",
       "files": [
         "evals/fixtures/webflow-connector.md"
       ],
@@ -100,7 +100,9 @@
         "update_crowdin_files is used for the import and update_integration_files for the push, and the answer says which direction each goes",
         "A job is reported finished only after get_job_info returned that status; otherwise it is reported as running with its ID",
         "No state-changing tool is called beyond the import and the push the user asked for",
-        "Says it is taking the connector path"
+        "Says it is taking the connector path",
+        "Takes the modules from get_application_installation; list_application_installations, if called, is called without modules",
+        "The final message says the Ukrainian sent back is not approved (approvalProgress 0)"
       ]
     },
     {
@@ -158,6 +160,38 @@
         "Calls no update_ tool",
         "Says this app needs the Crowdin CLI and names crowdin app methods",
         "Does not invent a field name for assets/sync"
+      ]
+    },
+    {
+      "id": 12,
+      "name": "connector-whats-new",
+      "prompt": "The agent calls no tools; fixtures/webflow-connector.md holds the recorded output of each one. This session has the Crowdin connector's tools and no shell. We use the Webflow app in Crowdin project 12345. Is there anything new in Webflow that isn't in Crowdin yet? And has anything we already translated changed since?",
+      "expected_output": "Reads the tree with list_integration_files and answers from it. New: 404 and Blog Posts Template under Pages and Navigation under Components, the entries with a type and notSynced true, listed by path and grouped by folder, with the count of items already in Crowdin and the fact that auto-sync is not set for either provider (get_sync_settings returns [] and {}). Changed: says the tree cannot show an edit to an item already in Crowdin, since isUpdated is false everywhere and a tooltip date also moves on a push (Password's 14:22 date is the push of its Ukrainian), and offers to re-import what the user wants refreshed.",
+      "files": [
+        "evals/fixtures/webflow-connector.md"
+      ],
+      "expectations": [
+        "Lists 404, Blog Posts Template and Navigation as new, by path and grouped by folder, and no other item as new",
+        "Reads get_sync_settings for both providers and says auto-sync is not set",
+        "Does not report Password or any other imported item as edited on the strength of its tooltip date or isUpdated",
+        "Says the tree cannot show edits to items already in Crowdin and offers a re-import",
+        "Calls no update_ tool"
+      ]
+    },
+    {
+      "id": 13,
+      "name": "connector-pre-translation-applied-nothing",
+      "prompt": "The agent calls no tools; fixtures/webflow-connector.md holds the recorded output of each one. This session has the Crowdin connector's tools and no shell. The Footer component of our Webflow site is already in Crowdin project 12345. Pre-translate it into Ukrainian with our DeepL engine (ID 280492), then push the Ukrainian back to Webflow.",
+      "expected_output": "Maps Footer to Crowdin file 34800 with list_crowdin_files, calls apply_pre_translation with fileIds [34800], languageIds [\"uk\"], method mt and engineId 280492, follows it with pre_translation_status until finished, then reads pre_translation_report with the job's identifier as jobIdentifier, finds languages [] and reports that DeepL applied nothing despite the finished status. Stops before the push and asks the user to pick another engine or method, or to fix DeepL's setup in Crowdin.",
+      "files": [
+        "evals/fixtures/webflow-connector.md"
+      ],
+      "expectations": [
+        "Reads pre_translation_report, or the file's translations or progress, after the finished status and before reporting the result",
+        "Says the DeepL run applied nothing even though its status is finished",
+        "Does not run apply_pre_translation again, with DeepL or with an engine the user did not choose",
+        "Asks the user to pick another engine or method, or to fix DeepL's setup in Crowdin",
+        "Does not call update_integration_files"
       ]
     }
   ]
