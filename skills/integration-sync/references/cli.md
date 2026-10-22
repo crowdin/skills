@@ -37,7 +37,7 @@ crowdin app api webflow crowdin-update --input body.json
 
 Webflow takes this `files` form, whole entries as the app returned them. An app that syncs by entry ID takes their `id` instead: `entryIds: [.files[] | select(...) | .id]`. Pass names and paths with `--arg`, never inside the jq program, so quotes in them cannot break the shell.
 
-- **`--dryrun` is the "show before sending" step.** The confirmation protocol in SKILL.md shows the user the `--dryrun` output and the exact command.
+- **`--dryrun` is the show-then-send step.** The user sees the `--dryrun` output and the exact command before it is sent.
 
 ## Settings and sync settings
 
@@ -47,7 +47,7 @@ Webflow takes this `files` form, whole entries as the app returned them. An app 
 
 ## Discovery
 
-An app whose methods are not the shared set is driven through `crowdin app methods <app>` and its own list method, with the same rules for bodies, jobs and state changes. When a method's description has no parameters (the app publishes no OpenAPI document), read its documentation link or ask the user for the field names; a write never goes out with a guessed body.
+An app whose methods are not the shared set is driven through `crowdin app methods <app>` and its own list method, with the same rules for bodies, jobs and state changes. A method description with no parameters means the app publishes no OpenAPI document; its field names come from where SKILL.md step 2 says.
 
 ## Errors
 

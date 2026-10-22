@@ -1,11 +1,11 @@
 ---
 name: integration-sync
-description: Runs an installed Crowdin integration app's sync loop - imports content from the connected platform into Crowdin, follows the job, pushes translations back, and reads or changes the auto-sync schedule - through the Crowdin connector or the Crowdin CLI. Use when someone wants content from Webflow, HubSpot, Contentful, Zendesk Guide, Braze or another platform connected through a Crowdin app brought into Crowdin, translations sent back to it, an integration job checked, or a nightly sync set up - including phrasings that never say "app" or "integration", such as "import the new pages from Webflow", "translate the latest HubSpot campaigns", "push the German back to Contentful", "has the Zendesk sync finished", "sync our blog posts every night". Not for choosing which app to install (how-to-crowdin), installing it (crowdin-cli or the Crowdin UI), building one (create-app), repository and design integrations configured inside Crowdin, or syncing local files with crowdin.yml (crowdin-cli).
+description: Syncs content between Crowdin and a platform connected through an installed Crowdin integration app (Webflow, HubSpot, Contentful, Zendesk Guide, Braze and the other store integrations), through the Crowdin connector or the Crowdin CLI. Use when someone wants platform content brought into Crowdin ("import the new pages from Webflow", "translate the latest HubSpot campaigns"), translations sent back ("push the German back to Contentful"), an integration job checked ("has the Zendesk sync finished"), or a schedule set up ("sync our blog posts every night"). Not for choosing which app to install (how-to-crowdin), installing it (crowdin-cli or the Crowdin UI), building one (create-app), repository and design integrations configured inside Crowdin, or syncing local files with crowdin.yml (crowdin-cli).
 ---
 
 # Integration sync
 
-Integrations such as Webflow, HubSpot, Contentful, Zendesk Guide and Braze are Crowdin apps built on one framework, and they share one set of API methods: list the platform's content, import it into Crowdin, push translations back, follow the job, read and change the sync schedule. This skill is that loop. The same loop runs through the Crowdin connector's tools and through the Crowdin CLI; the steps and their done conditions are below, and the names for each step are in one reference per path.
+Integration apps share one set of API methods, and this skill is the loop over them. The steps and their done conditions are below; the tool or command for each step is in one reference per path.
 
 ## Pick the path
 
@@ -24,7 +24,7 @@ Work through the steps in order; each ends on its done condition. An app whose m
 2. **Discover.** Learn which methods the app offers and what each takes. Done when every planned call has its method and required parameters from a description. When a description has no parameters, read the app's documentation link or ask the user. A write goes out with field names taken from a description, the app's documentation, or the user, never guessed.
 3. **Read the integration tree.** List the platform's content as the app sees it. Files carry a `type`; folders do not. Done when each item to import is matched to exactly one entry with a `type`; match on `path`, since names repeat. An entry's `notSynced: true` marks an item never imported into Crowdin, and it turns false after the import; `synced` stays false after an import, so "not yet in Crowdin" is an entry with a `type` and `notSynced` true.
 4. **Import into Crowdin.** Send the selected entries from step 3's output, in the shape the reference gives. Done when the call returns a job ID.
-5. **Follow the job.** Read the job until `status` is `finished` or `failed`. Done when you have seen that status. A `failed` job with `info` "Finished with errors. See error logs." can still have delivered part of the work, and those logs are not in the API: send the user to the app's page in the Crowdin project to read them.
+5. **Follow the job.** Read the job until `status` is `finished` or `failed`. Done when you have seen that status: a job is reported finished only then, and a job you stopped following is reported as still running, with its ID and how to check it. A `failed` job is reported with its `info`; "Finished with errors. See error logs." can still have delivered part of the work, and those logs are not in the API: send the user to the app's page in the Crowdin project to read them. The job also carries `progress`, `payload` and `data`; some apps store `payload` and `data` as JSON text, sometimes encoded more than once, so decode until the result is no longer a string.
 6. **Map to Crowdin files.** List the Crowdin-side files the app manages, matched by name under the right parent folder. Crowdin file IDs are different from the integration's IDs. Done when each imported item has its Crowdin file ID.
 7. **Translate.** In Crowdin: pre-translation when the user asked for it (the reference names it), or the project's translators. Progress is read per Crowdin file ID and reports translation and approval progress per language. Done when every target language shows the progress the user asked for, or the user says to push as is.
 8. **Push back.** Send a map of Crowdin file ID to language codes, then step 5 again. Done when the push job is `finished`.
@@ -50,17 +50,9 @@ The sync settings hold two lists, one per `provider`:
 
 A sync-settings write **replaces the whole list** for its provider and turns on a sync schedule when none is set. The schedule's frequency is in the app settings, and a settings write replaces the whole settings object too: a change is sent as the full current settings plus the change, and the reference says which values the path can carry. When the app offers `new-integration-files` in its settings, turning it on adds new platform items to auto-sync as they appear; that is how "every new blog post" is expressed.
 
-A settings change goes out only after the user has seen it in the conversation:
+A settings change is **show-then-send**:
 
 1. Read the current value: the sync settings for the same `provider`, or the app settings.
 2. Build the new value as the current value plus the change.
-3. Show the user the before and after and exactly what will be sent, in the form the reference gives.
+3. Show the user the before and after and exactly what will be sent, in the form the reference gives for show-then-send.
 4. Send it when the user confirms. When the user is away, the run ends at step 3: report the prepared change and how to send it.
-
-## Job results
-
-A job carries `status`, `progress`, `info`, and its `payload` and `data`. Some apps store `payload` and `data` as JSON text, sometimes encoded more than once; decode until the result is no longer a string.
-
-## Reporting
-
-A job is reported finished only when a `finished` status was seen. A job you stopped following is reported as still running, with its ID and how to check it. A failed job is reported with its `info`.
