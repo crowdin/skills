@@ -14,7 +14,7 @@ The workflow runs on the Crowdin connector (the Crowdin MCP server). If its tool
 ## Workflow
 
 1. **Scope.** Settle four things, and skip whatever the user already said.
-   - **Project.** The one the user names, or the one the conversation is already about (in Crowdin Copilot, the project in the page context). Otherwise ask.
+   - **Project.** The one the user names, or the one the conversation is already about (such as the project open in the page the user works in). Otherwise ask.
    - **Glossary.** The project's default glossary. `get_project` returns `defaultGlossaryId` to managers; for anyone else call `list_glossaries` with `fields: ["defaultProjectIds", "languageId", "webUrl"]` and `limit: 500`, and take the glossary whose `defaultProjectIds` contains the project. Note the glossary's `languageId`: that is the language its source terms are in. If the user names another glossary, use it. When neither call finds the glossary, follow "A user who cannot see the glossary" below.
    - **Terms.** Either the terms the user named, or, for a backfill, the glossary's existing concepts that lack at least one of the languages: page through `list_terms(glossaryId, languageId: <glossary language>, fields: ["conceptId", "status"])`, then list the glossary once per target language, `list_terms(glossaryId, languageId: <target>, fields: ["conceptId"])`, and compare the concept ids to see which languages each concept lacks.
    - **Languages.** The project's target languages, unless the user narrowed them.
@@ -51,10 +51,8 @@ The workflow runs on the Crowdin connector (the Crowdin MCP server). If its tool
      ```
 
      "Used in" counts the language's translated strings that use the proposed term, and "Other translations" what the rest use. A language the concept already has is not a row; it is only named under the table. For an existing concept the heading says `concept <id>` instead of "new term". Keep the text around the tables to a line or two: the tables and the questions carry the round.
-   - **Where the host has a tool that renders tables as UI**, as Crowdin Copilot does, read `references/question-tool.md` before showing the round: it says how to show the tables there and how to put the questions to the host's question tool.
-   - **Anywhere else**, write the tables as markdown and the questions as plain text under them, numbered, then end your turn and wait for the answer. Do not open a question tool there: the user answers this very message, with the tables in front of them.
-   - **The questions**, in this order:
-     - **Conflicts** - only when the round has conflicts: one question per term that has any. Its options: your recommended pick for every conflicting language first, then "leave those languages empty", then "skip the term"; a pick per language comes as a free answer.
+   - **Then the questions, in plain text right under the tables**, numbered, and end your turn there to wait for the answer: the user answers with the tables in front of them. In this order:
+     - **Conflicts** - only when the round has conflicts: one question per term that has any. Its options: your recommended pick for every conflicting language first, then "leave those languages empty", then "skip the term"; the user may also name a pick per language.
      - **Apply** - last, in every round that is not straight through, even with no conflicts and a single term: "Write as Drafts now" or "Skip", with a summary of what will be written in words read at a glance: how many new terms and translations, and the languages when they are few ("2 new terms, 4 translations: Ukrainian, German"; "38 translations into the concept "error""). Edits come in the user's answer; apply them as given.
 
    Everything the user reads is in the user's language: the tables (headings, column names, language names), the questions and the report. Name languages the way the user would ("Ukrainian" for someone writing in English, "українська" for someone writing in Ukrainian), not by code: a translator may not know what `sq` or `mk` stands for. Codes belong only in the tool calls. Keep each cell to a few words; a narrow chat panel cuts a long one off.

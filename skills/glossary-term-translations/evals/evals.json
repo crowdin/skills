@@ -77,14 +77,14 @@
     },
     {
       "id": 5,
-      "name": "five-conflicting-terms-batches",
+      "name": "five-conflicting-terms",
       "prompt": "Add item, product, name, amount and expense to our glossary with their Ukrainian, German and Spanish translations from the project.",
-      "expected_output": "Every term has a root conflict in at least one language. With a question tool, the conflict questions go out in batches of at most three, Apply rides as the last question of the call that holds the last batch, and no call holds more than four questions. Without one, the tables and every question come in one message, Apply last.",
+      "expected_output": "Every term has a root conflict in at least one language. The round's tables come first, then one conflict question per term and Apply last, in plain text in the same message, which waits for the answer.",
       "files": [],
       "expectations": [
-        "With a question tool, no call holds more than three conflict questions or more than four questions",
-        "Apply is asked last, together with the last conflict question",
         "Shows the round's tables before the first question",
+        "Asks one conflict question per conflicting term",
+        "Asks Apply last, after every conflict question",
         "Writes only Draft terms"
       ]
     },
