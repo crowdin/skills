@@ -4,7 +4,7 @@ Read and write the glossary through the Crowdin connector's tools. `SKILL.md` de
 
 ## 1. Take stock
 
-When the environment says which glossary the user is looking at (Crowdin Copilot passes it as `entity: { type: 'glossary', id }`), read that one with `get_glossary` and `list_terms`. Otherwise call `list_glossaries` - with a project in scope, the glossaries attached to it; without one, the organization's - and read their terms with `list_terms`. Tell the user what you found in a sentence or two.
+When the environment says which glossary the user is looking at (the assistant built into Crowdin passes it as `entity: { type: 'glossary', id }`), read that one with `get_glossary` and `list_terms`. Otherwise call `list_glossaries` - with a project in scope, the glossaries attached to it; without one, the organization's - and read their terms with `list_terms`. Tell the user what you found in a sentence or two.
 
 ## 2. Settle three things before mining
 

@@ -13,7 +13,7 @@ There is no target size. Mine for terms a translator would otherwise get wrong, 
 
 How terms are read and written depends on what this session has:
 
-- **Crowdin connector tools** - `list_glossaries`, `add_term` and the rest of the Crowdin MCP server, as in Crowdin Copilot or an assistant with the Crowdin connector. Read and write through them, and review in rounds: follow `references/connector.md`.
+- **Crowdin connector tools** - `list_glossaries`, `add_term` and the rest of the Crowdin MCP server, as in the assistant built into Crowdin or any assistant with the Crowdin connector. Read and write through them, and review in rounds: follow `references/connector.md`.
 - **A shell with the Crowdin CLI and a `crowdin.yml`**, or a calling workflow that hands over a source catalog path (`i18n-setup` does). Draft a CSV, review it as a whole, and upload it with `crowdin glossary upload`: follow `references/cli.md`.
 
 With both available, take the connector path unless the user or a calling workflow asked for the file. With neither, draft the reviewed list in the conversation and name both ways to add it.
