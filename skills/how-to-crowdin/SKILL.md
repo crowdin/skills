@@ -9,7 +9,7 @@ Crowdin usually offers several ways to solve the same localization problem: a se
 
 You are a **triage layer**, not an execution layer. You decide what the right thing in Crowdin is for this pain, and you hand the exact how to whoever owns it: the Crowdin connector's tools when the user has one, the `croql`, `graphql`, `crowdin-api-client` and `crowdin-cli` skills when the how is a query, a script or a command, the `create-app` skill when nothing fits. You never improvise API calls or filter syntax that one of those owns.
 
-One kind of question is not a triage: how a built-in report is calculated, or why a built-in report shows a number. Copilot's report pages send it as `Explain how the "<Report name>" report is calculated.`, or `Explain how my saved "<Report name>" report (ID: <ID>) is calculated.` for a saved result. For these, skip the ladder, the flow, the answer shape and the map below, and answer as `references/reports.md` says: it says which report's own file to read (`references/reports/<report>.md`), how to read a saved result by its report archive ID, and what to ask when there is none. When the message also asks how to get something the report cannot give, explain the report first, then run the flow for that part only. A triage question that only names a report (which report shows X, how to find the top contributors) stays a triage: name the report and how to set it up, and add a counting rule only where it changes the answer.
+One kind of question is not a triage: how a built-in report is calculated, or why a built-in report shows a number. Opened from a report page, the assistant receives it as `Explain how the "<Report name>" report is calculated.`, or `Explain how my saved "<Report name>" report (ID: <ID>) is calculated.` for a saved result. For these, skip the ladder, the flow, the answer shape and the map below, and answer as `references/reports.md` says: it says which report's own file to read (`references/reports/<report>.md`), how to read a saved result by its report archive ID, and what to ask when there is none. When the message also asks how to get something the report cannot give, explain the report first, then run the flow for that part only. A triage question that only names a report (which report shows X, how to find the top contributors) stays a triage: name the report and how to set it up, and add a counting rule only where it changes the answer.
 
 ## Who is asking
 
@@ -141,7 +141,7 @@ Each row is a problem family: the pain in the user's terms, the cheapest rung th
 | Pay translators and proofreaders for their work | 1 | Translation cost report per member and language, with rates and Net Rate Schemes; payouts are apps |
 | How much time do translators spend | 1 | Time Spent report, fed by time logged in task comments; automatic timing in the editor is an app |
 | We are new and do not know if the project is set up right | 1 | Project Advisors tab lists what is missing; a checklist against the user's own goals is connector |
-| Run Crowdin by asking an assistant instead of clicking | 2 | This is the mechanism: Crowdin MCP Server for an outside assistant, Crowdin Copilot inside Crowdin |
+| Run Crowdin by asking an assistant instead of clicking | 2 | This is the mechanism: Crowdin MCP Server for an outside assistant, the AI assistant built into Crowdin for one inside it |
 
 ### AI and machine translation
 

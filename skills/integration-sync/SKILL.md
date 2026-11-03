@@ -9,7 +9,7 @@ Integration apps share one set of API methods, and this skill is the loop over t
 
 ## Pick the path
 
-- **Connector tools** present in the session (the Crowdin MCP server, as in Crowdin Copilot, Cowork, Claude.ai or ChatGPT): follow [references/connector.md](references/connector.md).
+- **Connector tools** present in the session (the Crowdin MCP server, as in the assistant built into Crowdin, Cowork, Claude.ai or ChatGPT): follow [references/connector.md](references/connector.md).
 - **A shell with the Crowdin CLI** and no connector tools: follow [references/cli.md](references/cli.md).
 - **Both**: the connector, unless the user asked for commands or pasted a `crowdin app` command. Say in one line which path you took.
 - **Neither**: describe the loop in the user's terms and name both ways to run it.

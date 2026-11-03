@@ -19,7 +19,7 @@ Each item file (`https://store.crowdin.com/llms-txt/<slug>.txt`) opens with the 
 | `App` | Installable. Rung 3. |
 | `System` | A built-in Crowdin feature that happens to be listed in the store, such as a natively supported file format or a Crowdin-authored MT engine. Rung 1. |
 | `Guide` | A how-to for using Crowdin with some external product. Usually documents a native integration, so read it as rung 1 unless it points at an App. |
-| `Copilot Skill` | A capability of the AI assistant inside Crowdin. Rung 2 territory: it describes something an agent does on demand. |
+| Any type ending in `Skill` | A capability of the AI assistant built into Crowdin. Rung 2 territory: it describes something an agent does on demand. |
 | `QA Check` | An installable external QA check. Rung 3. |
 
 The index is about 125 KB. Fetch it, then keep only the section under the category heading you need, or the lines whose name or tagline contain the user's keywords. Read one or two item files in full before recommending anything. A tagline is enough to shortlist, never enough to recommend.

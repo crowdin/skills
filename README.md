@@ -98,7 +98,7 @@ Sets up, reviews, and debugs [crowdin/github-action](https://github.com/crowdin/
 
 ### integration-sync
 
-Runs an installed Crowdin integration app's sync loop: imports content from the connected platform (Webflow, HubSpot, Contentful, Zendesk Guide, Braze and the other store integrations) into Crowdin, follows the job, pushes translations back, and reads or changes the auto-sync schedule. Runs through the Crowdin connector in Cowork, Claude.ai, ChatGPT or Crowdin Copilot, and through `crowdin app api` in a terminal, with the same rules on both: IDs are copied from the app's own output, every state-changing call is shown before it is sent, and a job is reported finished only once that status was seen.
+Runs an installed Crowdin integration app's sync loop: imports content from the connected platform (Webflow, HubSpot, Contentful, Zendesk Guide, Braze and the other store integrations) into Crowdin, follows the job, pushes translations back, and reads or changes the auto-sync schedule. Runs through the Crowdin connector in Cowork, Claude.ai, ChatGPT or the assistant built into Crowdin, and through `crowdin app api` in a terminal, with the same rules on both: IDs are copied from the app's own output, every state-changing call is shown before it is sent, and a job is reported finished only once that status was seen.
 
 ### context-extraction
 
