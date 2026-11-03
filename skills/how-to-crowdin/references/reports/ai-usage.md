@@ -1,6 +1,6 @@
 # AI usage
 
-**What it shows.** What the AI provider was asked to do and what it cost, from Crowdin's record of every billed AI call: tokens and an estimated cost in USD per call. Two reports read it: **Tokens usage raw data** (one row per call) and **Costs by users** (one total per member). This is the AI provider's bill. It is not Translation cost's AI match rows: when someone asks what a word costs with AI or what AI saved, answer from AI in money questions in `references/reports/translation-cost-figures.md`, and use this file when they mean the bill.
+**What it shows.** What the AI provider was asked to do and what it cost, from Crowdin's record of every billed AI call: tokens and an estimated cost in USD per call. Two reports read it: **Tokens usage raw data** (one row per call) and **Costs by users** (one total per member). This is the AI provider's bill, not Translation cost's AI rows; which of the two a money question means is settled under AI in money questions in `references/reports/translation-cost-figures.md`.
 
 **Generating it through the API.**
 - Enterprise, organization owners and admins: `tokens-usage-raw-data` (`generate_organization_ai_report_tokens_usage_raw_data`) and `costs-by-users` (`generate_organization_ai_report_costs_by_users`), then `check_organization_ai_report_status` and `download_organization_ai_report`. crowdin.com has the same two reports for the user's own account (`generate_user_ai_report_*`).
@@ -17,4 +17,3 @@
 **Money rules.**
 - `totalCost` is Crowdin's estimate at the model's list price in USD. On Crowdin's credits it is what was charged; on the organization's own keys the provider bills the customer directly, and the invoice can differ.
 - Translation cost never contains AI or MT engine spend, so adding the AI bill to it counts nothing twice. Its currency is a label, though: show AI as a separate USD line, and add it to a Translation cost total only with an exchange rate the user gives.
-- Crowdin records no money for MT engines at all. When a full cost is asked, say so, and offer MT volume (Translation activity, Translation Savings), never an MT cost.

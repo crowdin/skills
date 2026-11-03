@@ -1,6 +1,6 @@
 ---
 name: how-to-crowdin
-description: Answers "how do I do X in Crowdin" by mapping a localization pain to the cheapest thing Crowdin already offers - a built-in feature, a few actions through the Crowdin connector or API, an app from the Crowdin Store, or a custom app - and handing the exact how to the skill that owns it. Use when someone describes a Crowdin or localization problem without naming a tool ("translators keep missing our terminology", "find strings changed since the last release", "QA passes but the German is wrong"), asks if Crowdin can do something or which app to use, names a store app and asks what it does or if they need it, or asks how a built-in report is calculated or why it shows a number. Not for a crowdin CLI command or crowdin.yml (crowdin-cli), a CroQL expression already in hand (croql), a GraphQL query or Playground error (graphql), code against the API client (crowdin-api-client), building an app (create-app), or internationalizing a codebase (i18n-setup).
+description: Answers "how do I do X in Crowdin" with the cheapest thing Crowdin already offers - a built-in feature, connector or API actions, a Crowdin Store app, or a custom app - and hands the exact how to the skill that owns it. Use when someone describes a Crowdin or localization problem without naming a tool ("translators keep missing our terminology", "find strings changed since the last release", "QA passes but the German is wrong"), asks if Crowdin can do something or which app to use, names a store app and asks what it does or if they need it, asks how a built-in report is calculated or why it shows a number, asks for a figure from Crowdin data (spend, price per word, what AI cost or saved), or why a language or release was late. Not for a crowdin CLI command or crowdin.yml (crowdin-cli), a CroQL expression already in hand (croql), a GraphQL query or Playground error (graphql), code against the API client (crowdin-api-client), building an app (create-app), or internationalizing a codebase (i18n-setup).
 ---
 
 # How to Crowdin
@@ -11,7 +11,7 @@ You are a **triage layer**, not an execution layer. You decide what the right th
 
 One kind of question is not a triage: how a built-in report is calculated, or why a built-in report shows a number. Copilot's report pages send it as `Explain how the "<Report name>" report is calculated.`, or `Explain how my saved "<Report name>" report (ID: <ID>) is calculated.` for a saved result. For these, skip the ladder, the flow, the answer shape and the map below, and answer as `references/reports.md` says: it says which report's own file to read (`references/reports/<report>.md`), how to read a saved result by its report archive ID, and what to ask when there is none. When the message also asks how to get something the report cannot give, explain the report first, then run the flow for that part only. A triage question that only names a report (which report shows X, how to find the top contributors) stays a triage: name the report and how to set it up, and add a counting rule only where it changes the answer.
 
-A request for a figure from Crowdin data (what we spent, a price per word, a breakdown, a before-and-after, what AI cost or saved) is not a triage either. Read `references/reports.md`, the report's own file and, for Translation cost, `references/reports/translation-cost-figures.md`. Ask in one question for what the message leaves open (the period, the scope, and always which rates, even when only one archive or template was found), offering the Translation cost archives and rate templates you found (never say there is no saved result before listing the archives). Generate with every setting passed explicitly, compute with the formulas in those files, and end with what the figure leaves out; a configured price, such as what a word costs at 100% AI, comes from the confirmed rates without generating anything. 'AI' here means Translation cost's AI rows, approvals and savings unless the user means the AI provider's bill (`references/reports/ai-usage.md`); a sum the user says was spent on AI is more often the bill, so say which reading you use.
+A request for a figure from Crowdin data (what we spent, a price per word, a breakdown, a before-and-after, what AI cost or saved) is not a triage either: answer it as Figures from report data in `references/reports.md` says.
 
 ## Who is asking
 
@@ -48,7 +48,7 @@ Solution first, in one or two sentences. Then what it costs the user: nothing, a
 - **Bulk changes get a count and a yes first.** Adding a label to many strings, approving in bulk, cleaning a TM, deleting anything: name how many objects are affected and wait for confirmation. A filter that matched more than the user pictured is the common way an assistant damages a project.
 - **Only name what the catalog confirms.** When the store has nothing for a pain, say so and move to rung 4 or to "not currently possible". An app that does not exist is worse than no answer.
 - **Enterprise-only stays labeled.** Workflows, vendors, teams and groups exist only in Crowdin Enterprise. Say so when they are the answer, so a crowdin.com user is not sent looking for a menu they do not have.
-- **Money figures need confirmed rates and a list of what is missing.** Never price work with rates the user has not confirmed, and say what the figure leaves out: payments and invoices, the AI provider's bill, MT engine fees (Crowdin records none at all, so offer MT volume, never an MT cost), work in deleted projects; and say the currency is a label, never converted.
+- **Money figures need confirmed rates and a list of what is missing**, as Figures from report data in `references/reports.md` says.
 
 ## The map
 
@@ -127,7 +127,7 @@ Each row is a problem family: the pain in the user's terms, the cheapest rung th
 
 | Pain | Rung | Do this |
 |---|---|---|
-| How much did TM, MT or AI save us; how much source changed; who reports issues | 1 | Project Overview reports; Enterprise adds Organization Reports across projects; their savings are gross (`references/reports.md`, Neighbouring reports) |
+| How much did TM, MT or AI save us; how much source changed; who reports issues | 1 | Project Overview reports; Enterprise adds Organization Reports across projects; their savings are gross (`references/reports/translation-savings.md`) |
 | I cannot see progress across all my projects | 2 | List projects, read per-language progress, one table sorted by completion; periodic email is an app |
 | Every time developers push new strings I have to click Auto-Translate | 1 | Auto-Translate settings on crowdin.com; TM, MT or AI auto-translation workflow steps on Enterprise |
 | Creating translation tasks for new content is repetitive | 1 | Task templates; "create tasks now for everything untranslated" is connector; on file upload is an app |
@@ -145,7 +145,7 @@ Each row is a problem family: the pain in the user's terms, the cheapest rung th
 | Pay translators and proofreaders for their work | 1 | Translation cost report per member and language, with rates and Net Rate Schemes; payouts are apps |
 | What a word cost us; spend or price per word by workspace, project, language, member, workflow or release | 2 | Translation cost with confirmed rates, computed as `references/reports/translation-cost-figures.md` says |
 | Proofreading versus translation spend; is proofreading worth it | 2 | Translation cost per language next to the accuracy reports, as `references/reports/translation-cost-figures.md` says (Proofreading against translation) |
-| What several translators on one string, or source changes, cost us | 2 | No report gives it: an estimate rebuilt from Contribution raw data, as `references/reports/translation-cost-figures.md` says |
+| What several translators on one string, or source changes, cost us | 2 | No report gives it: an estimate rebuilt from Contribution raw data, as `references/reports/contribution-raw-data.md` says |
 | How much time do translators spend | 1 | Time Spent report, fed by time logged in task comments; automatic timing in the editor is an app |
 | We are new and do not know if the project is set up right | 1 | Project Advisors tab lists what is missing; a checklist against the user's own goals is connector |
 | Run Crowdin by asking an assistant instead of clicking | 2 | This is the mechanism: Crowdin MCP Server for an outside assistant, Crowdin Copilot inside Crowdin |
