@@ -1,6 +1,6 @@
 {
   "skill_name": "how-to-crowdin",
-  "note": "Triage tests. Each prompt is what a localization manager or a developer would type to an assistant that has the Crowdin connector. What is graded is the rung the answer lands on, the hand-off it names, and whether it says why the cheaper rungs lost when it recommends an app. Half the prompts are traps: they sound like they need an app and do not, or they name an app the user does not need. Cases 10 to 21 are not triage: they ask how a built-in report counts, and are graded against references/reports.md and the report files under references/reports/. Case 22 is a triage question that names a report, and must stay a triage.",
+  "note": "Triage tests. Each prompt is what a localization manager or a developer would type to an assistant that has the Crowdin connector. What is graded is the rung the answer lands on, the hand-off it names, and whether it says why the cheaper rungs lost when it recommends an app. Half the prompts are traps: they sound like they need an app and do not, or they name an app the user does not need. Cases 10 to 21 are not triage: they ask how a built-in report counts, and are graded against references/reports.md and the report files under references/reports/. Case 22 is a triage question that names a report, and must stay a triage. Cases 23 to 30 ask for a figure from Crowdin data, or for the cause of a delay, and are graded against references/reports/translation-cost.md, references/reports/translation-cost-figures.md, references/reports/ai-usage.md and references/delivery-delays.md.",
   "evals": [
     {
       "id": 0,
@@ -283,6 +283,102 @@
         "The answer lands on rung 1: the built-in Top Members report, filtered to the quarter and, if needed, a language",
         "The answer does not turn into an explanation of how Top members counts each column (a sentence on what a column means is fine), because the user did not ask how the report is calculated",
         "If the answer names an app, it is only for the reward itself (certificates, tokens, payouts), not for finding the most active translators"
+      ]
+    },
+    {
+      "id": 23,
+      "name": "figure-effective-price-per-word",
+      "prompt": "What was our effective price per word across the whole company for the first half of 2026?",
+      "expected_output": "Uses the organization-level Translation cost report (group-translation-costs-pe) for 1 January to 30 June 2026 in the user's time zone. Before computing, asks in one question which rates to use, offering the Translation cost archives and rate templates it found, even when only one exists. Generates with unit, currency, rates, Net Rate Schemes and the four options passed explicitly (the API defaults the options to off) and with skipArchiving true. The price per word is totalCosts divided by paid words, the sum of translated.total over the member × language entries; a word is a source word counted once per paid record (per language, person, plural form and source version), not a word delivered, and pre-translations are unpaid. The figure is priced at the chosen rates, not what was paid, and leaves out the AI provider's bill, MT engine fees, vendors' invoices and work in projects deleted since.",
+      "expectations": [
+        "The answer uses the organization-level Translation cost report and asks the user to confirm which rates to use before giving a number",
+        "The answer passes the four advanced options explicitly instead of relying on the API defaults",
+        "The answer defines the price per word as total cost divided by paid source words summed over the member × language entries, and says what a word counts",
+        "The answer says the figure is priced at the chosen rates, not payments, and names what it leaves out, such as the AI provider's bill, MT engine fees or deleted projects"
+      ]
+    },
+    {
+      "id": 24,
+      "name": "figure-100-percent-ai-price",
+      "prompt": "What's our price per word when it's 100% AI?",
+      "expected_output": "Reads 'AI' as Translation cost's AI cells. The 100% AI price per word is a configured price: the Full translation rate × the AI 100% row of the rate set the user confirms (a template or an archive's scheme), given without generating a report. When a generated result is used, it gives two separate figures: AI suggestions saved unchanged in the Editor (translationCosts.aiMatch.100 / translated.aiMatch.100) and approvals of AI output (approvalCosts.aiMatch.100 / approved.aiMatch.100, which exist only with category-based approval rates). AI pre-translations themselves are not paid. The AI provider's token bill is a separate item (AI usage reports, in USD).",
+      "expectations": [
+        "The answer gives the 100% AI price as the Full translation rate times the AI 100% row of a rate set the user confirms, without requiring a generated report",
+        "The answer keeps AI suggestions saved unchanged and approvals of AI output as separate figures",
+        "The answer says AI pre-translations are not paid in Translation cost",
+        "The answer treats the AI provider's token bill as a separate item, not part of this price"
+      ]
+    },
+    {
+      "id": 25,
+      "name": "figure-cfo-ai-savings",
+      "prompt": "Our CFO says: I see 80k spent on AI, how much did we save? How should I answer?",
+      "expected_output": "Says which reading of the 80k it uses, or asks: the AI provider's bill (Enterprise AI usage reports, in USD; the likelier reading in a finance question) or the cost of Translation cost's AI rows and AI approvals. The savings come from Translation cost for the same period at confirmed rates: savings.aiMatch (first translations in the AI rows, gross), plus the savings of approved pre-translations shown separately as 'up to' (savings.total minus the four scheme rows, TM, MT and AI together). It never computes the savings as the Full translation rate × AI words − AI cost, does not use the Translation Savings report, and sets the bill against the savings only in one currency, with an exchange rate from the user.",
+      "expectations": [
+        "The answer says whether it reads the 80k as the AI provider's bill or as the cost of Translation cost's AI rows, or asks",
+        "The answer takes the AI savings in money from savings.aiMatch and does not compute them as the full rate times AI words minus AI cost",
+        "The answer shows any savings of approved pre-translations separately, as an upper bound mixed with TM and MT",
+        "The answer keeps the AI bill in USD apart from the rate-based figures unless the user gives an exchange rate"
+      ]
+    },
+    {
+      "id": 26,
+      "name": "figure-source-change-cost",
+      "prompt": "How much did source text changes cost us this year? I mean strings we paid to translate again because the source copy changed after they had been translated.",
+      "expected_output": "No report gives this number, so the answer rebuilds it as an estimate from Contribution raw data: one export per project, translations mode with no dateFrom so earlier source versions are visible, pre-translations dropped. A re-payment is the first row of a new sourceStringTextHash on a string, language and plural form, created this year, when an earlier row has another hash; approvals of the new version are paid again too. Each row is priced as Translation cost prices it (source units × the member's Full translation rate × the cheapest row its matches reach), and the rebuilt total is compared with the Translation cost total for the same period and rates. Any text change counts as a new version. It never presents Source content updates' changed volume × languages × rate as the cost.",
+      "expectations": [
+        "The answer says no report gives this cost directly and rebuilds it from Contribution raw data as an estimate",
+        "The answer exports the raw data without a dateFrom so that earlier versions of each string are visible",
+        "The answer counts a re-payment only when a later translation is for a different source version (sourceStringTextHash) of the same string, language and plural form",
+        "The answer does not present Source content updates volume multiplied by languages and a rate as the cost"
+      ]
+    },
+    {
+      "id": 27,
+      "name": "figure-repeat-translators-cost",
+      "prompt": "I suspect we pay several times for the same strings because more than one translator translates them. How much did that cost us this year?",
+      "expected_output": "Every person who saved a translation of a string is paid once for it, so extra translators do cost money. No report isolates it: the answer rebuilds it from Contribution raw data per project (translations mode, no dateFrom, pre-translations dropped). Within one string, language, plural form and source version, the first row is the translation that was needed and later rows created this year are extra; the extras are split into edits by the string's approver (approvals mode, wasEdited) and parallel work, priced as Translation cost prices them, and the result is called an estimate. It does not promise that the extras were discounted: a parallel translation with different text is priced near the full rate.",
+      "expectations": [
+        "The answer says each translator who saved a translation is paid once, so several translators on one string are several payments",
+        "The answer rebuilds the extra cost from Contribution raw data and labels it an estimate",
+        "The answer separates edits by the string's approver from parallel translations",
+        "The answer does not claim the extra translations were all cheap Other translations matches without pricing them"
+      ]
+    },
+    {
+      "id": 28,
+      "name": "delay-late-language",
+      "prompt": "Our Polish localization was late for the last release. Where did the delays come from? Why didn't we make it on time for Polish?",
+      "expected_output": "Crowdin has no release object and keeps no history of progress, so the answer first pins the release (branch, label or tasks) and the deadline, then rebuilds the timeline from the Polish tasks next to one or more languages that were on time (list_organization_tasks with targetLanguageIds): lead time, waiting (startedAt − createdAt), working (resolvedAt − startedAt), lateness against the deadline, and hand-offs between a task and the one it follows. It checks the usual causes (late task creation, waiting for an assignee or the previous step, assignee load, late or changed source, pre-translation, open issues) and labels each established, likely or unknown. It says what Crowdin does not record, such as when a string entered a workflow step, progress on a past date and deadline changes, and never rebuilds past progress from Translation activity.",
+      "expectations": [
+        "The answer pins which release and deadline are meant before analysing",
+        "The answer rebuilds the timeline from task dates and compares Polish with languages that were on time",
+        "The answer labels causes as established, likely or unknown instead of asserting them",
+        "The answer says Crowdin keeps no progress history and does not reconstruct past progress from Translation activity"
+      ]
+    },
+    {
+      "id": 29,
+      "name": "figure-workspace-spend-with-ai",
+      "prompt": "What did each of our workspaces spend on localization in Q3, including AI?",
+      "expected_output": "Two separate lines per workspace. The translators' and proofreaders' cost comes from one organization Translation cost run with groupBy=project at confirmed rates, rolled up from projects to workspaces (each project's groupId, each workspace's parentId). The AI provider's bill comes from the AI usage raw data (tokens-usage-raw-data) summed by projectId and mapped the same way, in USD, with calls that have no project on their own line. It does not add USD to the rates currency without an exchange rate, and it names what is missing: MT engine fees are not recorded, calls on the organization's own AI keys have a cost only from 2026-07-07, and projects deleted since are not in the report.",
+      "expectations": [
+        "The answer computes the human cost per workspace by mapping the projects of one organization Translation cost run to workspaces",
+        "The answer takes the AI bill from the AI usage reports, split by project, and shows calls without a project separately",
+        "The answer keeps the AI bill in USD apart from the rates currency unless an exchange rate is given",
+        "The answer names what is missing, such as MT engine fees, own-key AI cost before 2026-07-07 or deleted projects"
+      ]
+    },
+    {
+      "id": 30,
+      "name": "figure-release-cost",
+      "prompt": "How much did localizing our 4.2 release cost? The strings are in the release-4.2 branch of the Mobile App project, plus three translation tasks in the Web App project.",
+      "expected_output": "There is no release report, so the answer runs one Translation cost report per part with the same unit, currency, rates and options: the Mobile App project with the release-4.2 branch filter, and the Web App project in task mode for the three tasks, then adds the totals and says why there are two. It knows that task mode cannot be combined with dates, members or languages and that tasks sharing strings in one language are each priced in full, passes skipArchiving true so a task-mode run does not replace the tasks' Actual cost, and leaves the AI bill out of the release total or shows an approximation separately.",
+      "expectations": [
+        "The answer runs separate reports for the branch and for the tasks with the same rates and options, and adds them",
+        "The answer warns that selected tasks covering the same strings are each priced in full",
+        "The answer passes skipArchiving so that a task-mode run does not overwrite the tasks' Actual cost",
+        "The answer does not add a project's whole AI bill to the release figure"
       ]
     }
   ]
