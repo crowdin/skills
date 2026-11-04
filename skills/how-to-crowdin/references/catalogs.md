@@ -4,15 +4,16 @@ Two plain-text indexes describe what Crowdin offers today. They are the source o
 
 ## The store
 
-`https://store.crowdin.com/llms.txt` lists every marketplace item, grouped under one `##` heading per category, one line per item: name, a link to the item's own text file, and a one-line tagline.
+`https://store.crowdin.com/llms.txt` lists every marketplace item, grouped under one `##` heading per category, one line per item: name, a link to the item's own Markdown file, a one-line tagline, and an `OpenAPI spec` link when the app has an API.
 
 ```
 ## Manager Productivity
 
-- [Cross-Project Search](https://store.crowdin.com/llms-txt/cross-project-search.txt): Finds strings, translations, files and branches by text across every project in the organization
+- [Cross-Project Search](https://store.crowdin.com/cross-project-search.md): Finds strings, translations, files and branches by text across every project in the organization
+- [Linguistic Quality Assurance (LQA)](https://store.crowdin.com/lqa.md): Linguistic Quality Assurance for Crowdin. — [OpenAPI spec](https://store.crowdin.com/lqa/openapi.json)
 ```
 
-Each item file (`https://store.crowdin.com/llms-txt/<slug>.txt`) opens with the name, tagline, store URL, `Category`, `Type` and `Author`, then the full description. `Type` tells you what you are looking at:
+Each item file (`https://store.crowdin.com/<slug>.md`) opens with the name, tagline, store URL, `Identifier` (the slug), `Category`, `Type`, `Author` and, when the app has an API, `OpenAPI spec`. The full description follows, and a `## Resources` list of the item's guides and API docs closes the file when it has any. `Type` tells you what you are looking at:
 
 | Type | Meaning for triage |
 |---|---|
@@ -22,11 +23,13 @@ Each item file (`https://store.crowdin.com/llms-txt/<slug>.txt`) opens with the 
 | Any type ending in `Skill` | A capability of the AI assistant built into Crowdin. Rung 2 territory: it describes something an agent does on demand. |
 | `QA Check` | An installable external QA check. Rung 3. |
 
+An `OpenAPI spec` link marks an app whose actions an agent can call once it is installed; for a store integration (import, push, jobs) that is the `integration-sync` hand-off. Read the link as a yes and its absence as unknown, since some apps with an API carry no link (Contentful is one). The link is all triage needs; the spec behind it is for whoever runs the app.
+
 The index is about 125 KB. Fetch it, then keep only the section under the category heading you need, or the lines whose name or tagline contain the user's keywords. Read one or two item files in full before recommending anything. A tagline is enough to shortlist, never enough to recommend.
 
 Categories, as the headings spell them: AI, CMS, Marketing, eCommerce, Development, Design, File Management & Storage, Customer Service, Machine Translation, TM & Glossaries, File Formats, Translator Productivity, Manager Productivity, Team Chat & Notifications, Task Management, Security & Identity, Gaming, Other.
 
-When the user names an app, go straight to its item file. Slugs match the store URL path: `https://store.crowdin.com/stale-translations-advisor` is `llms-txt/stale-translations-advisor.txt`.
+When the user names an app or pastes its store link, go straight to its item file: the store page URL plus `.md`, so `https://store.crowdin.com/stale-translations-advisor` becomes `https://store.crowdin.com/stale-translations-advisor.md`.
 
 ## The docs
 
