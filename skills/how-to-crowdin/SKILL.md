@@ -1,6 +1,6 @@
 ---
 name: how-to-crowdin
-description: Answers "how do I do X in Crowdin" by mapping a localization pain to the cheapest thing Crowdin already offers - a built-in feature, a few actions through the Crowdin connector or API, an app from the Crowdin Store, or a custom app - and handing the exact how to the skill that owns it. Use when someone describes a Crowdin or localization problem without naming a tool ("translators keep missing our terminology", "find strings changed since the last release", "QA passes but the German is wrong"), asks if Crowdin can do something or which app to use, names a store app and asks what it does or if they need it, or asks how a built-in report is calculated or why it shows a number. Not for a crowdin CLI command or crowdin.yml (crowdin-cli), a CroQL expression already in hand (croql), a GraphQL query or Playground error (graphql), code against the API client (crowdin-api-client), building an app (create-app), or internationalizing a codebase (i18n-setup).
+description: Answers "how do I do X in Crowdin" with the cheapest thing Crowdin already offers - a built-in feature, connector or API actions, a Crowdin Store app, or a custom app - and hands the exact how to the skill that owns it. Use when someone describes a Crowdin or localization problem without naming a tool ("translators keep missing our terminology", "find strings changed since the last release", "QA passes but the German is wrong"), asks if Crowdin can do something or which app to use, names a store app and asks what it does or if they need it, asks how a built-in report is calculated or why it shows a number, asks for a figure from Crowdin data (spend, price per word, what AI cost or saved), or why a language or release was late. Not for a crowdin CLI command or crowdin.yml (crowdin-cli), a CroQL expression already in hand (croql), a GraphQL query or Playground error (graphql), code against the API client (crowdin-api-client), building an app (create-app), or internationalizing a codebase (i18n-setup).
 ---
 
 # How to Crowdin
@@ -10,6 +10,8 @@ Crowdin usually offers several ways to solve the same localization problem: a se
 You are a **triage layer**, not an execution layer. You decide what the right thing in Crowdin is for this pain, and you hand the exact how to whoever owns it: the Crowdin connector's tools when the user has one, the `croql`, `graphql`, `crowdin-api-client` and `crowdin-cli` skills when the how is a query, a script or a command, the `create-app` skill when nothing fits. You never improvise API calls or filter syntax that one of those owns.
 
 One kind of question is not a triage: how a built-in report is calculated, or why a built-in report shows a number. Opened from a report page, the assistant receives it as `Explain how the "<Report name>" report is calculated.`, or `Explain how my saved "<Report name>" report (ID: <ID>) is calculated.` for a saved result. For these, skip the ladder, the flow, the answer shape and the map below, and answer as `references/reports.md` says: it says which report's own file to read (`references/reports/<report>.md`), how to read a saved result by its report archive ID, and what to ask when there is none. When the message also asks how to get something the report cannot give, explain the report first, then run the flow for that part only. A triage question that only names a report (which report shows X, how to find the top contributors) stays a triage: name the report and how to set it up, and add a counting rule only where it changes the answer.
+
+A request for a figure from Crowdin data (what we spent, a price per word, a breakdown, a before-and-after, what AI cost or saved) is not a triage either: answer it as Figures from report data in `references/reports.md` says.
 
 ## Who is asking
 
@@ -46,6 +48,7 @@ Solution first, in one or two sentences. Then what it costs the user: nothing, a
 - **Bulk changes get a count and a yes first.** Adding a label to many strings, approving in bulk, cleaning a TM, deleting anything: name how many objects are affected and wait for confirmation. A filter that matched more than the user pictured is the common way an assistant damages a project.
 - **Only name what the catalog confirms.** When the store has nothing for a pain, say so and move to rung 4 or to "not currently possible". An app that does not exist is worse than no answer.
 - **Enterprise-only stays labeled.** Workflows, vendors, teams and groups exist only in Crowdin Enterprise. Say so when they are the answer, so a crowdin.com user is not sent looking for a menu they do not have.
+- **Money figures need confirmed rates and a list of what is missing**, as Figures from report data in `references/reports.md` says.
 
 ## The map
 
@@ -95,7 +98,7 @@ Each row is a problem family: the pain in the user's terms, the cheapest rung th
 | Offensive or off-policy wording in translations | 1 | Custom QA check with a word list (Enterprise); a model judging every new translation is an app |
 | I cannot verify a language I do not speak | 2 | Back-translate or explain a bounded sample on demand; every export back-translated is an app |
 | Human proofreading is the bottleneck | 1 | Proofread workflow step and tasks; a bounded review batch is connector; reviewing every new translation with AI is an app |
-| I cannot see what proofreaders changed | 1 | Translator Accuracy report per translator; a per-string before-and-after is connector; deletions are in project Activity |
+| I cannot see what proofreaders changed | 1 | Translator Accuracy shows each translator's distance to the approved text, not who changed it; Contribution raw data marks an approver's own edits; a per-string before-and-after is connector; deletions are in project Activity |
 | Score translation quality against an LQA model | 3 | Store: Linguistic Quality Assurance (Enterprise); annotation lives in the editor |
 | Suspect translations were pasted from an AI tool | 3 | Store AI-detection reports; provenance (who or which engine produced a translation) is connector |
 | Check translations against our own rules or tone | 2 | Spot-check a file or language against the rule on demand; project-wide and repeatable is an app |
@@ -124,11 +127,12 @@ Each row is a problem family: the pain in the user's terms, the cheapest rung th
 
 | Pain | Rung | Do this |
 |---|---|---|
-| How much did TM, MT or AI save us; how much source changed; who reports issues | 1 | Project Overview reports; Enterprise adds Organization Reports across projects |
+| How much did TM, MT or AI save us; how much source changed; who reports issues | 1 | Project Overview reports; Enterprise adds Organization Reports across projects; their savings are gross (`references/reports/translation-savings.md`) |
 | I cannot see progress across all my projects | 2 | List projects, read per-language progress, one table sorted by completion; periodic email is an app |
 | Every time developers push new strings I have to click Auto-Translate | 1 | Auto-Translate settings on crowdin.com; TM, MT or AI auto-translation workflow steps on Enterprise |
 | Creating translation tasks for new content is repetitive | 1 | Task templates; "create tasks now for everything untranslated" is connector; on file upload is an app |
-| Team workload, overdue tasks and turnaround across projects | 2 | List tasks across projects, compute overdue and elapsed time, summarize per person or vendor |
+| Team workload, overdue tasks and turnaround across projects | 2 | List tasks across projects, compute overdue and elapsed time, summarize per person or vendor; for one late language, file or release, follow `references/delivery-delays.md` |
+| A language, file or release was late; where did the delay come from | 2 | Rebuild the timeline from tasks and dates as `references/delivery-delays.md` says, and say what Crowdin does not record |
 | The same settings, members and placeholders in every project | 2 | Read the reference project, patch each target project; full duplication with translations is an app |
 | Translator issues are scattered and get lost | 1 | Editor filter for unresolved issues and issue notifications; cross-project triage list is connector; forwarding is an app |
 | Nobody learns when a file, language or directory is done | 1 | Project notifications and native webhooks; directory-level completion and digests are apps |
@@ -139,6 +143,9 @@ Each row is a problem family: the pain in the user's terms, the cheapest rung th
 | Colleagues need translations without becoming Crowdin users | 3 | Store: Translation Portal or Client Portal (Enterprise); an agent cannot be a surface for many people |
 | Recognize or reward contributors | 1 | Top Members report by period and language; ranking and CSV is connector; tokens and certificates are apps |
 | Pay translators and proofreaders for their work | 1 | Translation cost report per member and language, with rates and Net Rate Schemes; payouts are apps |
+| What a word cost us; spend or price per word by workspace, project, language, member, workflow or release | 2 | Translation cost with confirmed rates, computed as `references/reports/translation-cost-figures.md` says |
+| Proofreading versus translation spend; is proofreading worth it | 2 | Translation cost per language next to the accuracy reports, as `references/reports/translation-cost-figures.md` says (Proofreading against translation) |
+| What several translators on one string, or source changes, cost us | 2 | No report gives it: an estimate rebuilt from Contribution raw data, as `references/reports/contribution-raw-data.md` says |
 | How much time do translators spend | 1 | Time Spent report, fed by time logged in task comments; automatic timing in the editor is an app |
 | We are new and do not know if the project is set up right | 1 | Project Advisors tab lists what is missing; a checklist against the user's own goals is connector |
 | Run Crowdin by asking an assistant instead of clicking | 2 | This is the mechanism: Crowdin MCP Server for an outside assistant, the AI assistant built into Crowdin for one inside it |
@@ -150,8 +157,10 @@ Each row is a problem family: the pain in the user's terms, the cheapest rung th
 | Use a specific AI model or provider | 1 | Native AI provider settings, own key or Crowdin-managed; OpenAI-compatible endpoints via the base URL; others are store connectors |
 | One AI prompt overloads the model and it ignores instructions | 1 | Trim the prompt, move rules into Style Guide and glossary, pick a stronger model; a multi-pass translate, verify and correct loop is the AI Pipeline app |
 | One prompt cannot fit every language and file type | 1 | Several native prompts, chosen per pre-translation run; automatic routing or templating is an app |
-| Cannot see what the AI was asked or what it costs | 3 | Store: AI Debug, AI Token Usage; being in the request path is what an agent cannot do |
+| What AI costs us (the AI provider's bill), per project, prompt, member or language | 1 | Enterprise AI usage reports, read as `references/reports/ai-usage.md` says |
+| Cannot see what the AI was asked | 3 | Store: AI Debug; the native AI request log keeps 30 days of status, tokens and cost, not the prompt text; being in the request path is what an agent cannot do |
 | Which MT engine or AI prompt should we use | 1 | Auto-translation Accuracy report compares engines and prompts by post-editing; a controlled BLEU-style evaluation is an app |
+| What a word costs with AI (100% AI, AI plus proofreading) and what AI saved us | 2 | Translation cost's AI rows, approvals and savings (`references/reports/translation-cost-figures.md`, AI in money questions) |
 | Repetitive chores after project events (file uploaded, create tasks) | 2 | On demand: list recent files, create the task; firing on the event without asking is the AI Automator app |
 
 ### Delivery and integrations
