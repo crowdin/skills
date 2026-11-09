@@ -114,6 +114,7 @@ Build and download the latest translations. Config: set A.
 - `--skip-untranslated-strings` — omit untranslated strings from exports (not for document formats like .docx/.html/.md)
 - `--skip-untranslated-files` — omit files that are not fully translated
 - `--export-only-approved` — approved translations only (unapproved strings fall back to source text unless combined with `--skip-untranslated-strings`)
+- `--no-skip-untranslated-strings`, `--no-skip-untranslated-files`, `--no-export-only-approved` — turn that export option off for this run. Both forms override the `crowdin.yml` value on every file and the project's export settings; with neither, the config value applies, or the project's settings where the config has none
 - `--keep-archive` — keep the downloaded archive after extraction
 - `--all` — download even when local source files are missing
 - `--ignore-match` — suppress the configuration-change warning
@@ -317,9 +318,9 @@ Config: set B.
 Manage installed Crowdin apps and call their API methods. Config: set C.
 
 - `crowdin app list` — `-v/--verbose` adds the base URL and the projects each app serves
-- `crowdin app install <identifier>` — identifier from the Crowdin Store
+- `crowdin app install <identifier>` — identifier from the Crowdin Store; `crowdin app install --manifest-url <https-url>` installs a private app, or any app not listed in the Store, from its manifest instead (pass one or the other, not both)
 - `crowdin app uninstall <identifier>` — `--force`
-- `crowdin app methods <identifier> [path]` and `crowdin app api <identifier> <path>` — the loop is in the `integration-sync` skill
+- `crowdin app methods <identifier> [path]` and `crowdin app api <identifier> <path>` — `app api --wait` follows the job a request starts until it ends; the loop is in the `integration-sync` skill
 
 ## context
 

@@ -1,4 +1,4 @@
-# Recorded CLI outputs (crowdin CLI 5.5.0, project 12345, Webflow app installed)
+# Recorded CLI outputs (crowdin CLI 5.6.0, project 12345, Webflow app installed)
 
 Agents cannot run commands in these evals. When an agent "runs" a command, it reads the recorded output here. If a command is not recorded, it says what it expects and continues.
 
@@ -7,7 +7,7 @@ Recorded from a live Webflow app; IDs, names and the project are anonymized. Hel
 ## crowdin app --help (commands)
 Commands:
   list                         List installed apps
-  install <identifier>         Install the application
+  install [identifier]         Install the application
   uninstall <identifier>       Uninstall the application
   methods <identifier> [path]  List the application's API methods, or describe one
   api <identifier> <path>      Call one of the application's API methods
@@ -26,6 +26,7 @@ Options:
   -f, --field <field...>              Add a string field as key=value. Repeat 'key[]=value' to send an array
   -F, --typed-field <typed-field...>  Add a field as key=value, converting true, false, null and integers, and reading @file
       --input <input>                 Read the JSON request body from a file, or '-' for stdin
+      --wait                          Wait for the job the request starts, or the job-info request names, to end
       --dryrun                        Print a command output without execution
   -h, --help                          Display help message and exit
 
@@ -139,6 +140,10 @@ Body:
   "updatedAt": "2026-10-16T09:19:28.328Z",
   "finishedAt": "2026-10-16T09:19:28.328Z"
 }
+
+## crowdin app api webflow job-info -F projectId=12345 -f jobId=0f8e7d6c-1111-4222-8333-444455556666 --wait
+The same record as the job-info call above, printed once its status is finished.
+(exit code 0)
 
 ## crowdin app api webflow crowdin-files -F projectId=12345 -o json   (abridged)
 [

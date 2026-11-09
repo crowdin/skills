@@ -4,7 +4,7 @@ The loop in SKILL.md, run with `crowdin app api`. Syntax for every `app` subcomm
 
 ## Requirements
 
-`crowdin app methods` and `crowdin app api` need the Crowdin CLI 5.4.0 or later: `unknown command 'methods'` means an older install, fixed with `npm install -g @crowdin/cli`. The token needs the `application.proxy` scope; exit code 103 means it lacks it.
+`crowdin app methods` and `crowdin app api` need the Crowdin CLI 5.4.0 or later, and `app api --wait` needs 5.6.0: `unknown command 'methods'` or `unknown option '--wait'` means an older install, fixed with `npm install -g @crowdin/cli`. The token needs the `application.proxy` scope; exit code 103 means it lacks it.
 
 ## Step by step
 
@@ -14,7 +14,7 @@ The shared method set is `integration-files`, `crowdin-files`, `crowdin-update`,
 2. **Discover**: `crowdin app methods <app>`, then `crowdin app methods <app> <path>` for each method you will call. The text view cuts a parameter's description at its first sentence (`…`); `-o json` carries the full text. See "Discovery" below for an app outside the shared set.
 3. **Read the integration tree**: `crowdin app api <app> integration-files -F projectId=<id> -o json`. "Not yet in Crowdin" is `jq '.files[] | select(.type and .notSynced)'`.
 4. **Import into Crowdin**: build the body from step 3's output with jq and send it with `--input` (see "Request bodies"). Send `entryIds` first; when the app answers 501, send the `files` form.
-5. **Follow the job**: `crowdin app api <app> job-info -F projectId=<id> -f jobId=<jobId>`, repeated until `status` is `finished` or `failed`. A job you stopped polling is reported with this command for the user to run.
+5. **Follow the job**: `crowdin app api <app> job-info -F projectId=<id> -f jobId=<jobId> --wait`. It polls until the job ends and prints the final record; exit code 1 means the job `failed` or was `canceled`, its record printed all the same. Send step 4's request without `--wait`, so the `jobId` is in hand before any waiting starts. A wait cut short, by an interrupt or a command timeout, leaves the job running, and so does the CLI giving up after an hour without progress (it prints the resume command). A job you stopped following is reported with this `job-info … --wait` command for the user to run.
 6. **Map to Crowdin files**: `crowdin app api <app> crowdin-files -F projectId=<id> -o json`.
 7. **Translate**: `crowdin auto-translate` (in the `crowdin-cli` skill). `auto-translate --file` takes the file's Crowdin path, not its ID: `crowdin file list -o json` pairs each `id` with its `path`. Progress: `file-progress -F projectId=<id> -F fileId=<crowdinFileId>`, keyed by the file ID: `jq --arg id <crowdinFileId> '.[$id][] | {languageId, translationProgress, approvalProgress}'`. What a run applied shows in this progress read before and after it: a `translationProgress` that did not move means it applied nothing.
 8. **Push back**: `integration-update` with `{"projectId": <id>, "files": {"<crowdinFileId>": ["uk"]}}` through `--input`, then step 5 again.
@@ -60,6 +60,7 @@ The CLI prints the app's own message when the app sends one. Exit codes are the 
 | `Application '<app>' declares '<path>' for POST, not GET. Pass -X POST or --input` (exit 102) | The path is declared for another verb; a write sent without `-X POST` or `--input` goes out as GET | Add the flag the message names |
 | `Application '<app>' does not declare '<VERB> <path>'` (exit 102) | The app has no such path, usually a typo | Check the path against `crowdin app methods <app>` |
 | `Application '<app>' is not installed` (exit 102) | No installed app has that identifier | Check it against `crowdin app list` |
+| `Application '<app>' declares no GET job-info; --wait needs it` | The app has no shared job method | Follow the job through the app's own method (see "Discovery") |
 | Exit 103 | The token lacks `application.proxy` | A token with that scope |
 | `Request to '<app>' failed with status N` | The response carried no readable message | Report the status and the command; the app gave no details |
 
