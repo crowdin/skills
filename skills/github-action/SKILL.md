@@ -113,7 +113,7 @@ Details worth keeping when you adapt it:
 
 - Credentials go in `env:`, not `with:` — the CLI and the action's git code read them from the environment. (`token` and `project_id` inputs exist as an alternative, but a token in `with:` shows up in the step's rendered inputs.)
 - `workflow_dispatch` is what lets you test the workflow without waiting for a push.
-- `concurrency` with `cancel-in-progress: false` queues runs instead of racing them. A second run that starts while Crowdin is still building the previous export fails with a 409.
+- `concurrency` with `cancel-in-progress: false` queues runs instead of racing them. Crowdin builds one export per project at a time: a run whose download starts while another run's build is still going waits for that build, and fails if it is still running after 10 minutes.
 - `pull_request_base_branch_name` is worth setting explicitly: unset, the base branch is whatever ref triggered the run, which is correct for a push to `main` but broken for tag and release triggers.
 - A single sync step is the simplest shape, but the two directions have different natural rhythms — uploading on every push to `main`, downloading on a schedule. See [split workflows](references/recipes.md#split-upload-and-download).
 - `actions/checkout@v7` was current in August 2026; check its releases rather than copying a pin from an older example.
@@ -148,7 +148,7 @@ Read the step's log first: it prints `UPLOAD SOURCES`, `DOWNLOAD TRANSLATIONS`, 
 | Checks restart on every sync run | The localization branch is force-pushed each time | Pass a PAT to `actions/checkout` so the pushes come from a user |
 | PR creation fails on a tag or release trigger | Base branch defaults to the triggering ref, which is `refs/tags/...` | Set `pull_request_base_branch_name` |
 | Later steps hit permission errors on downloaded files | The container runs as root, so the files it writes are root-owned | Add `user: auto` to detect the workspace owner |
-| `409` / build already in progress | Parallel runs against one Crowdin project | Serialize with `concurrency`, or `max-parallel: 1` in a matrix |
+| `Another build is still in progress after waiting 10 minutes`, or a `409` on download | Parallel runs, or a long build started elsewhere, against one Crowdin project | Serialize with `concurrency`, or `max-parallel: 1` in a matrix |
 | Build artifacts in the translation PR | `git add .` commits the whole workspace | Move the Crowdin step before the build, or into its own job |
 | Nothing downloads, project is string-based | `download_translations` doesn't apply to string-based projects | Download a bundle: `download_bundle: <id>` |
 | `crowdin.yml` not found | The action looks in the repository root | `config: path/to/crowdin.yml`, no leading `/` |
