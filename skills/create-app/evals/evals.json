@@ -349,7 +349,7 @@
       "group": "environment",
       "prompt": "Can you rename the app you made me in the spring to \"Term Board\"?",
       "tests": "an existing app pinned to a CLI older than the app file, whose publish uploads the build without the manifest",
-      "pass": "Checks the pinned CLI before changing anything: --version inside the app prints a version below 0.30.0, so it updates the CLI (pnpm update @crowdin/serverless-apps-cli) and checks the version again. Publishes, then confirms with list --json that Crowdin shows the new name instead of trusting a green publish."
+      "pass": "Installs the app's dependencies with the manager its lockfile names, then checks the pinned CLI before changing anything: npx @crowdin/serverless-apps-cli --version inside the app prints a version below 0.30.0, so it updates the CLI (pnpm update @crowdin/serverless-apps-cli) and checks the version again. Publishes, then confirms with list --json that Crowdin shows the new name instead of trusting a green publish."
     }
   ]
 }

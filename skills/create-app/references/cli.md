@@ -1,6 +1,6 @@
 # CLI reference
 
-`@crowdin/serverless-apps-cli`, binary `crowdin-serverless-apps`. Outside an app directory, run it with `npx @crowdin/serverless-apps-cli@latest`; inside one, `npx crowdin-serverless-apps` resolves the copy pinned as the app's own devDependency, which is both faster and guaranteed to match the scaffold.
+`@crowdin/serverless-apps-cli`, binary `crowdin-serverless-apps`. Outside an app directory, run it with `npx @crowdin/serverless-apps-cli@latest`; inside one, `npx @crowdin/serverless-apps-cli` without a version runs the copy pinned as the app's own devDependency - faster, and guaranteed to match the scaffold - once the app's dependencies are installed. Always name the package: the binary name alone is not a package on npm, so without `node_modules` npx would look it up there.
 
 ## Interactive versus non-interactive
 
@@ -14,7 +14,7 @@ What you do have to handle: commands that need an answer will still wait for one
 
 | Command | Notes |
 |---|---|
-| `create [name]` | `--template`, `--yes`. Always pass `--template projects-dashboard-cli`; `projects-dashboard-standalone` exists for apps that own their build and is not what this workflow assumes. Downloads the template, gives the app and all its modules the name you passed, installs the dependencies (pnpm, else bun, else npm), builds the app, registers it and writes `CROWDIN_APP_ID` into `.env`. All or nothing: after a failure it removes the folder it made and has registered nothing. No `delete` counterpart exists, so confirm with the user first. |
+| `create [name]` | `--template`, `--yes`. Always pass `--template projects-dashboard-cli`; `projects-dashboard-standalone` exists for apps that own their build and is not what this workflow assumes. Downloads the template, gives the app and all its modules the name you passed, installs the dependencies (pnpm, else bun, else npm), builds the app, registers it and writes `CROWDIN_APP_ID` into `.env`. All or nothing: after a failure it removes the folder it made and has registered nothing, unless Crowdin did not confirm the registration - then the folder stays and the message says how to check and link the app. The install and the build take minutes on a cold cache. No `delete` counterpart exists, so confirm with the user first. |
 | `dev` | `--port <n>`, `-y`, `--no-manifest-sync`. Local server with hot reload. It points the registered app at your machine and sends `manifest.json` to Crowdin on start and on every valid save. Leave this to the user; publishing is what an agent should do. |
 | `preview` | `--module <key>`, `--project <id\|identifier>`. Opens the app's page in Crowdin, starts no server. Prints `Opening <url>` and attempts to open a browser. For project modules and `editor-right-panel`, omitting `--project` falls back to your first accessible project. |
 
@@ -87,6 +87,6 @@ pnpm format
 pnpm typecheck      # tsc --noEmit
 ```
 
-`create` has already run the install and the first build. When it installed with npm or bun, run these through that manager: `npm run build`, `npm run typecheck`.
+`create` has already run the install and the first build. When it installed with npm or bun - the lockfile says which: `pnpm-lock.yaml`, `package-lock.json` or `bun.lock` - run these through that manager: `npm run build`, `npm run typecheck`.
 
 There are no tests in the scaffold, so `typecheck`, `lint` and `manifest validate` are the whole automated safety net. All three must be green before the app goes to the user.
