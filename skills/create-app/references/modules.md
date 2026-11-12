@@ -144,7 +144,7 @@ If no registration matches what the host sent, the SDK deliberately does not cal
 
 ## Other manifest fields
 
-`name`, `description`, `logo`, `bundle` (managed by the CLI), `scopes`, `stringBasedAvailable`, and `default_permissions`.
+`name`, `description`, `logo`, `scopes`, `stringBasedAvailable`, and `default_permissions`.
 
 `scopes` are the Crowdin REST scopes the host will allow, evaluated against the session of the user who opened the app; calls outside them are rejected. `manifest validate` derives the list from the app's calls and names what is missing or unused - see [scopes.md](scopes.md). The scaffold ships a realistic example:
 

@@ -68,7 +68,7 @@
       "group": "edition-lock",
       "prompt": "Just make me a simple app that lists my projects. I don't care where it lives, as long as it works.",
       "tests": "the scaffold ships two edition-locked modules; a bare preview throws, and one of the pair is dead on any given edition",
-      "pass": "Deletes profile-resources-menu - the module that cannot work on Enterprise - from both manifest.json and src/index.tsx, keeps organization-menu, pushes, and previews with an explicit --module. Never runs a bare preview.",
+      "pass": "Deletes profile-resources-menu - the module that cannot work on Enterprise - from both manifest.json and src/index.tsx, keeps organization-menu, publishes, and previews with an explicit --module. Never runs a bare preview.",
       "observed": true
     },
     {
@@ -185,7 +185,7 @@
       "group": "user-vocabulary",
       "prompt": "Call it \"TM\" and let the key be the same, shorter is better.",
       "tests": "module key pattern and 3-character minimum, and the app label the user explicitly asked for",
-      "pass": "Keeps the display name the user wants where the schema allows it, explains in one sentence that the internal key is latin and at least three characters and never shown, and proposes one. Validates offline before pushing."
+      "pass": "Keeps the display name the user wants where the schema allows it, explains in one sentence that the internal key is latin and at least three characters and never shown, and proposes one. Validates offline before publishing."
     },
     {
       "id": 22,
@@ -243,7 +243,7 @@
       "name": "nothing-installed",
       "group": "environment",
       "prompt": "I'm a translator, I don't program and I have nothing installed on this laptop. Make me an app for checking terminology.",
-      "tests": "Node and pnpm preflight, and the browser login handshake",
+      "tests": "Node preflight, and the browser login handshake",
       "pass": "Preflight before promising anything. Missing tooling is handled warmly and concretely, not handed back as the user's problem. Login started in the background with the authorize URL handed over as a clickable link, and the five-minute timeout mentioned."
     },
     {
@@ -260,7 +260,7 @@
       "group": "platform-specifics",
       "prompt": "All our projects are string-based, we don't work with files. I want a tool in the project for bulk text replacement.",
       "tests": "stringBasedAvailable defaults to false, so the app is silently absent from every one of their projects",
-      "pass": "Sets the flag because the user said their projects are string-based, pushes before publishing, and confirms the user actually sees the entry.",
+      "pass": "Sets the flag because the user said their projects are string-based, publishes, and confirms the user actually sees the entry.",
       "observed": true
     },
     {
@@ -277,7 +277,7 @@
       "group": "platform-specifics",
       "prompt": "You said you added a page under the project Reports but I can't see it there.",
       "tests": "diagnosis order when a published app is absent from its slot",
-      "pass": "Does not re-publish and hope. Runs manifest status, then validate and push if they differ, and explains that publish moves only the bundle. Checks string-based projects as the second hypothesis."
+      "pass": "Does not re-publish and hope. Compares the local manifest with the one list --json says Crowdin holds and runs manifest validate; publishes only when Crowdin is behind. Checks string-based projects as the second hypothesis."
     },
     {
       "id": 33,
@@ -333,7 +333,7 @@
       "group": "scopes",
       "prompt": "Take the \"approve all\" button out again, we decided against it.",
       "tests": "removing calls leaves a declared scope behind; the validator notes it as unused",
-      "pass": "Removes the now-unused scope the validator notes along with the code, pushes the manifest before publishing, and says in one plain sentence that the app now asks for less than before."
+      "pass": "Removes the now-unused scope the validator notes along with the code, publishes, and says in one plain sentence that the app now asks for less than before."
     },
     {
       "id": 40,
@@ -342,6 +342,14 @@
       "prompt": "Here's the app you built me in the spring - can you add a tab with the project's glossary terms?",
       "tests": "an existing app pinned to an older api-client or CLI; manifest validate prints scope check skipped, or nothing about scopes at all",
       "pass": "Reads the note rather than the green tick: updates the CLI and api-client together (pnpm update @crowdin/serverless-apps-cli @crowdin/crowdin-api-client) so the installed toolchain carries the check, validates again, and only then trusts the scopes. Never reports the scopes as verified on a run that skipped them."
+    },
+    {
+      "id": 41,
+      "name": "older-app-manifest-left-behind",
+      "group": "environment",
+      "prompt": "Can you rename the app you made me in the spring to \"Term Board\"?",
+      "tests": "an existing app pinned to a CLI older than the app file, whose publish uploads the build without the manifest",
+      "pass": "Checks the pinned CLI before changing anything: --version inside the app prints a version below 0.30.0, so it updates the CLI (pnpm update @crowdin/serverless-apps-cli) and checks the version again. Publishes, then confirms with list --json that Crowdin shows the new name instead of trusting a green publish."
     }
   ]
 }
