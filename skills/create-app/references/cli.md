@@ -1,6 +1,6 @@
 # CLI reference
 
-`@crowdin/serverless-apps-cli`, binary `crowdin-serverless-apps`. Outside an app directory, run it with `npx @crowdin/serverless-apps-cli@latest`; inside one, `npx crowdin-serverless-apps` resolves the copy pinned as the app's own devDependency, which is both faster and guaranteed to match the scaffold.
+`@crowdin/serverless-apps-cli`, binary `crowdin-serverless-apps`. Outside an app directory, run it with `npx @crowdin/serverless-apps-cli@latest`; inside one, `npx @crowdin/serverless-apps-cli` without a version runs the copy pinned as the app's own devDependency - faster, and guaranteed to match the scaffold - once the app's dependencies are installed. Always name the package: the binary name alone is not a package on npm, so without `node_modules` npx would look it up there.
 
 ## Interactive versus non-interactive
 
@@ -14,17 +14,17 @@ What you do have to handle: commands that need an answer will still wait for one
 
 | Command | Notes |
 |---|---|
-| `create [name]` | `--template`, `--yes`. Always pass `--template projects-dashboard-cli`; `projects-dashboard-standalone` exists for apps that own their build and is not what this workflow assumes. Downloads the template, gives the app and all its modules the name you passed, registers the app remotely, and writes `CROWDIN_APP_ID` into `.env`. No `delete` counterpart exists, so confirm with the user first. |
-| `dev` | `--port <n>`, `-y`, `--no-manifest-sync`. Local server with hot reload, and it points the registered app at your machine. Leave this to the user; publishing is what an agent should do. |
+| `create [name]` | `--template`, `--yes`. Always pass `--template projects-dashboard-cli`; `projects-dashboard-standalone` exists for apps that own their build and is not what this workflow assumes. Downloads the template, gives the app and all its modules the name you passed, installs the dependencies (pnpm, else bun, else npm), builds the app, registers it and writes `CROWDIN_APP_ID` into `.env`. All or nothing: after a failure it removes the folder it made and has registered nothing, unless Crowdin did not confirm the registration - then the folder stays and the message says how to check and link the app. The install and the build take minutes on a cold cache. No `delete` counterpart exists, so confirm with the user first. |
+| `dev` | `--port <n>`, `-y`, `--no-manifest-sync`, `--skip-validation`. Local server with hot reload. It points the registered app at your machine and sends `manifest.json` to Crowdin on start and whenever a valid save changes it. Leave this to the user; publishing is what an agent should do. |
 | `preview` | `--module <key>`, `--project <id\|identifier>`. Opens the app's page in Crowdin, starts no server. Prints `Opening <url>` and attempts to open a browser. For project modules and `editor-right-panel`, omitting `--project` falls back to your first accessible project. |
 
 ### Build and publish
 
 | Command | Notes |
 |---|---|
-| `build` | `--no-extract`, `--no-bundle`. Produces `dist/app.js` plus `dist/bundle.zip`. |
+| `build` | `--no-extract`, `--no-bundle`. Produces `dist/app.js` and packs it, with `manifest.json` and the rest of `dist/`, into the app file `dist/<slug>.crowdinapp`; the slug comes from the manifest `name`. Crowdin takes app files up to 5 MB, and `build` warns above that. `--no-bundle` skips the app file. |
 | `extract` | Scans source for translatable text, updates `locales/*.po`. |
-| `publish` | `--no-build`, `-y`, `--no-manifest-sync`. Builds, uploads the zip, switches Crowdin to serving it. `-y` skips the confirmation. |
+| `publish` | `--no-build`, `-y`, `--no-manifest-sync`, `--skip-validation`. Builds, uploads the app file - manifest and build in one request - and switches Crowdin to serving it. `-y` skips the confirmation; `--no-manifest-sync` uploads without changing where Crowdin loads the app from; `--skip-validation` uploads even when the manifest check finds problems and leaves the verdict to Crowdin - only for a finding you have shown to be false ([green gate](../SKILL.md#5-green-gate)). A `manifest.json` that is not valid JSON stops it even then. |
 | `lint` / `format` | Runs the bundled Biome with the shipped config against the app. App-local Biome configs are ignored. |
 
 ### Manage
@@ -33,21 +33,19 @@ What you do have to handle: commands that need an answer will still wait for one
 |---|---|
 | `list` | `--print`, `--json`. Lists your apps. Doubles as a read-only auth probe. |
 | `link` | `--app-id <id>`. Links the working directory to an app that already exists. |
-| `manifest status` | Diffs local `manifest.json` against Crowdin. **Exit code 1 means they differ**, which makes it a check you can act on. |
-| `manifest validate` | Checks `manifest.json` against the manifest schema, plus forbidden root keys, unknown module types and duplicate keys - and checks `scopes` against the API calls in `src/`, read through the TypeScript compiler and the `@requiredScope` tag of each method in the app's installed `@crowdin/crowdin-api-client`. Offline: no login, no app link; the scope check needs `node_modules` and is skipped with a note without them. **Exit code 1** when invalid, not valid JSON, or a call lacks its scope. Run it after every manifest edit and after writing API calls, before `push`. |
-| `manifest push` | Applies the local manifest to Crowdin. |
-| `manifest pull` | Overwrites the local manifest from Crowdin. |
+| `manifest validate` | Checks `manifest.json` against the manifest schema, plus forbidden root keys, unknown module types and duplicate keys - and checks `scopes` against the API calls in `src/`, read through the TypeScript compiler and the `@requiredScope` tag of each method in the app's installed `@crowdin/crowdin-api-client`. Offline: no login, no app link; the scope check needs `node_modules` and is skipped with a note without them. **Exit code 1** when invalid, not valid JSON, or a call lacks its scope. Run it after every manifest edit and after writing API calls, before `publish`. |
 | `login` | `--file-storage`, `--port <n>` (one of 26140-26144). OAuth in the browser; stores the token. |
 | `logout` | Removes the stored token. |
 
-## What syncs when
+## What reaches Crowdin when
 
-This is the single most common way to end up with a published app that does not show up.
+A published app that does not show up usually means Crowdin is still on an older manifest.
 
-- `publish` and `dev` change **only** `bundle.mode` and `bundle.url` - that is, where Crowdin loads the bundle from. `dev` points it at your machine (`external`), `publish` points it back at the uploaded zip (`internal`). Both also rewrite the local `manifest.json` to match, so a modified `manifest.json` after either command is expected, not drift you should revert.
-- `modules`, `scopes`, `name`, `logo` and the rest sync **only** through `manifest push`.
+- `publish` uploads `manifest.json` and the build together, so `modules`, `scopes`, `name`, `logo` and the rest change on Crowdin with each `publish` and not before. `list --json` shows the manifest Crowdin holds.
+- `dev` sends the manifest on start and whenever a valid save changes it, and points Crowdin at your machine; `publish` points it back at the upload.
+- Neither command rewrites `manifest.json`: where Crowdin loads the app from belongs to the installation, not to the file.
 
-So: edit the manifest, run `manifest status`, push if it exits 1, and only then publish.
+So: edit the manifest, run `manifest validate`, then publish.
 
 ## Authentication
 
@@ -88,5 +86,7 @@ pnpm lint
 pnpm format
 pnpm typecheck      # tsc --noEmit
 ```
+
+`create` has already run the install and the first build. When it installed with npm or bun - the lockfile says which: `pnpm-lock.yaml`, `package-lock.json` or `bun.lock` (`bun.lockb` from older Bun) - run these through that manager: `npm run build`, `npm run typecheck`.
 
 There are no tests in the scaffold, so `typecheck`, `lint` and `manifest validate` are the whole automated safety net. All three must be green before the app goes to the user.
