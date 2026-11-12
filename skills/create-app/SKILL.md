@@ -128,7 +128,7 @@ npx @crowdin/serverless-apps-cli@latest list --json
 
 JSON means you are logged in. `Not logged in. Run crowdin-serverless-apps login first.` means run [the auth handshake](#the-auth-handshake) first.
 
-In an app that already exists, install its dependencies first, with the manager its lockfile names - `pnpm install` for `pnpm-lock.yaml`, `npm install` for `package-lock.json`, `bun install` for `bun.lock` - so npx finds the CLI the app pins. Then check that CLI before changing anything: `npx @crowdin/serverless-apps-cli --version` inside the app. Below 0.30.0 it is older than this page, and its `publish` uploads the build without the manifest. Update it with the same manager (`pnpm update @crowdin/serverless-apps-cli`, or `npm update` / `bun update` with that package) and check the version again.
+In an app that already exists, install its dependencies first, with the manager its lockfile names - `pnpm install` for `pnpm-lock.yaml`, `npm install` for `package-lock.json`, `bun install` for `bun.lock` or `bun.lockb` - so npx finds the CLI the app pins. Then check that CLI before changing anything: `npx @crowdin/serverless-apps-cli --version` inside the app. Below 0.30.0 it is older than this page, and its `publish` uploads the build without the manifest. Update it with the same manager (`pnpm update @crowdin/serverless-apps-cli`, or `npm update` / `bun update` with that package) and check the version again.
 
 Say where the app will be created, in absolute terms, before creating it. Every later change happens in that directory and the user needs to know where their app lives.
 
@@ -141,7 +141,7 @@ cd <name>
 
 Both flags matter: without them the CLI waits on an interactive picker that hangs in a non-interactive shell.
 
-Give `create` a command timeout of five minutes or more and let it finish: it installs the dependencies and builds the app, and a run killed by a timeout cannot clean up after itself.
+Give `create` a command timeout of five minutes or more and let it finish: it installs the dependencies and builds the app, and a run killed by a timeout may not manage to clean up after itself.
 
 **Always `projects-dashboard-cli`.** The template is not a decision to weigh and not worth a question. With it the CLI owns the whole toolchain - Vite, Tailwind, Lingui, Biome, the base tsconfig - so everything downstream works as described here. `projects-dashboard-standalone` hands the build back to the app and every later problem with it becomes yours; pick it only if the user explicitly asks to own the build.
 
@@ -186,6 +186,8 @@ Do not hand code over while any of the three is red. `typecheck` catches invente
 A green run that carries a `scope check skipped` note has not looked at the scopes. Do what the note says - `pnpm install`, or `pnpm update @crowdin/serverless-apps-cli @crowdin/crowdin-api-client` in an app that predates the check, through npm or bun instead when the app's lockfile is theirs - and run it again ([scopes.md](references/scopes.md)).
 
 Passing does not mean Crowdin will accept the manifest, only that the cheap mistakes are gone.
+
+The check can be wrong the other way too. Fix what it names first, by the `fix` line. Treat a finding as false only when you can point at the reason - the docs list the field or value it rejects, so the platform has outgrown this CLI's schema, or the call it names never runs. Then publish with `--skip-validation`: `publish` prints the findings, uploads anyway, and Crowdin checks the manifest itself. That call is yours, not the user's, so don't ask them. That finding is the one red the gate allows. A `manifest.json` that is not valid JSON stops `publish` even with the flag.
 
 ### 6. Publish instead of running a dev server
 
@@ -254,7 +256,7 @@ Never ask for a token in chat. On a machine with no browser at all, `CROWDIN_PER
 | `Could not list your projects - this login may lack the project scope.` | Log in again to grant it. |
 | `GraphQL is not available to serverless apps` | The proxy is REST `/api/v2` only. |
 | `FormData bodies are not supported through AP.apiRequest` | Pass a raw `Blob`, `File` or `ArrayBuffer`. |
-| `publish` fails on the manifest | Run `manifest validate`; it names the offending path. |
+| `publish` fails on the manifest | Run `manifest validate`; it names the offending path and the fix. For a finding you have shown to be false, `publish --skip-validation` ([green gate](#5-green-gate)). |
 | `npx` fails on network or permissions | Your environment, not the CLI. Ask the user to allow it. |
 
 ## References

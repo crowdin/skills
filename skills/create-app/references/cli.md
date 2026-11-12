@@ -15,7 +15,7 @@ What you do have to handle: commands that need an answer will still wait for one
 | Command | Notes |
 |---|---|
 | `create [name]` | `--template`, `--yes`. Always pass `--template projects-dashboard-cli`; `projects-dashboard-standalone` exists for apps that own their build and is not what this workflow assumes. Downloads the template, gives the app and all its modules the name you passed, installs the dependencies (pnpm, else bun, else npm), builds the app, registers it and writes `CROWDIN_APP_ID` into `.env`. All or nothing: after a failure it removes the folder it made and has registered nothing, unless Crowdin did not confirm the registration - then the folder stays and the message says how to check and link the app. The install and the build take minutes on a cold cache. No `delete` counterpart exists, so confirm with the user first. |
-| `dev` | `--port <n>`, `-y`, `--no-manifest-sync`. Local server with hot reload. It points the registered app at your machine and sends `manifest.json` to Crowdin on start and on every valid save. Leave this to the user; publishing is what an agent should do. |
+| `dev` | `--port <n>`, `-y`, `--no-manifest-sync`, `--skip-validation`. Local server with hot reload. It points the registered app at your machine and sends `manifest.json` to Crowdin on start and whenever a valid save changes it. Leave this to the user; publishing is what an agent should do. |
 | `preview` | `--module <key>`, `--project <id\|identifier>`. Opens the app's page in Crowdin, starts no server. Prints `Opening <url>` and attempts to open a browser. For project modules and `editor-right-panel`, omitting `--project` falls back to your first accessible project. |
 
 ### Build and publish
@@ -24,7 +24,7 @@ What you do have to handle: commands that need an answer will still wait for one
 |---|---|
 | `build` | `--no-extract`, `--no-bundle`. Produces `dist/app.js` and packs it, with `manifest.json` and the rest of `dist/`, into the app file `dist/<slug>.crowdinapp`; the slug comes from the manifest `name`. Crowdin takes app files up to 5 MB, and `build` warns above that. `--no-bundle` skips the app file. |
 | `extract` | Scans source for translatable text, updates `locales/*.po`. |
-| `publish` | `--no-build`, `-y`, `--no-manifest-sync`. Builds, uploads the app file - manifest and build in one request - and switches Crowdin to serving it. `-y` skips the confirmation; `--no-manifest-sync` uploads without changing where Crowdin loads the app from. |
+| `publish` | `--no-build`, `-y`, `--no-manifest-sync`, `--skip-validation`. Builds, uploads the app file - manifest and build in one request - and switches Crowdin to serving it. `-y` skips the confirmation; `--no-manifest-sync` uploads without changing where Crowdin loads the app from; `--skip-validation` uploads even when the manifest check finds problems and leaves the verdict to Crowdin - only for a finding you have shown to be false ([green gate](../SKILL.md#5-green-gate)). A `manifest.json` that is not valid JSON stops it even then. |
 | `lint` / `format` | Runs the bundled Biome with the shipped config against the app. App-local Biome configs are ignored. |
 
 ### Manage
@@ -42,7 +42,7 @@ What you do have to handle: commands that need an answer will still wait for one
 A published app that does not show up usually means Crowdin is still on an older manifest.
 
 - `publish` uploads `manifest.json` and the build together, so `modules`, `scopes`, `name`, `logo` and the rest change on Crowdin with each `publish` and not before. `list --json` shows the manifest Crowdin holds.
-- `dev` sends the manifest on start and on every valid save, and points Crowdin at your machine; `publish` points it back at the upload.
+- `dev` sends the manifest on start and whenever a valid save changes it, and points Crowdin at your machine; `publish` points it back at the upload.
 - Neither command rewrites `manifest.json`: where Crowdin loads the app from belongs to the installation, not to the file.
 
 So: edit the manifest, run `manifest validate`, then publish.
@@ -87,6 +87,6 @@ pnpm format
 pnpm typecheck      # tsc --noEmit
 ```
 
-`create` has already run the install and the first build. When it installed with npm or bun - the lockfile says which: `pnpm-lock.yaml`, `package-lock.json` or `bun.lock` - run these through that manager: `npm run build`, `npm run typecheck`.
+`create` has already run the install and the first build. When it installed with npm or bun - the lockfile says which: `pnpm-lock.yaml`, `package-lock.json` or `bun.lock` (`bun.lockb` from older Bun) - run these through that manager: `npm run build`, `npm run typecheck`.
 
 There are no tests in the scaffold, so `typecheck`, `lint` and `manifest validate` are the whole automated safety net. All three must be green before the app goes to the user.
