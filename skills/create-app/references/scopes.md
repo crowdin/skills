@@ -41,7 +41,7 @@ An unused-scope note appears when the scan found calls, or found nothing at all.
 
 Five outputs are not a clean bill:
 
-- `scope check skipped: ...` - the SDK is not installed, or the installed `@crowdin/crowdin-api-client` has no tags (the note says so: `update it to 1.59.2 or later`). `pnpm install`, or `pnpm update @crowdin/serverless-apps-cli @crowdin/crowdin-api-client`, then run it again: a green manifest with this note has not been checked for scopes. If the note survives the update - a pinned or age-gated install - take the scopes from [understanding-scopes](https://support.crowdin.com/developer/understanding-scopes/) for now and validate again once the note goes.
+- `scope check skipped: ...` - the SDK is not installed, or the installed `@crowdin/crowdin-api-client` has no tags (the note says so: `update it to 1.59.2 or later`). `pnpm install`, or `pnpm update @crowdin/serverless-apps-cli @crowdin/crowdin-api-client` (npm or bun instead when the app's lockfile is theirs), then run it again: a green manifest with this note has not been checked for scopes. If the note survives the update - a pinned or age-gated install - take the scopes from [understanding-scopes](https://support.crowdin.com/developer/understanding-scopes/) for now and validate again once the note goes.
 - `possible call <api>.<method> at ... (type unknown)` - a receiver the compiler could not type: a `.js` file, or an explicit `any`. Give it the `Client` type from `@crowdin/crowdin-api-client` and run again.
 - `computed method on <api> at ...; scope cannot be determined` - the method name is a variable, as in `client.usersApi[name]()`. Call it by name so the tag can be read.
 - `<api>.<method> at ... has no scope annotation in @crowdin/crowdin-api-client <version>; scope cannot be determined` - the installed api-client carries tags, but not on this method (1.59.2 left a handful untagged, `uploadStrings` among them). Nothing in the app clears it: take that call's scope from [understanding-scopes](https://support.crowdin.com/developer/understanding-scopes/) and keep the note in mind when reading an unused-scope note beside it.
@@ -52,7 +52,7 @@ The scan follows types, not names: files the tsconfig neither includes nor reach
 ## Checking what an installed app actually got
 
 ```bash
-npx crowdin-serverless-apps list --json
+npx @crowdin/serverless-apps-cli list --json
 ```
 
 Each app carries its `scopes` and its resolved `permissions`, so this is how you confirm what the organization granted rather than what the manifest asked for.

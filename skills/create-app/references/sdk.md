@@ -238,7 +238,7 @@ import { Plural, Trans } from "@lingui/react/macro";
 ```
 
 ```bash
-npx crowdin-serverless-apps extract   # updates locales/*.po
+npx @crowdin/serverless-apps-cli extract   # updates locales/*.po
 ```
 
 Catalogs must be named after full host locales - `uk-UA.po`, never `uk.po` - because the runtime fallback does not try base languages. The build compiles them to `dist/locales/<locale>.json`, which the app fetches at runtime.

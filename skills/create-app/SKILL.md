@@ -59,10 +59,10 @@ If they send nothing, the CLI's own state file holds the edition after login: `~
 
 | Slot | Why it has to be settled early |
 |---|---|
-| **Name** | `create <name>` names the directory, registers the app, and labels the app and all its modules in the UI. Pass a short latin slug; if the user wants a human label, set `name` in the manifest afterwards and push it. |
+| **Name** | `create <name>` names the directory, registers the app, and labels the app and all its modules in the UI. Pass a short latin slug; if the user wants a human label, set it afterwards as the manifest's `name` and as each module's `name` - `create` writes the slug into both, and a module's `name` is what its menu item says. Leave the module `key` as it is; the next `publish` carries the change. |
 | **Placement** | Where it appears in the Crowdin UI. The most expensive to get wrong, and constrained by edition ([modules.md](references/modules.md)). |
 | **Logic** | What result they expect to see, which drives the UI, the API calls and therefore the `scopes`. |
-| **Who sees it** | `default_permissions`. Its default is `owner` only, which is wrong for most requests and cannot be widened after the fact - see [visibility](#8-close-the-loop-on-visibility). |
+| **Who sees it** | `default_permissions`. Its default is `owner` only, which is wrong for most requests and cannot be widened after the fact - see [visibility](#7-close-the-loop-on-visibility). |
 
 ## Ask sparingly, and only in their words
 
@@ -118,7 +118,7 @@ Only when nothing useful survives, say so and offer to hand it to a developer. N
 
 ### 0. Preflight
 
-Node `^22.19 || ^24` and pnpm. `npx` implies Node, so pnpm is the usual gap: `corepack enable pnpm`. If Node itself is missing, say it plainly - this needs one install first - and help rather than turning it into a requirement they must satisfy alone.
+Node `^22.19 || ^24`, and nothing else: `create` installs the app's dependencies with pnpm if pnpm works on the machine, otherwise with bun or with the npm that comes with Node. If Node itself is missing, say it plainly - this needs one install first - and help rather than turning it into a requirement they must satisfy alone.
 
 Probe auth with a read-only call:
 
@@ -128,20 +128,24 @@ npx @crowdin/serverless-apps-cli@latest list --json
 
 JSON means you are logged in. `Not logged in. Run crowdin-serverless-apps login first.` means run [the auth handshake](#the-auth-handshake) first.
 
+In an app that already exists, install its dependencies first, with the manager its lockfile names - `pnpm install` for `pnpm-lock.yaml`, `npm install` for `package-lock.json`, `bun install` for `bun.lock` or `bun.lockb` - so npx finds the CLI the app pins. Then check that CLI before changing anything: `npx @crowdin/serverless-apps-cli --version` inside the app. Below 0.30.0 it is older than this page, and its `publish` uploads the build without the manifest. Update it with the same manager (`pnpm update @crowdin/serverless-apps-cli`, or `npm update` / `bun update` with that package) and check the version again.
+
 Say where the app will be created, in absolute terms, before creating it. Every later change happens in that directory and the user needs to know where their app lives.
 
 ### 1. Scaffold
 
 ```bash
 npx @crowdin/serverless-apps-cli@latest create <name> --template projects-dashboard-cli --yes
-cd <name> && pnpm install
+cd <name>
 ```
 
 Both flags matter: without them the CLI waits on an interactive picker that hangs in a non-interactive shell.
 
+Give `create` a command timeout of five minutes or more and let it finish: it installs the dependencies and builds the app, and a run killed by a timeout may not manage to clean up after itself.
+
 **Always `projects-dashboard-cli`.** The template is not a decision to weigh and not worth a question. With it the CLI owns the whole toolchain - Vite, Tailwind, Lingui, Biome, the base tsconfig - so everything downstream works as described here. `projects-dashboard-standalone` hands the build back to the app and every later problem with it becomes yours; pick it only if the user explicitly asks to own the build.
 
-`create` writes `CROWDIN_APP_ID` into `.env` and registers the app. From here use the local binary inside the app directory - `npx crowdin-serverless-apps <command>` - so the toolchain matches the app's pinned version.
+`create` installs the dependencies, builds the app, registers it and writes `CROWDIN_APP_ID` into `.env`. It is all or nothing: when a step fails it prints the error, removes the folder it made and registers nothing, so fix the cause and run the same command again. The exception is a registration Crowdin did not confirm: the folder stays, because the app may exist, and the message says how to check it (`list`) and link it (`link --app-id`) - do that rather than run `create` again, which would register a second app. When it installs with npm or bun instead of pnpm it says so, and the lockfile it leaves tells a later session the same; run every `pnpm <script>` on this page through that manager instead (`npm run typecheck`). From here run the CLI inside the app directory as `npx @crowdin/serverless-apps-cli <command>`, without a version: npx then runs the copy the app pins in `node_modules`, so the toolchain matches it. Name the package every time - `crowdin-serverless-apps` is only the command's name, not a package on npm, so in a folder without `node_modules` npx would go looking for that name there. The CLI's own hints - `Next: ... crowdin-serverless-apps dev` after `create`, the `dev` tip after `preview` - are written for a person at a terminal; this page decides what you run.
 
 ### 2. Placement: the part that silently breaks
 
@@ -162,48 +166,41 @@ Editor modules need `modes`; asset panels need `fileNamePattern`; context-menu e
 
 Read [references/sdk.md](references/sdk.md) before writing SDK code - verified snippets from a working scaffold, and the traps types do not catch. Two that reach the user directly: call `resize()` after any layout change or the app looks truncated, and design a real empty state, because a first-run organization with no TMs or a project with no glossary renders a blank screen the user reads as broken.
 
-**Every app is localizable, and that is not an optional extra.** The scaffold arrives wired for it - Lingui, a `locales/` folder, catalogs - so the default is to keep it, and stripping it would be the deviation. Put every user-visible string behind a macro (`<Trans>`, `<Plural>`, `` t` ``) as you write it, not afterwards: retrofitting means touching every line of JSX again. Then `npx crowdin-serverless-apps extract` collects them into `locales/*.po`, and `build` re-extracts by default. This app runs inside a localization platform whose own users work in their own languages; hardcoded English is the one thing they will notice immediately.
+**Every app is localizable, and that is not an optional extra.** The scaffold arrives wired for it - Lingui, a `locales/` folder, catalogs - so the default is to keep it, and stripping it would be the deviation. Put every user-visible string behind a macro (`<Trans>`, `<Plural>`, `` t` ``) as you write it, not afterwards: retrofitting means touching every line of JSX again. Then `npx @crowdin/serverless-apps-cli extract` collects them into `locales/*.po`, and `build` re-extracts by default. This app runs inside a localization platform whose own users work in their own languages; hardcoded English is the one thing they will notice immediately.
 
 ### 4. Give it a logo
 
 The scaffold ships a placeholder `public/logo.svg`, and leaving it is the clearest sign nobody finished the job - every app in the menu wears the same generic tile. Draw the thing the app is about: layers for translation memories, bars for a report, a tag for a glossary.
 
-Square `viewBox` matching the placeholder's `0 0 64 64`; no text, since it renders at roughly 24px; give the mark its own background, because host themes flip between light and dark and CSS cannot reach inside an `<img>`; self-contained, no remote fonts or images; a couple of KB at most. Write it to `public/logo.svg` - the manifest already points at `/logo.svg` and everything under `public/` ships in the bundle. Afterwards confirm `dist/logo.svg` exists and appears in `dist/bundle.zip`.
+Square `viewBox` matching the placeholder's `0 0 64 64`; no text, since it renders at roughly 24px; give the mark its own background, because host themes flip between light and dark and CSS cannot reach inside an `<img>`; self-contained, no remote fonts or images; a couple of KB at most. Write it to `public/logo.svg` - the manifest already points at `/logo.svg` and everything under `public/` ships in the bundle. Afterwards confirm `dist/logo.svg` exists and is packed into `dist/<slug>.crowdinapp`, the file `publish` uploads.
 
 ### 5. Green gate
 
 ```bash
 pnpm typecheck && pnpm lint
-npx crowdin-serverless-apps manifest validate
+npx @crowdin/serverless-apps-cli manifest validate
 ```
 
-Do not hand code over while any of the three is red. `typecheck` catches invented SDK APIs; neither it nor `lint` reads `manifest.json`, which is what `manifest validate` is for. It checks the file against the schema, and it checks `scopes` against the code: every call the app makes through the API client is matched to the scope that method needs, `createStorage()` to `application.storage`, and the result compared with the manifest. A call the manifest does not cover is a problem with the exact string to add; a declared scope no call uses is a note. Validation is offline - no login, no app link - but the scope half reads the packages in `node_modules`, so run it after `pnpm install` and again whenever the manifest or the API calls change. It exits 1 on a problem, groups problems by section and prints a `fix` line under each; read that hint, it spells out the accepted values, scope strings included.
+Do not hand code over while any of the three is red. `typecheck` catches invented SDK APIs; neither it nor `lint` reads `manifest.json`, which is what `manifest validate` is for. It checks the file against the schema, and it checks `scopes` against the code: every call the app makes through the API client is matched to the scope that method needs, `createStorage()` to `application.storage`, and the result compared with the manifest. A call the manifest does not cover is a problem with the exact string to add; a declared scope no call uses is a note. Validation is offline - no login, no app link - but the scope half reads the packages `create` installed into `node_modules`, so run it again whenever the manifest or the API calls change. It exits 1 on a problem, groups problems by section and prints a `fix` line under each; read that hint, it spells out the accepted values, scope strings included.
 
-A green run that carries a `scope check skipped` note has not looked at the scopes. Do what the note says - `pnpm install`, or `pnpm update @crowdin/serverless-apps-cli @crowdin/crowdin-api-client` in an app that predates the check - and run it again ([scopes.md](references/scopes.md)).
+A green run that carries a `scope check skipped` note has not looked at the scopes. Do what the note says - `pnpm install`, or `pnpm update @crowdin/serverless-apps-cli @crowdin/crowdin-api-client` in an app that predates the check, through npm or bun instead when the app's lockfile is theirs - and run it again ([scopes.md](references/scopes.md)).
 
 Passing does not mean Crowdin will accept the manifest, only that the cheap mistakes are gone.
 
-### 6. Sync the manifest
+The check can be wrong the other way too. Fix what it names first, by the `fix` line. Treat a finding as false only when you can point at the reason - the docs list the field or value it rejects, so the platform has outgrown this CLI's schema, or the call it names never runs. Then publish with `--skip-validation`: `publish` prints the findings, uploads anyway, and Crowdin checks the manifest itself. That call is yours, not the user's, so don't ask them. That finding is the one red the gate allows. A `manifest.json` that is not valid JSON stops `publish` even with the flag.
+
+### 6. Publish instead of running a dev server
 
 ```bash
-npx crowdin-serverless-apps manifest status   # exit code 1 means local and remote differ
-npx crowdin-serverless-apps manifest push
+npx @crowdin/serverless-apps-cli publish -y
 ```
 
-Before publishing, not after. `publish` moves only the bundle; `modules`, `scopes` and `name` travel only with a push. `preview` also reads the manifest from Crowdin, not from disk, so an unpushed change means you are previewing the old placement.
+Builds the app, packs it with `manifest.json` into one app file, `dist/<slug>.crowdinapp`, uploads that and switches Crowdin to serving it. Publishing is how a manifest change reaches Crowdin: a new `name`, module or scope is live after the next `publish`, and `preview` reads the manifest from Crowdin, not from disk, so publish before you preview. Do not start `dev`: it ties the app to your machine and forces the user to keep a terminal open, which defeats handing them something that just works. `dev` is the right tool when the *user* wants a fast local loop, in their own terminal. Say the trade-off out loud - every iteration is now a build plus an upload rather than an instant reload.
 
-### 7. Publish instead of running a dev server
-
-```bash
-npx crowdin-serverless-apps publish -y
-```
-
-Builds, uploads `dist/bundle.zip`, and switches Crowdin to serving it. Do not start `dev`: it ties the app to your machine and forces the user to keep a terminal open, which defeats handing them something that just works. `dev` is the right tool when the *user* wants a fast local loop, in their own terminal. Say the trade-off out loud - every iteration is now a build plus an upload rather than an instant reload.
-
-### 8. Close the loop on visibility
+### 7. Close the loop on visibility
 
 ```bash
-npx crowdin-serverless-apps list --json
+npx @crowdin/serverless-apps-cli list --json
 ```
 
 Each app reports its resolved `permissions`, so read them instead of assuming. A fresh install is `user: owner`, meaning the app works for whoever created it and is invisible to everyone else - and because `create` installed the app before you edited anything, setting `default_permissions` in the manifest afterwards does not widen an existing install.
@@ -212,10 +209,10 @@ So: derive the audience from the request ("so the translators can see it" is `al
 
 Remember calls run as the **viewer**. An app built for translators must only need what a translator may do, or it will 403 for exactly the person it was made for.
 
-### 9. Open it, and look
+### 8. Open it, and look
 
 ```bash
-npx crowdin-serverless-apps preview --module <key> [--project <id|identifier>]
+npx @crowdin/serverless-apps-cli preview --module <key> [--project <id|identifier>]
 ```
 
 Always pass `--module`: with more than one module and no flag the CLI refuses to choose. Project modules and `editor-right-panel` need a project - omitting `--project` falls back to the first project the login can access, which is fine for a smoke test and wrong whenever the content depends on the project, so pass the one from the user's link.
@@ -248,18 +245,18 @@ Never ask for a token in chat. On a machine with no browser at all, `CROWDIN_PER
 | `Module type X only has a page on Crowdin Enterprise` / `only on crowdin.com` | Edition-locked placement. Pick one that exists on their edition. |
 | `Module type X has no page of its own` | One of the seven unopenable types. Expected: hand over navigation, not a link. |
 | Blank iframe, or the host reports the app did not start | Manifest type, `prepare*` and `context.app.type` disagree, or a registration is not at the top level, or two modules of one type without keys. |
-| App published but absent from the UI slot | `manifest push` skipped, or a string-based project without `stringBasedAvailable`. |
+| App published but absent from the UI slot | A manifest edit made after the last `publish` - `list --json` shows the manifest Crowdin holds - or a string-based project without `stringBasedAvailable`. |
 | App opens but shows nothing | Empty data, or the first-project fallback landed somewhere with no glossary/TM/strings. Check before blaming the code. |
-| 403 `Endpoint isn't allowed for token scopes.` at runtime | A manifest scope. Run `manifest validate`: it names the call and the string to add. If validate is green, run `manifest status` - the scope is on disk but not pushed. If it printed `scope check skipped`, do what the note says first; a green run with that note has not looked at the scopes ([scopes.md](references/scopes.md)). |
+| 403 `Endpoint isn't allowed for token scopes.` at runtime | A manifest scope. Run `manifest validate`: it names the call and the string to add. If validate is green, the scope is on disk but not yet on Crowdin: `list --json` shows the scopes Crowdin holds, and `publish` sends yours. If it printed `scope check skipped`, do what the note says first; a green run with that note has not looked at the scopes ([scopes.md](references/scopes.md)). |
 | Any other 403, or an empty list, all checks green | The viewer's own rights, not the manifest: calls run as whoever opened the app, and no check can see that. Build for what that person may do, or narrow the audience. |
-| Every storage call rejected | `application.storage` missing from the manifest `scopes` - `manifest validate` names the `createStorage()` call that needs it - or, if validate is green, the manifest change not pushed. |
+| Every storage call rejected | `application.storage` missing from the manifest `scopes` - `manifest validate` names the `createStorage()` call that needs it - or, if validate is green, the manifest change not published yet. |
 | `kv.user.*` throws while shared keys work | The viewer is anonymous - no user identity. Check `user.id` in the context before offering per-user features. |
 | A write under `module:...:` rejected | The key names a module other than the one the app is currently running as, or an unknown one. On reads the same situation is silent: `get` resolves `undefined`, listings skip the records. |
 | `You have no accessible projects to preview this module in.` | Either no project access, or a crowdsource module needing a public project. |
 | `Could not list your projects - this login may lack the project scope.` | Log in again to grant it. |
 | `GraphQL is not available to serverless apps` | The proxy is REST `/api/v2` only. |
 | `FormData bodies are not supported through AP.apiRequest` | Pass a raw `Blob`, `File` or `ArrayBuffer`. |
-| `manifest push` rejected by Crowdin | Run `manifest validate`; it names the offending path. |
+| `publish` fails on the manifest | Run `manifest validate`; it names the offending path and the fix. For a finding you have shown to be false, `publish --skip-validation` ([green gate](#5-green-gate)). |
 | `npx` fails on network or permissions | Your environment, not the CLI. Ask the user to allow it. |
 
 ## References
