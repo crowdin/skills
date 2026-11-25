@@ -99,7 +99,7 @@ Each row is a problem family: the pain in the user's terms, the cheapest rung th
 | I cannot verify a language I do not speak | 2 | Back-translate or explain a bounded sample on demand; every export back-translated is an app |
 | Human proofreading is the bottleneck | 1 | Proofread workflow step and tasks; a bounded review batch is connector; reviewing every new translation with AI is an app |
 | I cannot see what proofreaders changed | 1 | Translator Accuracy shows each translator's distance to the approved text, not who changed it; Contribution raw data marks an approver's own edits; a per-string before-and-after is connector; deletions are in project Activity |
-| Score translation quality against an LQA model | 3 | Store: Linguistic Quality Assurance (Enterprise); annotation lives in the editor |
+| Score translation quality against an LQA model | 3 | Store: Linguistic Quality Assurance (Enterprise); annotation lives in the editor. With the LQA app installed, an agent evaluates a language, a task or a file and explains a score through `lqa-evaluation` |
 | Suspect translations were pasted from an AI tool | 3 | Store AI-detection reports; provenance (who or which engine produced a translation) is connector |
 | Check translations against our own rules or tone | 2 | Spot-check a file or language against the rule on demand; project-wide and repeatable is an app |
 | Which MT or AI translations are safe to ship without a human | 3 | Store quality-estimation apps; crude triage (task for MT-only translations) is connector |
@@ -188,6 +188,7 @@ Each row is a problem family: the pain in the user's terms, the cheapest rung th
 | a script against the API | `crowdin-api-client` |
 | syncing files, or anything `crowdin` on the command line | `crowdin-cli` |
 | running an installed app's import, push or sync settings | `integration-sync` |
+| evaluating translations with the installed LQA app, or explaining an LQA score | `lqa-evaluation` |
 | a GitHub workflow that syncs and opens the translation PR | `github-action` |
 | writing translator context or a glossary from the source strings | `context-extraction`, `glossary-terms-extraction` |
 | filling in glossary term translations from the project's own translations | `glossary-term-translations` |
