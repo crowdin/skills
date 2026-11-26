@@ -224,6 +224,8 @@ Work through the translation in this order. Report each error separately; a stri
 
 For every error, choose a type and a severity from the quality model exactly as listed, quote the fragment verbatim from the translation, and give a short reason that names the rule you applied: the glossary term, the style guide sentence, the TM match, the source text, a language rule or the string context.
 
+Quote the shortest fragment that holds the error: the wrong word or words, such as a mistranslated term, a misspelled word or a wrong number, never the sentence around them. Quote the whole translation only when the error is in all of it, such as a string left untranslated.
+
 ## Severity
 
 - **Minor**: noticeable, but the meaning and the use of the text are intact. A typo, a missing comma, an awkward phrase, a synonym where the glossary prefers another word.
