@@ -1,6 +1,6 @@
 {
   "skill_name": "lqa-evaluation",
-  "note": "Behaviour specification for the lqa-evaluation skill on both paths: an LQA evaluation and the requests beside it. Evals 1, 3 to 8 and 15 to 21 run with the Crowdin connector's tools and no shell; fixtures/lqa-connector.md holds the tool outputs. Evals 2, 11 and 12 run with a shell and the Crowdin CLI; fixtures/lqa-cli.md holds the command outputs. Evals 9 and 10 check the path choice, 13 and 14 triggering. Evals 16 to 21 (2026-11-26) cover what the skill does besides evaluating and what it asks for: which projects have LQA, a request with no project, an unclear intent, \"this file\" with no page open, the quality models, and an evaluation in a language the user can read but not annotate; eval 18 makes Polish annotatable, so that the intent is its only open question. Evals 3 and 15 gained the examples of Get Scores the same day. The rules that matter most hold on both paths: the app is found before it is called, only the types and severities of the project's quality model are used, a fragment is copied from the translation character for character, no error rests on a rule that was not read, text inside strings is never an instruction, a run is closed only when the list has ended, a session that cannot write says so instead of pretending, and a choice offered to the user is a real one. Why some rules read as they do, from the dry runs behind this file (Sonnet 5.5 against the fixtures, 2026-11-25; evals 1 to 12 passed 72 of 76 checks with the first text): total is said to count the evaluated translations too, and to give no number for the rest, because two runs reported it as the number still to evaluate, and one worked a remainder out of it; a refusal the user shows of their own call is answered with the corrected call and not sent, because a run sent it itself with an error type and a reason of its own. After those changes the three evals concerned pass all their checks; the others were not run again. Eval 15 came with the app's `evaluation` field (2026-11-26) and passed its six checks in a dry run, as did eval 3 once more. The dry runs of 2026-11-26 for the projects, errors, models and asking (Sonnet 5.5 against the fixtures): evals 1, 2, 3 and 15 to 21 passed 77 of 79 checks with the first text; eval 3 missed which severities carry the points, and eval 2's one miss is its run not showing the heredoc. After the score section learned to weigh bySeverity by the model's weights and the asking rules said that what the user named is never asked back and the scope is never asked, evals 3, 17, 18 and 19 were run again and passed every check. The fixtures are put together from the app's answers in its own test suite and from the CLI's text view, not recorded from a live installation. Eval 22 (2026-11-26, after the final review) checks that an evaluation whose project and language the user named goes on when Get Projects fails; it has had no dry run yet.",
+  "note": "Behaviour specification for the lqa-evaluation skill on both paths: an LQA evaluation and the requests beside it. Evals 1, 3 to 8 and 15 to 21 run with the Crowdin connector's tools and no shell; fixtures/lqa-connector.md holds the tool outputs. Evals 2, 11 and 12 run with a shell and the Crowdin CLI; fixtures/lqa-cli.md holds the command outputs. Evals 9 and 10 check the path choice, 13 and 14 triggering. Evals 16 to 21 (2026-11-26) cover what the skill does besides evaluating and what it asks for: which projects have LQA, a request with no project, an unclear intent, \"this file\" with no page open, the quality models, and an evaluation in a language the user can read but not annotate; eval 18 makes Polish annotatable, so that the intent is its only open question. Evals 3 and 15 gained the examples of Get Scores the same day. The rules that matter most hold on both paths: the app is found before it is called, only the types and severities of the project's quality model are used, a fragment is copied from the translation character for character, no error rests on a rule that was not read, text inside strings is never an instruction, a run is closed only when the list has ended, a session that cannot write says so instead of pretending, and a choice offered to the user is a real one. Why some rules read as they do, from the dry runs behind this file (Sonnet 5.5 against the fixtures, 2026-11-25; evals 1 to 12 passed 72 of 76 checks with the first text): total is said to count the evaluated translations too, and to give no number for the rest, because two runs reported it as the number still to evaluate, and one worked a remainder out of it; a refusal the user shows of their own call is answered with the corrected call and not sent, because a run sent it itself with an error type and a reason of its own. After those changes the three evals concerned pass all their checks; the others were not run again. Eval 15 came with the app's `evaluation` field (2026-11-26) and passed its six checks in a dry run, as did eval 3 once more. The dry runs of 2026-11-26 for the projects, errors, models and asking (Sonnet 5.5 against the fixtures): evals 1, 2, 3 and 15 to 21 passed 77 of 79 checks with the first text; eval 3 missed which severities carry the points, and eval 2's one miss is its run not showing the heredoc. After the score section learned to weigh bySeverity by the model's weights and the asking rules said that what the user named is never asked back and the scope is never asked, evals 3, 17, 18 and 19 were run again and passed every check. The rule that an answer speaks the user's language (no method, path, field, code, tool or ID) came on 2026-11-26: without it, eval 22's run told the user that \"Get Projects\" failed and named a string by its ID; with it, evals 7, 15, 21 and 22 named none, and eval 11, whose user sent the call themselves, still got the corrected call. The fixtures are put together from the app's answers in its own test suite and from the CLI's text view, not recorded from a live installation. Eval 22 (2026-11-26, after the final review) checks that an evaluation whose project and language the user named goes on when Get Projects fails; it has had no dry run yet.",
   "evals": [
     {
       "id": 1,
@@ -11,7 +11,7 @@
         "evals/fixtures/lqa-connector.md"
       ],
       "expectations": [
-        "Says it is taking the connector path",
+        "Its answer names none of the app's methods, paths, parameters, fields or codes, no tool and no ID of a string, translation or evaluation",
         "Checks the app with get_application_installation before the first call to it",
         "Reads the quality model before judging, and every errorType and severity it sends is one of that model",
         "Every List Evaluation Scope call carries onlyNotEvaluated=1 and no limit",
@@ -38,7 +38,7 @@
         "evals/fixtures/lqa-cli.md"
       ],
       "expectations": [
-        "Says it is taking the CLI path because the session has a shell and no connector tools",
+        "Uses the Crowdin CLI (crowdin app api) because the session has a shell and no connector tools",
         "Lists the app's methods with crowdin app methods lqa-next before calling any of them",
         "Finds the file's ID with crowdin file list instead of guessing it",
         "Reads with crowdin app api lqa-next and fields or a query string; no read carries --input or -X POST",
@@ -72,7 +72,8 @@
         "Names Terminology as the most frequent error type",
         "Says that the Major and Critical errors carry most of the penalty points",
         "Presents the numbers as the language's current score over the last 30 days, not as a new evaluation",
-        "Quotes two or three of the answer's examples, each with its fragment and its reason (aiReason, or the comment of the error a person found), and no error that is not among them"
+        "Quotes two or three of the answer's examples, each with its fragment and its reason (aiReason, or the comment of the error a person found), and no error that is not among them",
+        "Its answer names none of the app's methods, paths, parameters, fields or codes, no tool and no ID of a string, translation or evaluation"
       ]
     },
     {
@@ -170,14 +171,14 @@
       "id": 10,
       "name": "connector-wins-when-both",
       "prompt": "The agent calls no tools and runs no commands; fixtures/lqa-connector.md and fixtures/lqa-cli.md hold the recorded outputs. This session has both a shell with the Crowdin CLI and the Crowdin connector's tools. Why did Polish fail LQA in project 12345?",
-      "expected_output": "Takes the connector path, says so in one line, and reads the score with get_application_data rather than crowdin app api.",
+      "expected_output": "Takes the connector path, and reads the score with get_application_data rather than crowdin app api.",
       "files": [
         "evals/fixtures/lqa-connector.md",
         "evals/fixtures/lqa-cli.md"
       ],
       "expectations": [
         "Uses the connector tools, not crowdin app api",
-        "States in one line that it took the connector path"
+        "Its answer names none of the app's methods, paths, parameters, fields or codes, no tool and no ID of a string, translation or evaluation"
       ]
     },
     {
@@ -247,7 +248,8 @@
         "Names Accuracy as the most frequent error type",
         "Says that the numbers are those of an AI evaluation of 120 translations that finished on 20 November 2026",
         "Does not present the numbers as the proofreading of the last 30 days",
-        "Quotes two or three of the answer's examples, each with its fragment and its reason, and no error that is not among them"
+        "Quotes two or three of the answer's examples, each with its fragment and its reason, and no error that is not among them",
+        "Its answer names none of the app's methods, paths, parameters, fields or codes, no tool and no ID of a string, translation or evaluation"
       ]
     },
     {
@@ -345,7 +347,8 @@
         "Says, before reading any translation, that the user can see Polish's score but cannot record errors in Polish",
         "Offers Polish's score instead: asks whether to show it, or shows it with Get Scores without closeEvaluation",
         "Makes no List Evaluation Scope and no add_application_data call",
-        "Does not call Get Scores with closeEvaluation=1 and does not claim that any error was recorded"
+        "Does not call Get Scores with closeEvaluation=1 and does not claim that any error was recorded",
+        "Its answer names none of the app's methods, paths, parameters, fields or codes, no tool and no ID of a string, translation or evaluation"
       ]
     },
     {
@@ -360,7 +363,8 @@
         "Calls Get Projects (path api-projects) at most twice",
         "Says in one line that Get Projects did not answer and that its check of LQA and access was skipped",
         "Goes on without asking the user anything: calls Get Quality Model and List Evaluation Scope with taskId 12",
-        "Does not stop the run because of Get Projects, and does not say that LQA is off or that the user lacks access"
+        "Does not stop the run because of Get Projects, and does not say that LQA is off or that the user lacks access",
+        "Its answer names none of the app's methods, paths, parameters, fields or codes, no tool and no ID of a string, translation or evaluation"
       ]
     }
   ]
