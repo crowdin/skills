@@ -188,7 +188,7 @@ Each row is a problem family: the pain in the user's terms, the cheapest rung th
 | a script against the API | `crowdin-api-client` |
 | syncing files, or anything `crowdin` on the command line | `crowdin-cli` |
 | running an installed app's import, push or sync settings | `integration-sync` |
-| evaluating translations with the installed LQA app, or explaining an LQA score | `lqa-evaluation` |
+| evaluating translations with the installed LQA app, or a question about LQA: a score, its errors, which projects have LQA, the quality models | `lqa-evaluation` |
 | a GitHub workflow that syncs and opens the translation PR | `github-action` |
 | writing translator context or a glossary from the source strings | `context-extraction`, `glossary-terms-extraction` |
 | filling in glossary term translations from the project's own translations | `glossary-term-translations` |
