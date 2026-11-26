@@ -78,7 +78,7 @@ Work through the steps in order; each ends on its done condition.
    - The evaluation of a scope adds up over its runs: the numbers also count the errors that earlier runs of the same scope recorded. Keep count of the errors this run recorded, to say both in the report.
    - `wordsState: "pending"`: Crowdin is still counting the words, and the run stays open. Wait `retryAfterSeconds` seconds and make the same call again, until the state is no longer `pending`; the reference says how your path waits.
    - `wordsState: "unavailable"`: the words could not be counted (`wordsError` says why), so there is no score and no Pass or Fail. Report the errors and say so.
-   - `evaluationJobId: null`: the run recorded no new error, so nothing was closed and the numbers are the scope's current score in LQA (for a language, its proofreading of the last 30 days), not an evaluation's.
+   - `evaluationJobId: null`: the run recorded no new error, so nothing was closed and the numbers are the scope's current score in LQA (for a language, what its LQA page shows; see "A question about a score"), not this run's.
    - A run that stopped before the end of the list has no score yet, so do not close it: a closed run is scored against the words of the whole scope. Report what you found and say that the score comes once the rest is evaluated. Going on in this conversation within 24 hours adds to the same evaluation. A new conversation cannot know where the run stopped: it starts the scope over, which doubles no error but judges the translations without errors again, so tell the user to come back to this one.
 
    Done when the answer's `wordsState` is `ok` or `unavailable`, or the run was left open on purpose.
@@ -95,11 +95,13 @@ Work through the steps in order; each ends on its done condition.
 
 "Why did Polish fail", "how is German doing", "which errors does this translator make most" need no evaluation, only Get Scores, which a session that cannot write can call too. Call it without `closeEvaluation`: then it only reads, and a run left open in another conversation stays open. It answers with the current numbers of what you ask for:
 
-- a language: `projectId` and `languageId` alone, its proofreading of the last 30 days;
+- a language: `projectId` and `languageId` alone, its result as the project's LQA page shows it: its proofreading of the last 30 days or, when the answer has `evaluation`, its latest AI evaluation;
 - a task: add `taskId`. A task takes no other filter;
 - a file, a translator or a period: add `fileId`, `translatorId` (a user ID; the reference says how to find it), `dateStart` and `dateEnd` (UTC date-times such as `2026-01-31T00:00:00Z`; one of them alone leaves the other end open).
 
 Answer from `perThousand` against `allowed`, `passed`, `errors.bySeverity` and `errors.byType`; `errors.byAi` is how many of the errors were found by AI. Get Quality Model explains a type or a severity.
+
+`evaluation` is set when the language has no approved words in the last 30 days: LQA then shows the score of its latest AI evaluation, which checked `strings` translations and finished at `finishedAt`, and the numbers are that evaluation's. Say so, with the date, so that they are not taken for the proofreading of the last 30 days. Every other answer has `evaluation: null`.
 
 ## When a call is refused
 

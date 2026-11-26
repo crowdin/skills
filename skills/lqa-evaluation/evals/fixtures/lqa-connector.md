@@ -208,7 +208,8 @@ A task's words are known at once, so the run closes with this call.
       },
       "byAi": 5
     },
-    "evaluationJobId": 318
+    "evaluationJobId": 318,
+    "evaluation": null
   }
 }
 ```
@@ -241,7 +242,43 @@ A task's words are known at once, so the run closes with this call.
       },
       "byAi": 26
     },
-    "evaluationJobId": null
+    "evaluationJobId": null,
+    "evaluation": null
+  }
+}
+```
+
+## get_application_data(applicationIdentifier: "lqa-next", path: "scores?projectId=12345&languageId=it")
+```json
+{
+  "data": {
+    "words": 2100,
+    "wordsState": "ok",
+    "wordsError": null,
+    "penaltyPoints": 30,
+    "perThousand": 14.29,
+    "score": 98.57,
+    "passed": false,
+    "allowed": 10,
+    "errors": {
+      "total": 10,
+      "bySeverity": {
+        "Minor": 5,
+        "Major": 5
+      },
+      "byType": {
+        "Accuracy": 6,
+        "Terminology": 3,
+        "Style": 1
+      },
+      "byAi": 10
+    },
+    "evaluationJobId": null,
+    "evaluation": {
+      "jobId": 301,
+      "strings": 120,
+      "finishedAt": "2026-11-20T14:05:00.000Z"
+    }
   }
 }
 ```

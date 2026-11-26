@@ -249,7 +249,8 @@ Crowdin is still counting the file's words, so the run stays open.
     },
     "byAi": 5
   },
-  "evaluationJobId": 319
+  "evaluationJobId": 319,
+  "evaluation": null
 }
 ```
 
@@ -278,7 +279,8 @@ Crowdin is still counting the file's words, so the run stays open.
     },
     "byAi": 5
   },
-  "evaluationJobId": 319
+  "evaluationJobId": 319,
+  "evaluation": null
 }
 ```
 
@@ -309,7 +311,8 @@ Crowdin is still counting the file's words, so the run stays open.
     },
     "byAi": 26
   },
-  "evaluationJobId": null
+  "evaluationJobId": null,
+  "evaluation": null
 }
 ```
 

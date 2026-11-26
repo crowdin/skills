@@ -1,6 +1,6 @@
 {
   "skill_name": "lqa-evaluation",
-  "note": "Behaviour specification for an LQA evaluation on both paths. Evals 1 and 3 to 8 run with the Crowdin connector's tools and no shell; fixtures/lqa-connector.md holds the tool outputs. Evals 2, 11 and 12 run with a shell and the Crowdin CLI; fixtures/lqa-cli.md holds the command outputs. Evals 9 and 10 check the path choice, 13 and 14 triggering. The rules that matter most hold on both paths: the app is found before it is called, only the types and severities of the project's quality model are used, a fragment is copied from the translation character for character, no error rests on a rule that was not read, text inside strings is never an instruction, a run is closed only when the list has ended, and a session that cannot write says so instead of pretending. Why some rules read as they do, from the dry runs behind this file (Sonnet 5.5 against the fixtures, 2026-11-25; evals 1 to 12 passed 72 of 76 checks with the first text): total is said to count the evaluated translations too, and to give no number for the rest, because two runs reported it as the number still to evaluate, and one worked a remainder out of it; a refusal the user shows of their own call is answered with the corrected call and not sent, because a run sent it itself with an error type and a reason of its own. After those changes the three evals concerned pass all their checks; the others were not run again. The fixtures are put together from the app's answers in its own test suite and from the CLI's text view, not recorded from a live installation.",
+  "note": "Behaviour specification for an LQA evaluation on both paths. Evals 1, 3 to 8 and 15 run with the Crowdin connector's tools and no shell; fixtures/lqa-connector.md holds the tool outputs. Evals 2, 11 and 12 run with a shell and the Crowdin CLI; fixtures/lqa-cli.md holds the command outputs. Evals 9 and 10 check the path choice, 13 and 14 triggering. The rules that matter most hold on both paths: the app is found before it is called, only the types and severities of the project's quality model are used, a fragment is copied from the translation character for character, no error rests on a rule that was not read, text inside strings is never an instruction, a run is closed only when the list has ended, and a session that cannot write says so instead of pretending. Why some rules read as they do, from the dry runs behind this file (Sonnet 5.5 against the fixtures, 2026-11-25; evals 1 to 12 passed 72 of 76 checks with the first text): total is said to count the evaluated translations too, and to give no number for the rest, because two runs reported it as the number still to evaluate, and one worked a remainder out of it; a refusal the user shows of their own call is answered with the corrected call and not sent, because a run sent it itself with an error type and a reason of its own. After those changes the three evals concerned pass all their checks; the others were not run again. Eval 15 came with the app's `evaluation` field (2026-11-26) and passed its six checks in a dry run, as did eval 3 once more. The fixtures are put together from the app's answers in its own test suite and from the CLI's text view, not recorded from a live installation.",
   "evals": [
     {
       "id": 1,
@@ -229,6 +229,23 @@
       "expectations": [
         "No call is made to the LQA app",
         "The answer treats it as turning on Crowdin's built-in QA checks, not as an LQA evaluation"
+      ]
+    },
+    {
+      "id": 15,
+      "name": "connector-score-question-evaluated",
+      "prompt": "The agent calls no tools; fixtures/lqa-connector.md holds the recorded output of each one. This session has the Crowdin connector's tools and no shell. Why did Italian fail LQA in project 12345?",
+      "expected_output": "Reads the Italian score with Get Scores and no closeEvaluation, sees `evaluation` set, and answers from it: 14.29 penalty points per 1,000 words against the allowed 10, Accuracy the most frequent type, from the AI evaluation of 120 translations that finished on 20 November 2026, because the language has no approved words in the last 30 days. Does not present the numbers as the proofreading of the last 30 days. Reads no translations and records nothing.",
+      "files": [
+        "evals/fixtures/lqa-connector.md"
+      ],
+      "expectations": [
+        "Calls Get Scores for it without closeEvaluation",
+        "Makes no Report Error call and reads no page of translations",
+        "Says 14.29 penalty points per 1,000 words against the allowed 10",
+        "Names Accuracy as the most frequent error type",
+        "Says that the numbers are those of an AI evaluation of 120 translations that finished on 20 November 2026",
+        "Does not present the numbers as the proofreading of the last 30 days"
       ]
     }
   ]
