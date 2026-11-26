@@ -339,6 +339,7 @@ A task's words are known at once, so the run closes with this call. Its `example
     },
     "evaluationJobId": 318,
     "evaluation": null,
+    "evaluationErrors": null,
     "examples": [
       {
         "id": 4102,
@@ -427,6 +428,7 @@ A task's words are known at once, so the run closes with this call. Its `example
     },
     "evaluationJobId": null,
     "evaluation": null,
+    "evaluationErrors": 0,
     "examples": [
       {
         "id": 3871,
@@ -642,6 +644,7 @@ A task's words are known at once, so the run closes with this call. Its `example
       "strings": 120,
       "finishedAt": "2026-11-20T14:05:00.000Z"
     },
+    "evaluationErrors": null,
     "examples": [
       {
         "id": 3852,

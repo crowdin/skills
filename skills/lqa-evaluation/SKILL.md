@@ -163,6 +163,8 @@ Which severities carry the points comes from the weights, not the counts: each c
 
 `evaluation` is set when the language has no approved words in the last 30 days: LQA then shows the score of its latest AI evaluation, which checked `strings` translations and finished at `finishedAt`, and the numbers are that evaluation's. Say so, with the date, so that they are not taken for the proofreading of the last 30 days. Every other answer has `evaluation: null`. All the errors of that evaluation are Get Issues with `evaluationJobId` set to its `evaluation.jobId` (see "The errors").
 
+`evaluationErrors` comes with a score of proofreading: a translator's, a file's, a period's, or a language's that has approved words. Such a score counts the errors found outside AI evaluations, and AI evaluations recorded `evaluationErrors` more in the same translations and period, which it leaves out. When it is above 0, say so next to the numbers, such as "AI evaluations found 5 more errors in these translations, which this score does not count", so that a score without errors is not taken for translations without errors; Get Issues lists them. `evaluationErrors: null` means the numbers count them already: those of an AI evaluation or of a task.
+
 ## The errors
 
 "Show the LQA errors of …", "which errors did AI find in German": call Get Issues with `projectId` and only the filters the user asked for. `languages`, `translators` (user IDs), `files` and `taskIds` take comma-separated IDs; `dateStart` and `dateEnd` (UTC date-times, both ends included) bound when the error occurred; `evaluationJobId` keeps one AI evaluation's errors. The answer has `data`, a page of errors, and `pagination.total`, how many match.

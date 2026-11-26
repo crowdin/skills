@@ -303,6 +303,7 @@ Crowdin is still counting the file's words, so the run stays open. Its `examples
   },
   "evaluationJobId": 319,
   "evaluation": null,
+  "evaluationErrors": null,
   "examples": [
     {
       "id": 4205,
@@ -387,6 +388,7 @@ Crowdin is still counting the file's words, so the run stays open. Its `examples
   },
   "evaluationJobId": 319,
   "evaluation": null,
+  "evaluationErrors": null,
   "examples": [
     {
       "id": 4205,
@@ -473,6 +475,7 @@ Crowdin is still counting the file's words, so the run stays open. Its `examples
   },
   "evaluationJobId": null,
   "evaluation": null,
+  "evaluationErrors": 0,
   "examples": [
     {
       "id": 3871,
