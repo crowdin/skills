@@ -2,9 +2,9 @@
 
 Agents cannot run commands in these evals. When an agent "runs" a command, it reads the output here. If a command is not recorded, it says what it expects and continues.
 
-The LQA app's answers (the quality model, the pages, the recorded error, the scores and the refusals) have the shape and the messages the app gave in its own test suite on 2026-11-25; their content (the project, its strings, the numbers) is written for these evals. The method list and the method descriptions are what the CLI's text view prints for the app's manifest and OpenAPI document, put together from both. The outputs of the other commands are written for these evals. None of it is recorded from a live installation yet.
+The LQA app's answers (the projects, the quality model, the pages, the recorded error, the scores and the refusals) have the shape and the messages the app gave in its own test suite on 2026-11-25, and on 2026-11-26 for Get Projects and the `examples` of Get Scores; their content (the projects, their strings, the numbers) is written for these evals. The method list and the method descriptions are what the CLI's text view prints for the app's manifest and OpenAPI document, put together from both. The outputs of the other commands are written for these evals. None of it is recorded from a live installation yet.
 
-The project is "Flowdesk Web", source language English, target languages German (`de`), Polish (`pl`) and Ukrainian (`uk`). The working directory has no `crowdin.yml`; `CROWDIN_PROJECT_ID=12345` and a token with the `application.proxy` scope are in the environment.
+Project 12345 is "Mobile app", source language English, target languages German (`de`), Polish (`pl`), Italian (`it`) and Ukrainian (`uk`). The organization has two more LQA projects, 23456 "Website" and 34567 "Legacy docs". What the user can do in each project and language is in the Get Projects answer. The working directory has no `crowdin.yml`; `CROWDIN_PROJECT_ID=12345` and a token with the `application.proxy` scope are in the environment.
 
 ## crowdin app list --verbose
 ◆  webflow Webflow (all projects) https://webflow.app.crowdin.net
@@ -87,6 +87,56 @@ Parameters:
   closeEvaluation  query  string             1 scores and closes the caller's running evaluation of the scope (`taskId`, `fileId` or neither) and answers with its numbers…
 Example:
   crowdin app api lqa-next scores -F 'projectId=<integer>' -F 'languageId=<string>'
+
+## crowdin app api lqa-next api-projects -o json
+```json
+[
+  {
+    "id": 12345,
+    "name": "Mobile app",
+    "modelId": 1,
+    "modelName": "MQM Core",
+    "type": "model",
+    "enabled": true,
+    "canManage": false,
+    "modelKey": "mqm-core",
+    "languages": [
+      { "id": "de", "name": "German", "active": true, "canRead": true, "canAnnotate": true },
+      { "id": "pl", "name": "Polish", "active": true, "canRead": true, "canAnnotate": false },
+      { "id": "it", "name": "Italian", "active": true, "canRead": true, "canAnnotate": false },
+      { "id": "uk", "name": "Ukrainian", "active": true, "canRead": true, "canAnnotate": true }
+    ]
+  },
+  {
+    "id": 23456,
+    "name": "Website",
+    "modelId": 2,
+    "modelName": "TAUS DQF-MQM",
+    "type": "model",
+    "enabled": true,
+    "canManage": false,
+    "modelKey": "taus-dqf-mqm",
+    "languages": [
+      { "id": "uk", "name": "Ukrainian", "active": true, "canRead": true, "canAnnotate": true },
+      { "id": "fr", "name": "French", "active": false, "canRead": false, "canAnnotate": false }
+    ]
+  },
+  {
+    "id": 34567,
+    "name": "Legacy docs",
+    "modelId": 3,
+    "modelName": "LISA QA",
+    "type": "model",
+    "enabled": false,
+    "canManage": false,
+    "modelKey": "lisa-qa",
+    "languages": [
+      { "id": "de", "name": "German", "active": true, "canRead": true, "canAnnotate": false },
+      { "id": "uk", "name": "Ukrainian", "active": true, "canRead": true, "canAnnotate": true }
+    ]
+  }
+]
+```
 
 ## crowdin file list -o json
 ```json
@@ -216,6 +266,7 @@ Every Report Error call of these evals is answered like this one, with the value
     "taskIds": [],
     "createdAt": "2026-11-25T10:14:03.739Z",
     "updatedAt": "2026-11-25T10:14:03.739Z",
+    "evaluationJobId": 319,
     "projectId": 12345
   },
   "duplicate": false
@@ -223,7 +274,8 @@ Every Report Error call of these evals is answered like this one, with the value
 ```
 
 ## crowdin app api lqa-next scores -F projectId=12345 -f languageId=uk -F fileId=77 -F closeEvaluation=1 -o json   (the first call)
-Crowdin is still counting the file's words, so the run stays open.
+Crowdin is still counting the file's words, so the run stays open. Its `examples` are errors the run recorded, with the values of its Report Error calls: the reasons below stand in for the ones the run sent.
+(abridged: `examples` holds five errors, the heaviest first; the first three are shown)
 ```json
 {
   "words": null,
@@ -249,11 +301,66 @@ Crowdin is still counting the file's words, so the run stays open.
     },
     "byAi": 5
   },
-  "evaluationJobId": 319
+  "evaluationJobId": 319,
+  "evaluation": null,
+  "examples": [
+    {
+      "id": 4205,
+      "stringId": 6025,
+      "translationId": 91025,
+      "fileName": "/web/onboarding.json",
+      "source": "Your plan renews on 03/04/2026.",
+      "translation": "Ваш план буде поновлено 03.04.2026.",
+      "subsegment": "03.04.2026",
+      "errorType": "Locale conventions",
+      "severity": "Major",
+      "comment": null,
+      "aiReason": "The source date is March 4 (MM/DD/YYYY), so in DD.MM.YYYY it is 04.03.2026; 03.04.2026 reads as April 3.",
+      "aiSource": "context",
+      "origin": "copilot",
+      "translatorName": "translator.c",
+      "occurredAt": "2026-11-25T10:14:09.310Z"
+    },
+    {
+      "id": 4202,
+      "stringId": 6022,
+      "translationId": 91022,
+      "fileName": "/web/onboarding.json",
+      "source": "You have %d unread messages",
+      "translation": "У вас %s непрочитаних повідомлень",
+      "subsegment": "%s",
+      "errorType": "Design and markup",
+      "severity": "Major",
+      "comment": null,
+      "aiReason": "The placeholder %d is changed to %s, so the number is formatted as a string.",
+      "aiSource": "source_text",
+      "origin": "copilot",
+      "translatorName": "translator.c",
+      "occurredAt": "2026-11-25T10:14:05.020Z"
+    },
+    {
+      "id": 4201,
+      "stringId": 6021,
+      "translationId": 91021,
+      "fileName": "/web/onboarding.json",
+      "source": "Open your workspace",
+      "translation": "Відкрийте свою робочу область",
+      "subsegment": "робочу область",
+      "errorType": "Terminology",
+      "severity": "Major",
+      "comment": null,
+      "aiReason": "The glossary's approved term for \"workspace\" is \"робочий простір\"; the translation replaces it.",
+      "aiSource": "glossary",
+      "origin": "copilot",
+      "translatorName": "translator.c",
+      "occurredAt": "2026-11-25T10:14:03.770Z"
+    }
+  ]
 }
 ```
 
 ## The same command, sent again after the wait
+(abridged: `examples` holds five errors, the heaviest first; the first three are shown)
 ```json
 {
   "words": 640,
@@ -278,11 +385,66 @@ Crowdin is still counting the file's words, so the run stays open.
     },
     "byAi": 5
   },
-  "evaluationJobId": 319
+  "evaluationJobId": 319,
+  "evaluation": null,
+  "examples": [
+    {
+      "id": 4205,
+      "stringId": 6025,
+      "translationId": 91025,
+      "fileName": "/web/onboarding.json",
+      "source": "Your plan renews on 03/04/2026.",
+      "translation": "Ваш план буде поновлено 03.04.2026.",
+      "subsegment": "03.04.2026",
+      "errorType": "Locale conventions",
+      "severity": "Major",
+      "comment": null,
+      "aiReason": "The source date is March 4 (MM/DD/YYYY), so in DD.MM.YYYY it is 04.03.2026; 03.04.2026 reads as April 3.",
+      "aiSource": "context",
+      "origin": "copilot",
+      "translatorName": "translator.c",
+      "occurredAt": "2026-11-25T10:14:09.310Z"
+    },
+    {
+      "id": 4202,
+      "stringId": 6022,
+      "translationId": 91022,
+      "fileName": "/web/onboarding.json",
+      "source": "You have %d unread messages",
+      "translation": "У вас %s непрочитаних повідомлень",
+      "subsegment": "%s",
+      "errorType": "Design and markup",
+      "severity": "Major",
+      "comment": null,
+      "aiReason": "The placeholder %d is changed to %s, so the number is formatted as a string.",
+      "aiSource": "source_text",
+      "origin": "copilot",
+      "translatorName": "translator.c",
+      "occurredAt": "2026-11-25T10:14:05.020Z"
+    },
+    {
+      "id": 4201,
+      "stringId": 6021,
+      "translationId": 91021,
+      "fileName": "/web/onboarding.json",
+      "source": "Open your workspace",
+      "translation": "Відкрийте свою робочу область",
+      "subsegment": "робочу область",
+      "errorType": "Terminology",
+      "severity": "Major",
+      "comment": null,
+      "aiReason": "The glossary's approved term for \"workspace\" is \"робочий простір\"; the translation replaces it.",
+      "aiSource": "glossary",
+      "origin": "copilot",
+      "translatorName": "translator.c",
+      "occurredAt": "2026-11-25T10:14:03.770Z"
+    }
+  ]
 }
 ```
 
 ## crowdin app api lqa-next scores -F projectId=12345 -f languageId=pl -o json
+(abridged: `examples` holds five errors, the heaviest first; the first three are shown)
 ```json
 {
   "words": 18400,
@@ -309,7 +471,61 @@ Crowdin is still counting the file's words, so the run stays open.
     },
     "byAi": 26
   },
-  "evaluationJobId": null
+  "evaluationJobId": null,
+  "evaluation": null,
+  "examples": [
+    {
+      "id": 3871,
+      "stringId": 5121,
+      "translationId": 90921,
+      "fileName": "/web/messages.json",
+      "source": "You won't be charged until the trial ends.",
+      "translation": "Opłata zostanie pobrana przed końcem okresu próbnego.",
+      "subsegment": "przed końcem okresu próbnego",
+      "errorType": "Accuracy",
+      "severity": "Critical",
+      "comment": null,
+      "aiReason": "The source says there is no charge until the trial ends; the translation says the charge comes before it ends.",
+      "aiSource": "source_text",
+      "origin": "ai",
+      "translatorName": "translator.e",
+      "occurredAt": "2026-11-21T09:42:10.000Z"
+    },
+    {
+      "id": 3802,
+      "stringId": 5133,
+      "translationId": 90933,
+      "fileName": "/web/messages.json",
+      "source": "Your card will be charged {amount} on {date}.",
+      "translation": "Z Twojej karty zostanie pobrana kwota {kwota} w dniu {date}.",
+      "subsegment": "{kwota}",
+      "errorType": "Design and markup",
+      "severity": "Critical",
+      "comment": null,
+      "aiReason": "The placeholder {amount} is renamed to {kwota}, so the amount is never filled in.",
+      "aiSource": "source_text",
+      "origin": "ai",
+      "translatorName": "translator.f",
+      "occurredAt": "2026-11-14T16:05:31.000Z"
+    },
+    {
+      "id": 3755,
+      "stringId": 5140,
+      "translationId": 90940,
+      "fileName": "/web/messages.json",
+      "source": "Deleting a workspace cannot be undone.",
+      "translation": "Usunięcie obszaru roboczego można cofnąć.",
+      "subsegment": "można cofnąć",
+      "errorType": "Accuracy",
+      "severity": "Critical",
+      "comment": "Says the deletion can be undone, the opposite of the source: users would delete a workspace expecting to restore it.",
+      "aiReason": null,
+      "aiSource": null,
+      "origin": "manual",
+      "translatorName": "translator.e",
+      "occurredAt": "2026-11-09T11:20:00.000Z"
+    }
+  ]
 }
 ```
 

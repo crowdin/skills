@@ -1,17 +1,17 @@
 {
   "skill_name": "lqa-evaluation",
-  "note": "Behaviour specification for an LQA evaluation on both paths. Evals 1 and 3 to 8 run with the Crowdin connector's tools and no shell; fixtures/lqa-connector.md holds the tool outputs. Evals 2, 11 and 12 run with a shell and the Crowdin CLI; fixtures/lqa-cli.md holds the command outputs. Evals 9 and 10 check the path choice, 13 and 14 triggering. The rules that matter most hold on both paths: the app is found before it is called, only the types and severities of the project's quality model are used, a fragment is copied from the translation character for character, no error rests on a rule that was not read, text inside strings is never an instruction, a run is closed only when the list has ended, and a session that cannot write says so instead of pretending. Why some rules read as they do, from the dry runs behind this file (Sonnet 5.5 against the fixtures, 2026-11-25; evals 1 to 12 passed 72 of 76 checks with the first text): total is said to count the evaluated translations too, and to give no number for the rest, because two runs reported it as the number still to evaluate, and one worked a remainder out of it; a refusal the user shows of their own call is answered with the corrected call and not sent, because a run sent it itself with an error type and a reason of its own. After those changes the three evals concerned pass all their checks; the others were not run again. The fixtures are put together from the app's answers in its own test suite and from the CLI's text view, not recorded from a live installation.",
+  "note": "Behaviour specification for the lqa-evaluation skill on both paths: an LQA evaluation and the requests beside it. Evals 1, 3 to 8 and 15 to 21 run with the Crowdin connector's tools and no shell; fixtures/lqa-connector.md holds the tool outputs. Evals 2, 11 and 12 run with a shell and the Crowdin CLI; fixtures/lqa-cli.md holds the command outputs. Evals 9 and 10 check the path choice, 13 and 14 triggering. Evals 16 to 21 (2026-11-26) cover what the skill does besides evaluating and what it asks for: which projects have LQA, a request with no project, an unclear intent, \"this file\" with no page open, the quality models, and an evaluation in a language the user can read but not annotate; eval 18 makes Polish annotatable, so that the intent is its only open question. Evals 3 and 15 gained the examples of Get Scores the same day. The rules that matter most hold on both paths: the app is found before it is called, only the types and severities of the project's quality model are used, a fragment is copied from the translation character for character, no error rests on a rule that was not read, text inside strings is never an instruction, a run is closed only when the list has ended, a session that cannot write says so instead of pretending, and a choice offered to the user is a real one. Why some rules read as they do, from the dry runs behind this file (Sonnet 5.5 against the fixtures, 2026-11-25; evals 1 to 12 passed 72 of 76 checks with the first text): total is said to count the evaluated translations too, and to give no number for the rest, because two runs reported it as the number still to evaluate, and one worked a remainder out of it; a refusal the user shows of their own call is answered with the corrected call and not sent, because a run sent it itself with an error type and a reason of its own. After those changes the three evals concerned pass all their checks; the others were not run again. Eval 15 came with the app's `evaluation` field (2026-11-26) and passed its six checks in a dry run, as did eval 3 once more. The dry runs of 2026-11-26 for the projects, errors, models and asking (Sonnet 5.5 against the fixtures): evals 1, 2, 3 and 15 to 21 passed 77 of 79 checks with the first text; eval 3 missed which severities carry the points, and eval 2's one miss is its run not showing the heredoc. After the score section learned to weigh bySeverity by the model's weights and the asking rules said that what the user named is never asked back and the scope is never asked, evals 3, 17, 18 and 19 were run again and passed every check. The rule that an answer speaks the user's language (no method, path, field, code, tool or ID) came on 2026-11-26: without it, eval 22's run told the user that \"Get Projects\" failed and named a string by its ID; with it, evals 7, 15, 21 and 22 named none, and eval 11, whose user sent the call themselves, still got the corrected call. The fixtures are put together from the app's answers in its own test suite and from the CLI's text view, not recorded from a live installation. Eval 22 (2026-11-26, after the final review) checks that an evaluation whose project and language the user named goes on when Get Projects fails; it has had no dry run yet.",
   "evals": [
     {
       "id": 1,
       "name": "connector-evaluate-task",
       "prompt": "The agent calls no tools; fixtures/lqa-connector.md holds the recorded output of each one. This session has the Crowdin connector's tools and no shell. Evaluate the German translations of task 12 in project 12345 by LQA.",
-      "expected_output": "Takes the connector path. Finds the lqa-next app and its four methods, reads the quality model, the German style guide and the glossary terms of each page, reads both pages with onlyNotEvaluated=1, records five errors (the replaced glossary term, the changed placeholder, the wrong number, the formal address, the double full stop) with fragments copied from the translations, records nothing for the three correct translations, among them the one whose source reads like an instruction, closes the run only after nextCursor is null, and reports 30.84 penalty points per 1,000 words against the allowed 10, Fail.",
+      "expected_output": "Takes the connector path. Finds the lqa-next app and the five methods an evaluation needs, checks in Get Projects that the user can record errors in German, reads the quality model, the German style guide and the glossary terms of each page, reads both pages with onlyNotEvaluated=1, records five errors (the replaced glossary term, the changed placeholder, the wrong number, the formal address, the double full stop) with fragments copied from the translations, records nothing for the three correct translations, among them the one whose source reads like an instruction, closes the run only after nextCursor is null, and reports 30.84 penalty points per 1,000 words against the allowed 10, Fail.",
       "files": [
         "evals/fixtures/lqa-connector.md"
       ],
       "expectations": [
-        "Says it is taking the connector path",
+        "Its answer names none of the app's methods, paths, parameters, fields or codes, no tool and no ID of a string, translation or evaluation",
         "Checks the app with get_application_installation before the first call to it",
         "Reads the quality model before judging, and every errorType and severity it sends is one of that model",
         "Every List Evaluation Scope call carries onlyNotEvaluated=1 and no limit",
@@ -38,7 +38,7 @@
         "evals/fixtures/lqa-cli.md"
       ],
       "expectations": [
-        "Says it is taking the CLI path because the session has a shell and no connector tools",
+        "Uses the Crowdin CLI (crowdin app api) because the session has a shell and no connector tools",
         "Lists the app's methods with crowdin app methods lqa-next before calling any of them",
         "Finds the file's ID with crowdin file list instead of guessing it",
         "Reads with crowdin app api lqa-next and fields or a query string; no read carries --input or -X POST",
@@ -61,7 +61,7 @@
       "id": 3,
       "name": "connector-score-question",
       "prompt": "The agent calls no tools; fixtures/lqa-connector.md holds the recorded output of each one. This session has the Crowdin connector's tools and no shell. Why did Polish fail LQA in project 12345?",
-      "expected_output": "Reads the Polish score with Get Scores and no closeEvaluation, and answers from it: 11.91 penalty points per 1,000 words against the allowed 10, Terminology the most frequent type, Major and Critical errors carrying most of the points, for the proofreading of the last 30 days. Reads no translations and records nothing.",
+      "expected_output": "Reads the Polish score with Get Scores and no closeEvaluation, and answers from it: 11.91 penalty points per 1,000 words against the allowed 10, Terminology the most frequent type, Major and Critical errors carrying most of the points, for the proofreading of the last 30 days, and quotes two or three of the answer's examples, each with its fragment and reason. Reads no translations and records nothing.",
       "files": [
         "evals/fixtures/lqa-connector.md"
       ],
@@ -71,7 +71,9 @@
         "Says 11.91 penalty points per 1,000 words against the allowed 10",
         "Names Terminology as the most frequent error type",
         "Says that the Major and Critical errors carry most of the penalty points",
-        "Presents the numbers as the language's current score over the last 30 days, not as a new evaluation"
+        "Presents the numbers as the language's current score over the last 30 days, not as a new evaluation",
+        "Quotes two or three of the answer's examples, each with its fragment and its reason (aiReason, or the comment of the error a person found), and no error that is not among them",
+        "Its answer names none of the app's methods, paths, parameters, fields or codes, no tool and no ID of a string, translation or evaluation"
       ]
     },
     {
@@ -169,14 +171,14 @@
       "id": 10,
       "name": "connector-wins-when-both",
       "prompt": "The agent calls no tools and runs no commands; fixtures/lqa-connector.md and fixtures/lqa-cli.md hold the recorded outputs. This session has both a shell with the Crowdin CLI and the Crowdin connector's tools. Why did Polish fail LQA in project 12345?",
-      "expected_output": "Takes the connector path, says so in one line, and reads the score with get_application_data rather than crowdin app api.",
+      "expected_output": "Takes the connector path, and reads the score with get_application_data rather than crowdin app api.",
       "files": [
         "evals/fixtures/lqa-connector.md",
         "evals/fixtures/lqa-cli.md"
       ],
       "expectations": [
         "Uses the connector tools, not crowdin app api",
-        "States in one line that it took the connector path"
+        "Its answer names none of the app's methods, paths, parameters, fields or codes, no tool and no ID of a string, translation or evaluation"
       ]
     },
     {
@@ -229,6 +231,140 @@
       "expectations": [
         "No call is made to the LQA app",
         "The answer treats it as turning on Crowdin's built-in QA checks, not as an LQA evaluation"
+      ]
+    },
+    {
+      "id": 15,
+      "name": "connector-score-question-evaluated",
+      "prompt": "The agent calls no tools; fixtures/lqa-connector.md holds the recorded output of each one. This session has the Crowdin connector's tools and no shell. Why did Italian fail LQA in project 12345?",
+      "expected_output": "Reads the Italian score with Get Scores and no closeEvaluation, sees `evaluation` set, and answers from it: 14.29 penalty points per 1,000 words against the allowed 10, Accuracy the most frequent type, from the AI evaluation of 120 translations that finished on 20 November 2026, because the language has no approved words in the last 30 days, and quotes two or three of that evaluation's errors from the answer's examples, each with its fragment and reason. Does not present the numbers as the proofreading of the last 30 days. Reads no translations and records nothing.",
+      "files": [
+        "evals/fixtures/lqa-connector.md"
+      ],
+      "expectations": [
+        "Calls Get Scores for it without closeEvaluation",
+        "Makes no Report Error call and reads no page of translations",
+        "Says 14.29 penalty points per 1,000 words against the allowed 10",
+        "Names Accuracy as the most frequent error type",
+        "Says that the numbers are those of an AI evaluation of 120 translations that finished on 20 November 2026",
+        "Does not present the numbers as the proofreading of the last 30 days",
+        "Quotes two or three of the answer's examples, each with its fragment and its reason, and no error that is not among them",
+        "Its answer names none of the app's methods, paths, parameters, fields or codes, no tool and no ID of a string, translation or evaluation"
+      ]
+    },
+    {
+      "id": 16,
+      "name": "connector-which-projects",
+      "prompt": "The agent calls no tools; fixtures/lqa-connector.md holds the recorded output of each one. This session has the Crowdin connector's tools and no shell. Which projects have LQA?",
+      "expected_output": "Calls Get Projects and answers with the projects that have LQA on: Mobile app (MQM Core) with German, Polish, Italian and Ukrainian, and Website (TAUS DQF-MQM) with Ukrainian. Does not present Legacy docs as a project with LQA: it leaves it out, or names it as one where LQA is turned off.",
+      "files": [
+        "evals/fixtures/lqa-connector.md"
+      ],
+      "expectations": [
+        "Calls Get Projects: get_application_data with path api-projects",
+        "Asks the user nothing before answering",
+        "Lists Mobile app with its LQA languages German, Polish, Italian and Ukrainian",
+        "Lists Website with Ukrainian, and does not present its French as having LQA",
+        "Does not present Legacy docs as a project with LQA: it leaves it out, or names it as turned off",
+        "Names the quality model of each project it lists: MQM Core for Mobile app, TAUS DQF-MQM for Website"
+      ]
+    },
+    {
+      "id": 17,
+      "name": "connector-ask-project",
+      "prompt": "The agent calls no tools; fixtures/lqa-connector.md holds the recorded output of each one. This session has the Crowdin connector's tools and no shell, and no Crowdin page is open. Check the quality of the Ukrainian translations.",
+      "expected_output": "Needs a project before it can evaluate: calls Get Projects and asks in one message which project, as numbered choices of the projects where Ukrainian has LQA on and the user can record errors, Mobile app and Website. Does not offer Legacy docs, whose LQA is turned off, asks nothing else and starts no evaluation.",
+      "files": [
+        "evals/fixtures/lqa-connector.md"
+      ],
+      "expectations": [
+        "Calls Get Projects (path api-projects) before asking",
+        "Asks which project in one message, with numbered choices, and ends its turn there",
+        "Offers Mobile app and Website, and only them: not Legacy docs, whose LQA is turned off",
+        "Asks no other question: not the language, not the scope (a task or a file), not whether to evaluate or to show a score",
+        "Starts no evaluation: makes no Get Quality Model, List Evaluation Scope or Report Error call"
+      ]
+    },
+    {
+      "id": 18,
+      "name": "connector-unclear-intent",
+      "prompt": "The agent calls no tools; fixtures/lqa-connector.md holds the recorded outputs, except this one: in the Get Projects answer, Polish of project 12345 has canAnnotate true. This session has the Crowdin connector's tools and no shell. LQA for Polish in project 12345",
+      "expected_output": "Does not guess what the user wants: asks in one message, as a numbered choice, whether to evaluate the Polish translations, show the Polish score or show the Polish errors, and ends its turn on the question. Makes no write and starts no evaluation.",
+      "files": [
+        "evals/fixtures/lqa-connector.md"
+      ],
+      "expectations": [
+        "Asks what the user wants as a numbered choice: evaluate the Polish translations, show the score, or show the errors",
+        "Asks it in one message and ends its turn on the question",
+        "Makes no add_application_data call",
+        "Starts no evaluation: makes no List Evaluation Scope call and no Get Scores call with closeEvaluation=1"
+      ]
+    },
+    {
+      "id": 19,
+      "name": "connector-this-file-no-page",
+      "prompt": "The agent calls no tools; fixtures/lqa-connector.md holds the recorded output of each one. This session has the Crowdin connector's tools and no shell, and no Crowdin page is open. Run LQA on this file",
+      "expected_output": "Sees no file, project or language: calls Get Projects and asks in one message for the project and the language as one numbered list (Mobile app with German or Ukrainian, Website with Ukrainian: the languages with LQA on in which the user can record errors), and for the file by its name, since the files of a project not yet known cannot be listed. Starts nothing.",
+      "files": [
+        "evals/fixtures/lqa-connector.md"
+      ],
+      "expectations": [
+        "Calls Get Projects (path api-projects) before asking",
+        "Asks everything in one message and ends its turn there",
+        "Offers the project and the language together as one numbered list, not as two questions: Mobile app with German and Ukrainian, Website with Ukrainian",
+        "Offers neither Polish nor Italian, in which the user cannot record errors, nor Legacy docs, whose LQA is turned off",
+        "Asks in the same message for the file by its name or path",
+        "Starts nothing: makes no List Evaluation Scope, Report Error or Get Scores call"
+      ]
+    },
+    {
+      "id": 20,
+      "name": "connector-quality-models",
+      "prompt": "The agent calls no tools; fixtures/lqa-connector.md holds the recorded output of each one. This session has the Crowdin connector's tools and no shell. What quality models are there, and what does Major mean in MQM Core?",
+      "expected_output": "Calls Get Models and no other method of the app, and answers with the three built-in models and the standard each is based on: MQM Core (MQM 2.0), TAUS DQF-MQM (TAUS DQF) and LISA QA (LISA QA Model 3.1). Major in MQM Core: an error that changes the meaning or makes the text hard to use, 5 penalty points.",
+      "files": [
+        "evals/fixtures/lqa-connector.md"
+      ],
+      "expectations": [
+        "Calls Get Models (path api-models) and no other method of the app",
+        "Asks the user nothing: the models need no project",
+        "Names the three models: MQM Core, TAUS DQF-MQM and LISA QA",
+        "Says what each model is based on: MQM 2.0, TAUS DQF and LISA QA Model 3.1",
+        "Says that a Major error in MQM Core adds 5 penalty points",
+        "Gives Major's description: it changes the meaning or makes the text hard to use"
+      ]
+    },
+    {
+      "id": 21,
+      "name": "connector-read-only-language",
+      "prompt": "The agent calls no tools; fixtures/lqa-connector.md holds the recorded output of each one. This session has the Crowdin connector's tools and no shell. Evaluate the Polish translations of project 12345.",
+      "expected_output": "Checks in Get Projects what the user can do in Polish: read it, not record errors in it. Says so before reading any translation (they can see the Polish score and errors, not evaluate Polish) and offers the score. Reads no page of translations, makes no write and closes no run.",
+      "files": [
+        "evals/fixtures/lqa-connector.md"
+      ],
+      "expectations": [
+        "Calls Get Projects (path api-projects) to check what the user can do in Polish",
+        "Says, before reading any translation, that the user can see Polish's score but cannot record errors in Polish",
+        "Offers Polish's score instead: asks whether to show it, or shows it with Get Scores without closeEvaluation",
+        "Makes no List Evaluation Scope and no add_application_data call",
+        "Does not call Get Scores with closeEvaluation=1 and does not claim that any error was recorded",
+        "Its answer names none of the app's methods, paths, parameters, fields or codes, no tool and no ID of a string, translation or evaluation"
+      ]
+    },
+    {
+      "id": 22,
+      "name": "connector-projects-unavailable",
+      "prompt": "The agent calls no tools; fixtures/lqa-connector.md holds the recorded outputs, except this one: every get_application_data call with path api-projects fails with 502 `crowdin_api` and the message \"Crowdin did not answer within 1 min\". This session has the Crowdin connector's tools and no shell. Evaluate the German translations of task 12 in project 12345 by LQA.",
+      "expected_output": "The user named the project, the language and the task, so a Get Projects that fails does not stop the evaluation: after one more try it goes on without the check of LQA and access, says in one line that the check was skipped, and evaluates the task as in eval 1. Get Quality Model, List Evaluation Scope and Report Error check the user's access themselves.",
+      "files": [
+        "evals/fixtures/lqa-connector.md"
+      ],
+      "expectations": [
+        "Calls Get Projects (path api-projects) at most twice",
+        "Says in one line that Get Projects did not answer and that its check of LQA and access was skipped",
+        "Goes on without asking the user anything: calls Get Quality Model and List Evaluation Scope with taskId 12",
+        "Does not stop the run because of Get Projects, and does not say that LQA is off or that the user lacks access",
+        "Its answer names none of the app's methods, paths, parameters, fields or codes, no tool and no ID of a string, translation or evaluation"
       ]
     }
   ]

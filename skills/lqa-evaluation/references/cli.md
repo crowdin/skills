@@ -1,6 +1,6 @@
 # CLI path
 
-The loop in SKILL.md, run with `crowdin app api`. Syntax for every `app` subcommand: `crowdin app --help` and `crowdin app api --help`; the `crowdin-cli` skill's command reference lists them, and the read commands used below.
+SKILL.md's requests, run with `crowdin app api`. Syntax for every `app` subcommand: `crowdin app --help` and `crowdin app api --help`; the `crowdin-cli` skill's command reference lists them, and the read commands used below.
 
 ## Requirements
 
@@ -12,6 +12,9 @@ The loop in SKILL.md, run with `crowdin app api`. Syntax for every `app` subcomm
 
 | Method | Command |
 |---|---|
+| Get Projects | `crowdin app api lqa-next api-projects -o json` |
+| Get Models | `crowdin app api lqa-next api-models -o json` |
+| Get Issues | `crowdin app api lqa-next api-issues -F projectId=<id> -F limit=10 -o json` to quote a few, plus the filters the user asked for: a list of IDs with `-f` (`-f languages=<language>`, `-f taskIds=<id>,<id>`), `-F evaluationJobId=<id>`; for the list itself, a larger `-F limit=<n>` and `-F offset=<n>` for the next page |
 | Get Quality Model | `crowdin app api lqa-next quality-model -F projectId=<id> -o json` |
 | List Evaluation Scope | `crowdin app api lqa-next evaluation-scope -F projectId=<id> -f languageId=<language> -F onlyNotEvaluated=1 -o json`, plus `-F taskId=<id>` or `-F fileId=<id>`, and `-f cursor=<nextCursor>` for the next page |
 | Report Error | `crowdin app api lqa-next errors --input - -o json`, with the body on stdin |
@@ -24,9 +27,9 @@ The loop in SKILL.md, run with `crowdin app api`. Syntax for every `app` subcomm
 
 ## Step by step
 
-1. **Find the app**: `crowdin app methods lqa-next`. It lists the methods the installed app declares; the four of SKILL.md are `GET quality-model`, `GET evaluation-scope`, `POST errors` and `GET scores`. `Application 'lqa-next' is not installed` (exit code 102) means what it says: `crowdin app list` shows what is installed (the earlier app is `lqa`).
+1. **Find the app**: `crowdin app methods lqa-next`. It lists the methods the installed app declares; the seven of SKILL.md are `GET api-projects`, `GET api-models`, `GET api-issues`, `GET quality-model`, `GET evaluation-scope`, `POST errors` and `GET scores`, and the others are not for this skill. `Application 'lqa-next' is not installed` (exit code 102) means what it says: `crowdin app list` shows what is installed (the earlier app is `lqa`).
    `crowdin app methods lqa-next errors` describes one method, its parameters and body fields, from the app's own OpenAPI document. The text view cuts each description at its first sentence (`…`); `-o json` carries the full text. This is the description to follow where it differs from SKILL.md.
-2. **Scope**: `crowdin task list -o json` gives each task's `id`, `targetLanguageId` and `title`; `crowdin file list -o json` pairs each file's `id` with its `path`.
+2. **Scope**: Get Projects gives the projects with LQA, their languages and what the user can do in each; `crowdin task list -o json` gives each task's `id`, `targetLanguageId` and `title`; `crowdin file list -o json` pairs each file's `id` with its `path`.
 3. **Quality model**: Get Quality Model.
 4. **Rules.** Download them once into a temporary directory, or into `.crowdin/resources/` when the working directory is a project with `crowdin.yml` (the `translate` skill keeps the same files there).
    - Glossary: `crowdin glossary list --assigned -o json`, then `crowdin glossary download <id> --format csv --to <dir>/glossary-<id>.csv` for each. The CSV has one row per concept with a term and a description column per language, small enough to read whole.
@@ -37,7 +40,12 @@ The loop in SKILL.md, run with `crowdin app api`. Syntax for every `app` subcomm
 7. **Record**: Report Error, see "The error body".
 8. **Score**: Get Scores. On `wordsState: "pending"`, `sleep <retryAfterSeconds>` and send the same command again.
 
-A question about a translator needs their user ID, which the CLI does not list: ask the user for it, or answer for the language, a task or a file.
+The other requests of SKILL.md:
+
+- **A question about a score**: Get Scores. A question about a translator needs their user ID, which the CLI does not list: ask the user for it, or answer for the language, a task or a file.
+- **The errors**: Get Issues. `crowdin task list` and `crowdin file list` give the IDs of its `taskIds` and `files` filters; its `translators` filter needs user IDs, as a question about a translator does.
+- **Which projects have LQA**: Get Projects.
+- **The quality models**: Get Models.
 
 ## The error body
 
