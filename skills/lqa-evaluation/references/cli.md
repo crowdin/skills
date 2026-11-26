@@ -14,7 +14,7 @@ SKILL.md's requests, run with `crowdin app api`. Syntax for every `app` subcomma
 |---|---|
 | Get Projects | `crowdin app api lqa-next api-projects -o json` |
 | Get Models | `crowdin app api lqa-next api-models -o json` |
-| Get Issues | `crowdin app api lqa-next api-issues -F projectId=<id> -f languages=<language> -o json`, plus the other filters the user asked for: a list of IDs with `-f` (`-f taskIds=<id>,<id>`), `-F evaluationJobId=<id>`, and `-F offset=<n>` for the next page |
+| Get Issues | `crowdin app api lqa-next api-issues -F projectId=<id> -F limit=10 -o json` to quote a few, plus the filters the user asked for: a list of IDs with `-f` (`-f languages=<language>`, `-f taskIds=<id>,<id>`), `-F evaluationJobId=<id>`; for the list itself, a larger `-F limit=<n>` and `-F offset=<n>` for the next page |
 | Get Quality Model | `crowdin app api lqa-next quality-model -F projectId=<id> -o json` |
 | List Evaluation Scope | `crowdin app api lqa-next evaluation-scope -F projectId=<id> -f languageId=<language> -F onlyNotEvaluated=1 -o json`, plus `-F taskId=<id>` or `-F fileId=<id>`, and `-f cursor=<nextCursor>` for the next page |
 | Report Error | `crowdin app api lqa-next errors --input - -o json`, with the body on stdin |

@@ -484,8 +484,8 @@ A task's words are known at once, so the run closes with this call. Its `example
 }
 ```
 
-## get_application_data(applicationIdentifier: "lqa-next", path: "api-issues?projectId=12345&languages=pl")
-(abridged: three of the 57 errors on the page are shown, the oldest first, each without the fields the previous version of the app's API had at the end of the record)
+## get_application_data(applicationIdentifier: "lqa-next", path: "api-issues?projectId=12345&limit=10&languages=pl")
+(abridged: three of the 10 errors on the page are shown, of the 57 that match, the oldest first, each without the fields the previous version of the app's API had at the end of the record)
 ```json
 {
   "data": {
@@ -603,7 +603,7 @@ A task's words are known at once, so the run closes with this call. Its `example
     ],
     "pagination": {
       "total": 57,
-      "limit": 100,
+      "limit": 10,
       "offset": 0
     }
   }

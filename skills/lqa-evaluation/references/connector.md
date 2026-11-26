@@ -10,7 +10,7 @@ Both tools take `applicationIdentifier: "lqa-next"` and `path`: the method's pat
 |---|---|---|
 | Get Projects | `get_application_data` | `api-projects` |
 | Get Models | `get_application_data` | `api-models` |
-| Get Issues | `get_application_data` | `api-issues?projectId=<id>`, plus the filters the user asked for, such as `&languages=<language>`, `&taskIds=<id>,<id>` or `&evaluationJobId=<id>`, and `&offset=<n>` for the next page |
+| Get Issues | `get_application_data` | `api-issues?projectId=<id>&limit=10` to quote a few, plus the filters the user asked for, such as `&languages=<language>`, `&taskIds=<id>,<id>` or `&evaluationJobId=<id>`; for the list itself, a larger `limit` and `&offset=<n>` for the next page |
 | Get Quality Model | `get_application_data` | `quality-model?projectId=<id>` |
 | List Evaluation Scope | `get_application_data` | `evaluation-scope?projectId=<id>&languageId=<language>&onlyNotEvaluated=1`, plus `&taskId=<id>` or `&fileId=<id>`, and `&cursor=<nextCursor>` for the next page |
 | Report Error | `add_application_data` | `errors`, with the error as `body` |
