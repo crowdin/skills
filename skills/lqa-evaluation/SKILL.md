@@ -123,7 +123,7 @@ Work through the steps in order; each ends on its done condition.
 
 7. **Record every error** with one Report Error call. Its body:
    - `projectId`, `languageId`, and the item's `stringId` and `translationId`;
-   - `scope`: `{ "taskId": <id> }`, `{ "fileId": <id> }`, or `{}` for the whole language, as in the listing;
+   - `scope`: `{ "taskId": <id> }` or `{ "fileId": <id> }`, as in the listing; for the whole language, leave `scope` out;
    - `errorType` and `severity`: a type and a severity of the quality model, by `key` or by `name`;
    - `fragment`: the part of the translation that is wrong, copied from it character for character. For something that is missing, quote the words it belongs next to;
    - `reason`: one sentence, up to 300 characters, that names the rule and what the fragment does wrong;
