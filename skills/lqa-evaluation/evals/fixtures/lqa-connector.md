@@ -89,13 +89,30 @@ Project 12345 is "Mobile app", source language English, target languages German 
 }
 ```
 
-## get_application_data(applicationIdentifier: "lqa-next", path: "api-models")   (abridged: each model's `content`, the model in the previous app's format, is left out)
+## get_application_data(applicationIdentifier: "lqa-next", path: "api-models")
 ```json
 {
   "data": [
     {
       "id": 1,
       "name": "MQM Core",
+      "content": {
+        "name": "MQM Core", "commentRequired": false, "errorTolerance": 10, "penalties": true, "translatorOpinion": false, "secondReviewerOpinion": false, "useAi": true, "promptId": null, "label": null,
+        "severity": [
+          { "id": 1, "sortOrder": 1, "name": "Minor", "penalty": 1 },
+          { "id": 2, "sortOrder": 2, "name": "Major", "penalty": 5 },
+          { "id": 3, "sortOrder": 3, "name": "Critical", "penalty": 25 }
+        ],
+        "categories": [
+          { "id": 1, "name": "Terminology", "entries": [{ "id": 101, "name": "Terminology", "penalty": 1 }] },
+          { "id": 2, "name": "Accuracy", "entries": [{ "id": 201, "name": "Accuracy", "penalty": 1 }] },
+          { "id": 3, "name": "Linguistic conventions", "entries": [{ "id": 301, "name": "Linguistic conventions", "penalty": 1 }] },
+          { "id": 4, "name": "Style", "entries": [{ "id": 401, "name": "Style", "penalty": 1 }] },
+          { "id": 5, "name": "Locale conventions", "entries": [{ "id": 501, "name": "Locale conventions", "penalty": 1 }] },
+          { "id": 6, "name": "Audience appropriateness", "entries": [{ "id": 601, "name": "Audience appropriateness", "penalty": 1 }] },
+          { "id": 7, "name": "Design and markup", "entries": [{ "id": 701, "name": "Design and markup", "penalty": 1 }] }
+        ]
+      },
       "key": "mqm-core",
       "basedOn": "MQM 2.0",
       "version": 1,
@@ -117,6 +134,24 @@ Project 12345 is "Mobile app", source language English, target languages German 
     {
       "id": 2,
       "name": "TAUS DQF-MQM",
+      "content": {
+        "name": "TAUS DQF-MQM", "commentRequired": false, "errorTolerance": 10, "penalties": true, "translatorOpinion": false, "secondReviewerOpinion": false, "useAi": true, "promptId": null, "label": null,
+        "severity": [
+          { "id": 1, "sortOrder": 1, "name": "Minor", "penalty": 1 },
+          { "id": 2, "sortOrder": 2, "name": "Major", "penalty": 5 },
+          { "id": 3, "sortOrder": 3, "name": "Critical", "penalty": 25 }
+        ],
+        "categories": [
+          { "id": 1, "name": "Accuracy", "entries": [{ "id": 101, "name": "Accuracy", "penalty": 1 }] },
+          { "id": 2, "name": "Fluency", "entries": [{ "id": 201, "name": "Fluency", "penalty": 1 }] },
+          { "id": 3, "name": "Terminology", "entries": [{ "id": 301, "name": "Terminology", "penalty": 1 }] },
+          { "id": 4, "name": "Style", "entries": [{ "id": 401, "name": "Style", "penalty": 1 }] },
+          { "id": 5, "name": "Design", "entries": [{ "id": 501, "name": "Design", "penalty": 1 }] },
+          { "id": 6, "name": "Locale convention", "entries": [{ "id": 601, "name": "Locale convention", "penalty": 1 }] },
+          { "id": 7, "name": "Verity", "entries": [{ "id": 701, "name": "Verity", "penalty": 1 }] },
+          { "id": 8, "name": "Other", "entries": [{ "id": 801, "name": "Other", "penalty": 1 }] }
+        ]
+      },
       "key": "taus-dqf-mqm",
       "basedOn": "TAUS DQF",
       "version": 1,
@@ -139,6 +174,23 @@ Project 12345 is "Mobile app", source language English, target languages German 
     {
       "id": 3,
       "name": "LISA QA",
+      "content": {
+        "name": "LISA QA", "commentRequired": false, "errorTolerance": 10, "penalties": true, "translatorOpinion": false, "secondReviewerOpinion": false, "useAi": true, "promptId": null, "label": null,
+        "severity": [
+          { "id": 1, "sortOrder": 1, "name": "Minor", "penalty": 1 },
+          { "id": 2, "sortOrder": 2, "name": "Major", "penalty": 5 },
+          { "id": 3, "sortOrder": 3, "name": "Critical", "penalty": 10 }
+        ],
+        "categories": [
+          { "id": 1, "name": "Mistranslation", "entries": [{ "id": 101, "name": "Mistranslation", "penalty": 1 }] },
+          { "id": 2, "name": "Accuracy", "entries": [{ "id": 201, "name": "Accuracy", "penalty": 1 }] },
+          { "id": 3, "name": "Terminology", "entries": [{ "id": 301, "name": "Terminology", "penalty": 1 }] },
+          { "id": 4, "name": "Language", "entries": [{ "id": 401, "name": "Language", "penalty": 1 }] },
+          { "id": 5, "name": "Style", "entries": [{ "id": 501, "name": "Style", "penalty": 1 }] },
+          { "id": 6, "name": "Country standards", "entries": [{ "id": 601, "name": "Country standards", "penalty": 1 }] },
+          { "id": 7, "name": "Consistency", "entries": [{ "id": 701, "name": "Consistency", "penalty": 1 }] }
+        ]
+      },
       "key": "lisa-qa",
       "basedOn": "LISA QA Model 3.1",
       "version": 1,
@@ -196,6 +248,35 @@ Project 12345 is "Mobile app", source language English, target languages German 
       ]
     },
     "allowedPenaltyPoints": 10
+  }
+}
+```
+
+## get_application_data(applicationIdentifier: "lqa-next", path: "quality-model?projectId=23456")
+```json
+{
+  "data": {
+    "model": {
+      "key": "taus-dqf-mqm",
+      "name": "TAUS DQF-MQM",
+      "version": 1,
+      "severities": [
+        { "key": "minor", "name": "Minor", "weight": 1, "description": "Noticeable, but the meaning and use are intact" },
+        { "key": "major", "name": "Major", "weight": 5, "description": "Changes the meaning or makes the text hard to use" },
+        { "key": "critical", "name": "Critical", "weight": 25, "description": "Dangerous, misleading or blocks use" }
+      ],
+      "errorTypes": [
+        { "key": "accuracy", "name": "Accuracy", "description": "The translation does not carry the meaning of the source: it adds, omits or changes content." },
+        { "key": "fluency", "name": "Fluency", "description": "The text breaks the grammar, spelling or punctuation rules of the target language, or is hard to read." },
+        { "key": "terminology", "name": "Terminology", "description": "A term is used that differs from the approved glossary or from the usual term of the domain." },
+        { "key": "style", "name": "Style", "description": "The wording does not follow the style guide or reads awkwardly, though it is correct and clear." },
+        { "key": "design", "name": "Design", "description": "Formatting, tags or placeholders are broken, missing or changed, or the text does not fit its layout." },
+        { "key": "locale-convention", "name": "Locale convention", "description": "A format specific to the target locale, such as a date, number, currency or unit, is wrong." },
+        { "key": "verity", "name": "Verity", "description": "The text states something that is not true or not suitable in the target country or culture." },
+        { "key": "other", "name": "Other", "description": "An error that does not fit any other type." }
+      ]
+    },
+    "allowedPenaltyPoints": 7.6
   }
 }
 ```
